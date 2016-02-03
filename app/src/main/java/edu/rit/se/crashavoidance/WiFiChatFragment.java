@@ -90,7 +90,7 @@ public class WiFiChatFragment extends Fragment {
             if (message != null && !message.isEmpty()) {
                 TextView nameText = (TextView) v
                         .findViewById(android.R.id.text1);
-
+                nameText.setText(message);
             }
             return v;
         }
