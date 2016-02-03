@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +27,9 @@ public class WiFiChatFragment extends Fragment implements OnLocationUpdatedListe
 
     private View view;
     private ChatManager chatManager;
-    private TextView chatLine;
+//    private TextView chatLine;
     private ListView listView;
+    private TextView myLocation;
     ChatMessageAdapter adapter = null;
     private List<String> items = new ArrayList<String>();
 
@@ -34,32 +37,22 @@ public class WiFiChatFragment extends Fragment implements OnLocationUpdatedListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_chat, container, false);
-        chatLine = (TextView) view.findViewById(R.id.txtChatLine);
+//        chatLine = (TextView) view.findViewById(R.id.txtChatLine);
         listView = (ListView) view.findViewById(android.R.id.list);
         adapter = new ChatMessageAdapter(getActivity(), android.R.id.text1,
                 items);
         listView.setAdapter(adapter);
-        view.findViewById(R.id.button1).setOnClickListener(
-                new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View arg0) {
-                        if (chatManager != null) {
-                            chatManager.write(chatLine.getText().toString()
-                                    .getBytes());
-                            pushMessage("Me: " + chatLine.getText().toString());
-                            chatLine.setText("");
-                            chatLine.clearFocus();
-                        }
-                    }
-                });
+        myLocation = (TextView) view.findViewById(R.id.my_location);
         return view;
     }
 
     @Override
     public void onLocationUpdated(Location location) {
         String locationStr = location.toString();
-        chatManager.write(locationStr.getBytes());
+        if (chatManager != null) {
+            chatManager.write(locationStr.getBytes());
+        }
+        myLocation.setText("My location: " + location);
     }
 
     public interface MessageTarget {

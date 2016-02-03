@@ -10,6 +10,7 @@ import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.Bundle;
@@ -31,6 +32,8 @@ import java.util.Map;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
+import io.nlopez.smartlocation.location.config.LocationAccuracy;
+import io.nlopez.smartlocation.location.config.LocationParams;
 import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesProvider;
 
 public class MainActivity extends Activity implements
@@ -41,10 +44,9 @@ public class MainActivity extends Activity implements
         OnLocationUpdatedListener {
 
     public static final String SERVICE_NAME = "_crashavoidance";
-    static final int SERVER_PORT = 4545;
     public static final int MESSAGE_READ = 0x400 + 1;
     public static final int MY_HANDLE = 0x400 + 2;
-
+    static final int SERVER_PORT = 4545;
     private IntentFilter intentFilter = new IntentFilter();
     private WifiP2pManager mManager;
     private WifiP2pManager.Channel mChannel;
@@ -71,6 +73,14 @@ public class MainActivity extends Activity implements
         mChannel = mManager.initialize(this, getMainLooper(), null);
 
         statusTextView = (TextView) findViewById(R.id.status_text);
+
+        findViewById(R.id.reset).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetConnections();
+            }
+        });
+
         appendStatus("test");
 
         servicesList = new ServicesList();
@@ -79,6 +89,29 @@ public class MainActivity extends Activity implements
 
         registerAndFindServices();
         startLocation();
+    }
+
+    private void resetConnections() {
+        statusTextView.setText("");
+        statusTextView.setVisibility(View.VISIBLE);
+        mManager.removeGroup(mChannel, new ActionListener() {
+
+            @Override
+            public void onSuccess() {
+                appendStatus("Disconnected from wifi group");
+                getFragmentManager().beginTransaction()
+                        .remove(chatFragment)
+                        .commit();
+                chatFragment = null;
+                servicesList.listAdapter.clear();
+                registerAndFindServices();
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                appendStatus("Error disconnecting from wifi group");
+            }
+        });
     }
 
     @Override
@@ -122,7 +155,7 @@ public class MainActivity extends Activity implements
 
         WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(
                 SERVICE_NAME, "_presence._tcp", record);
-        mManager.addLocalService(mChannel, service, new WifiP2pManager.ActionListener() {
+        mManager.addLocalService(mChannel, service, new ActionListener() {
 
             @Override
             public void onSuccess() {
@@ -194,7 +227,7 @@ public class MainActivity extends Activity implements
         // discovery.
         serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
         mManager.addServiceRequest(mChannel, serviceRequest,
-                new WifiP2pManager.ActionListener() {
+                new ActionListener() {
 
                     @Override
                     public void onSuccess() {
@@ -206,7 +239,7 @@ public class MainActivity extends Activity implements
                         appendStatus("Failed adding service discovery request");
                     }
                 });
-        mManager.discoverServices(mChannel, new WifiP2pManager.ActionListener() {
+        mManager.discoverServices(mChannel, new ActionListener() {
 
             @Override
             public void onSuccess() {
@@ -228,7 +261,7 @@ public class MainActivity extends Activity implements
         config.wps.setup = WpsInfo.PBC;
         if (serviceRequest != null)
             mManager.removeServiceRequest(mChannel, serviceRequest,
-                    new WifiP2pManager.ActionListener() {
+                    new ActionListener() {
 
                         @Override
                         public void onSuccess() {
@@ -239,7 +272,7 @@ public class MainActivity extends Activity implements
                         }
                     });
 
-        mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+        mManager.connect(mChannel, config, new ActionListener() {
 
             @Override
             public void onSuccess() {
@@ -326,8 +359,12 @@ public class MainActivity extends Activity implements
         provider.setCheckLocationSettings(true);
 
         SmartLocation smartLocation = new SmartLocation.Builder(this).logging(true).build();
+        LocationParams params = new LocationParams.Builder()
+                .setAccuracy(LocationAccuracy.HIGH)
+                .setInterval(1000)
+                .build();
 
-        smartLocation.location(provider).start(this);
+        smartLocation.location(provider).config(params).start(this);
         appendStatus("Location started");
     }
 
