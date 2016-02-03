@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends Activity implements ServicesList.DeviceClickListener {
+public class MainActivity extends Activity implements ServicesList.DeviceClickListener, WifiP2pManager.ConnectionInfoListener {
 
     public static final String SERVICE_NAME = "_crashavoidance";
     static final int SERVER_PORT = 4545;
@@ -39,22 +39,14 @@ public class MainActivity extends Activity implements ServicesList.DeviceClickLi
     private TextView statusTextView;
     private WifiP2pDnsSdServiceRequest serviceRequest;
     private BroadcastReceiver receiver = null;
+    private WiFiChatFragment chatFragment;
+    private ServicesList servicesList;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -65,8 +57,13 @@ public class MainActivity extends Activity implements ServicesList.DeviceClickLi
         mChannel = mManager.initialize(this, getMainLooper(), null);
 
         statusTextView = (TextView) findViewById(R.id.status_text);
+        appendStatus("test");
 
+        servicesList = new ServicesList();
+        getFragmentManager().beginTransaction()
+                .add(R.id.main_container, servicesList, "services").commit();
 
+        registerAndFindServices();
     }
 
     @Override
@@ -142,7 +139,7 @@ public class MainActivity extends Activity implements ServicesList.DeviceClickLi
                         // A service has been discovered. Is this our app?
 
                         if (instanceName.equalsIgnoreCase(SERVICE_NAME)) {
-
+                            appendStatus("Service available");
                             // update the UI and add the item the discovered
                             // device.
                             ServicesList fragment = (ServicesList) getFragmentManager()
@@ -254,7 +251,7 @@ public class MainActivity extends Activity implements ServicesList.DeviceClickLi
             Log.d(SERVICE_NAME, "Connected as group owner");
             try {
                 handler = new GroupOwnerSocketHandler(
-                        ((MessageTarget) this).getHandler());
+                        ((WiFiChatFragment.MessageTarget) this).getHandler());
                 handler.start();
             } catch (IOException e) {
                 Log.d(SERVICE_NAME,
@@ -264,14 +261,14 @@ public class MainActivity extends Activity implements ServicesList.DeviceClickLi
         } else {
             Log.d(SERVICE_NAME, "Connected as peer");
             handler = new ClientSocketHandler(
-                    ((MessageTarget) this).getHandler(),
+                    ((WiFiChatFragment.MessageTarget) this).getHandler(),
                     p2pInfo.groupOwnerAddress);
             handler.start();
         }
         chatFragment = new WiFiChatFragment();
         getFragmentManager().beginTransaction()
                 .replace(R.id.main_container, chatFragment).commit();
-        statusTxtView.setVisibility(View.GONE);
+        statusTextView.setVisibility(View.GONE);
     }
 
     private void appendStatus(String status) {
