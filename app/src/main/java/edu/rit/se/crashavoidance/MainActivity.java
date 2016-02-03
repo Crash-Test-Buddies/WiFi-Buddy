@@ -12,6 +12,8 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -26,7 +28,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends Activity implements ServicesList.DeviceClickListener, WifiP2pManager.ConnectionInfoListener {
+public class MainActivity extends Activity implements ServicesList.DeviceClickListener,
+        WifiP2pManager.ConnectionInfoListener, WiFiChatFragment.MessageTarget, Handler.Callback {
 
     public static final String SERVICE_NAME = "_crashavoidance";
     static final int SERVER_PORT = 4545;
@@ -41,6 +44,7 @@ public class MainActivity extends Activity implements ServicesList.DeviceClickLi
     private BroadcastReceiver receiver = null;
     private WiFiChatFragment chatFragment;
     private ServicesList servicesList;
+    private Handler handler = new Handler(this);
 
 
     @Override
@@ -273,5 +277,29 @@ public class MainActivity extends Activity implements ServicesList.DeviceClickLi
 
     private void appendStatus(String status) {
         statusTextView.append("\n" + status);
+    }
+
+    @Override
+    public Handler getHandler() {
+        return handler;
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case MESSAGE_READ:
+                byte[] readBuf = (byte[]) msg.obj;
+                // construct a string from the valid bytes in the buffer
+                String readMessage = new String(readBuf, 0, msg.arg1);
+                Log.d(SERVICE_NAME, readMessage);
+                (chatFragment).pushMessage("Buddy: " + readMessage);
+                break;
+
+            case MY_HANDLE:
+                Object obj = msg.obj;
+                (chatFragment).setChatManager((ChatManager) obj);
+
+        }
+        return true;
     }
 }
