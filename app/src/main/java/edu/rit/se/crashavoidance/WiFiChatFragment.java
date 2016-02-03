@@ -2,6 +2,7 @@ package edu.rit.se.crashavoidance;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -14,11 +15,13 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.nlopez.smartlocation.OnLocationUpdatedListener;
+
 /**
  * This fragment handles chat related UI which includes a list view for messages
  * and a message entry field with send button.
  */
-public class WiFiChatFragment extends Fragment {
+public class WiFiChatFragment extends Fragment implements OnLocationUpdatedListener {
 
     private View view;
     private ChatManager chatManager;
@@ -51,6 +54,12 @@ public class WiFiChatFragment extends Fragment {
                     }
                 });
         return view;
+    }
+
+    @Override
+    public void onLocationUpdated(Location location) {
+        String locationStr = location.toString();
+        chatManager.write(locationStr.getBytes());
     }
 
     public interface MessageTarget {

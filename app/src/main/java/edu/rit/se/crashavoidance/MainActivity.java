@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.location.Location;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -28,8 +29,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends Activity implements ServicesList.DeviceClickListener,
-        WifiP2pManager.ConnectionInfoListener, WiFiChatFragment.MessageTarget, Handler.Callback {
+import io.nlopez.smartlocation.OnLocationUpdatedListener;
+import io.nlopez.smartlocation.SmartLocation;
+import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesProvider;
+
+public class MainActivity extends Activity implements
+        ServicesList.DeviceClickListener,
+        WifiP2pManager.ConnectionInfoListener,
+        WiFiChatFragment.MessageTarget,
+        Handler.Callback,
+        OnLocationUpdatedListener {
 
     public static final String SERVICE_NAME = "_crashavoidance";
     static final int SERVER_PORT = 4545;
@@ -45,6 +54,7 @@ public class MainActivity extends Activity implements ServicesList.DeviceClickLi
     private WiFiChatFragment chatFragment;
     private ServicesList servicesList;
     private Handler handler = new Handler(this);
+    private LocationGooglePlayServicesProvider provider;
 
 
     @Override
@@ -68,6 +78,7 @@ public class MainActivity extends Activity implements ServicesList.DeviceClickLi
                 .add(R.id.main_container, servicesList, "services").commit();
 
         registerAndFindServices();
+        startLocation();
     }
 
     @Override
@@ -301,5 +312,27 @@ public class MainActivity extends Activity implements ServicesList.DeviceClickLi
 
         }
         return true;
+    }
+
+    @Override
+    public void onLocationUpdated(Location location) {
+        if (chatFragment != null) {
+            chatFragment.onLocationUpdated(location);
+        }
+    }
+
+    private void startLocation() {
+        provider = new LocationGooglePlayServicesProvider();
+        provider.setCheckLocationSettings(true);
+
+        SmartLocation smartLocation = new SmartLocation.Builder(this).logging(true).build();
+
+        smartLocation.location(provider).start(this);
+        appendStatus("Location started");
+    }
+
+    private void stopLocation() {
+        SmartLocation.with(this).location().stop();
+        appendStatus("Location stopped");
     }
 }
