@@ -297,6 +297,7 @@ public class MainActivity extends Activity implements
 
         if (p2pInfo.isGroupOwner) {
             Log.d(SERVICE_NAME, "Connected as group owner");
+            (chatFragment).pushMessage("You are the group owner");
             try {
                 handler = new GroupOwnerSocketHandler(
                         ((WiFiChatFragment.MessageTarget) this).getHandler());
@@ -308,6 +309,8 @@ public class MainActivity extends Activity implements
             }
         } else {
             Log.d(SERVICE_NAME, "Connected as peer");
+            (chatFragment).pushMessage("You are a client");
+            (chatFragment).pushMessage("Owner address: " + p2pInfo.groupOwnerAddress);
             handler = new ClientSocketHandler(
                     ((WiFiChatFragment.MessageTarget) this).getHandler(),
                     p2pInfo.groupOwnerAddress);
