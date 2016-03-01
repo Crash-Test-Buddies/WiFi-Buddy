@@ -294,10 +294,10 @@ public class MainActivity extends Activity implements
          * client socket for every client. This is handled by {@code
          * GroupOwnerSocketHandler}
          */
-
+        boolean isOwner;
         if (p2pInfo.isGroupOwner) {
+            isOwner = true;
             Log.d(SERVICE_NAME, "Connected as group owner");
-            (chatFragment).pushMessage("You are the group owner");
             try {
                 handler = new GroupOwnerSocketHandler(
                         ((WiFiChatFragment.MessageTarget) this).getHandler());
@@ -308,9 +308,8 @@ public class MainActivity extends Activity implements
                 return;
             }
         } else {
+            isOwner = false;
             Log.d(SERVICE_NAME, "Connected as peer");
-            (chatFragment).pushMessage("You are a client");
-            (chatFragment).pushMessage("Owner address: " + p2pInfo.groupOwnerAddress);
             handler = new ClientSocketHandler(
                     ((WiFiChatFragment.MessageTarget) this).getHandler(),
                     p2pInfo.groupOwnerAddress);
@@ -320,6 +319,13 @@ public class MainActivity extends Activity implements
         getFragmentManager().beginTransaction()
                 .replace(R.id.main_container, chatFragment).commit();
         statusTextView.setVisibility(View.GONE);
+        if (isOwner) {
+
+            appendStatus("You are the group owner");
+        } else {
+            appendStatus("You are a client");
+            appendStatus("Owner address: " + p2pInfo.groupOwnerAddress);
+        }
     }
 
     private void appendStatus(String status) {
