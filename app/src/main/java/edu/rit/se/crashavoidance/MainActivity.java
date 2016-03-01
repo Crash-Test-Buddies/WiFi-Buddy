@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
@@ -318,13 +319,11 @@ public class MainActivity extends Activity implements
         chatFragment = new WiFiChatFragment();
         getFragmentManager().beginTransaction()
                 .replace(R.id.main_container, chatFragment).commit();
-        statusTextView.setVisibility(View.GONE);
+//        statusTextView.setVisibility(View.GONE);
         if (isOwner) {
-
-            appendStatus("You are the group owner");
+            statusTextView.setBackgroundColor(Color.BLUE);
         } else {
-            appendStatus("You are a client");
-            appendStatus("Owner address: " + p2pInfo.groupOwnerAddress);
+            statusTextView.setBackgroundColor(Color.GREEN);
         }
     }
 
