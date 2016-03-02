@@ -17,10 +17,6 @@ import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -49,8 +45,8 @@ public class MainActivity extends Activity implements
     public static final int MY_HANDLE = 0x400 + 2;
     static final int SERVER_PORT = 4545;
     private IntentFilter intentFilter = new IntentFilter();
-    private WifiP2pManager mManager;
-    private WifiP2pManager.Channel mChannel;
+    private WifiP2pManager wifiP2pManager;
+    private WifiP2pManager.Channel channel;
     private TextView statusTextView;
     private WifiP2pDnsSdServiceRequest serviceRequest;
     private BroadcastReceiver receiver = null;
@@ -70,8 +66,8 @@ public class MainActivity extends Activity implements
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
-        mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        mChannel = mManager.initialize(this, getMainLooper(), null);
+        wifiP2pManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+        channel = wifiP2pManager.initialize(this, getMainLooper(), null);
 
         statusTextView = (TextView) findViewById(R.id.status_text);
 
@@ -82,8 +78,6 @@ public class MainActivity extends Activity implements
             }
         });
 
-        appendStatus("test");
-
         servicesList = new ServicesList();
         getFragmentManager().beginTransaction()
                 .add(R.id.main_container, servicesList, "services").commit();
@@ -93,9 +87,8 @@ public class MainActivity extends Activity implements
     }
 
     private void resetConnections() {
-        statusTextView.setText("");
-        statusTextView.setVisibility(View.VISIBLE);
-        mManager.removeGroup(mChannel, new ActionListener() {
+//        statusTextView.setText("");
+        wifiP2pManager.removeGroup(channel, new ActionListener() {
 
             @Override
             public void onSuccess() {
@@ -118,8 +111,9 @@ public class MainActivity extends Activity implements
     @Override
     protected void onResume() {
         super.onResume();
-        receiver = new WiFiDirectBroadcastReceiver(mManager, mChannel, this);
+        receiver = new WiFiDirectBroadcastReceiver(wifiP2pManager, channel, this);
         registerReceiver(receiver, intentFilter);
+        discoverService();
     }
 
     @Override
@@ -156,7 +150,7 @@ public class MainActivity extends Activity implements
 
         WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(
                 SERVICE_NAME, "_presence._tcp", record);
-        mManager.addLocalService(mChannel, service, new ActionListener() {
+        wifiP2pManager.addLocalService(channel, service, new ActionListener() {
 
             @Override
             public void onSuccess() {
@@ -178,7 +172,7 @@ public class MainActivity extends Activity implements
          * by the system when a service is actually discovered.
          */
 
-        mManager.setDnsSdResponseListeners(mChannel,
+        wifiP2pManager.setDnsSdResponseListeners(channel,
                 new WifiP2pManager.DnsSdServiceResponseListener() {
 
                     @Override
@@ -227,7 +221,7 @@ public class MainActivity extends Activity implements
         // After attaching listeners, create a service request and initiate
         // discovery.
         serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
-        mManager.addServiceRequest(mChannel, serviceRequest,
+        wifiP2pManager.addServiceRequest(channel, serviceRequest,
                 new ActionListener() {
 
                     @Override
@@ -240,7 +234,7 @@ public class MainActivity extends Activity implements
                         appendStatus("Failed adding service discovery request");
                     }
                 });
-        mManager.discoverServices(mChannel, new ActionListener() {
+        wifiP2pManager.discoverServices(channel, new ActionListener() {
 
             @Override
             public void onSuccess() {
@@ -261,7 +255,7 @@ public class MainActivity extends Activity implements
         config.deviceAddress = service.device.deviceAddress;
         config.wps.setup = WpsInfo.PBC;
         if (serviceRequest != null)
-            mManager.removeServiceRequest(mChannel, serviceRequest,
+            wifiP2pManager.removeServiceRequest(channel, serviceRequest,
                     new ActionListener() {
 
                         @Override
@@ -273,7 +267,7 @@ public class MainActivity extends Activity implements
                         }
                     });
 
-        mManager.connect(mChannel, config, new ActionListener() {
+        wifiP2pManager.connect(channel, config, new ActionListener() {
 
             @Override
             public void onSuccess() {
@@ -319,11 +313,12 @@ public class MainActivity extends Activity implements
         chatFragment = new WiFiChatFragment();
         getFragmentManager().beginTransaction()
                 .replace(R.id.main_container, chatFragment).commit();
-//        statusTextView.setVisibility(View.GONE);
         if (isOwner) {
             statusTextView.setBackgroundColor(Color.BLUE);
+            appendStatus("Connected as owner");
         } else {
             statusTextView.setBackgroundColor(Color.GREEN);
+            appendStatus("Connected as peer");
         }
     }
 

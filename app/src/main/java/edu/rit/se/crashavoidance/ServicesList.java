@@ -79,6 +79,10 @@ public class ServicesList extends ListFragment {
             }
             return v;
         }
+
+//        public Boolean addUnique(WiFiP2pService service) {
+//            if( items.con)
+//        }
     }
 
     public static String getDeviceStatus(int statusCode) {
