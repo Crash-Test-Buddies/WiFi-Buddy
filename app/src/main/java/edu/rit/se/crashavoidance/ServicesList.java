@@ -80,9 +80,16 @@ public class ServicesList extends ListFragment {
             return v;
         }
 
-//        public Boolean addUnique(WiFiP2pService service) {
-//            if( items.con)
-//        }
+        //This should prevent duplicates from appearing in the list
+        public Boolean addUnique(WiFiP2pService service) {
+            if (items.contains(service)) {
+                return false;
+            } else {
+                this.add(service);
+                this.notifyDataSetChanged();
+                return true;
+            }
+        }
     }
 
     public static String getDeviceStatus(int statusCode) {

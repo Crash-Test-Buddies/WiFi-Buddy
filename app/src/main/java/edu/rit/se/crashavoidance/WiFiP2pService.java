@@ -9,4 +9,15 @@ public class WiFiP2pService {
     WifiP2pDevice device;
     String instanceName = null;
     String serviceRegistrationType = null;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof WiFiP2pService)) {
+            return false;
+        } else {
+            WiFiP2pService other = (WiFiP2pService) o;
+            return other.device.deviceName.equals(this.device.deviceName)
+                    && other.instanceName.equals(this.instanceName);
+        }
+    }
 }

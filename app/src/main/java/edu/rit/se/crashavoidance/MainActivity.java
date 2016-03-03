@@ -93,6 +93,7 @@ public class MainActivity extends Activity implements
             @Override
             public void onSuccess() {
                 appendStatus("Disconnected from wifi group");
+                statusTextView.setBackgroundColor(Color.WHITE);
                 getFragmentManager().beginTransaction()
                         .remove(chatFragment)
                         .commit();
@@ -194,8 +195,9 @@ public class MainActivity extends Activity implements
                                 service.device = srcDevice;
                                 service.instanceName = instanceName;
                                 service.serviceRegistrationType = registrationType;
-                                adapter.add(service);
-                                adapter.notifyDataSetChanged();
+                                adapter.addUnique(service);
+//                                adapter.add(service);
+//                                adapter.notifyDataSetChanged();
                                 Log.d(SERVICE_NAME, "onBonjourServiceAvailable "
                                         + instanceName);
                             }
@@ -311,8 +313,8 @@ public class MainActivity extends Activity implements
             handler.start();
         }
         chatFragment = new WiFiChatFragment();
-        getFragmentManager().beginTransaction()
-                .replace(R.id.main_container, chatFragment).commit();
+//        getFragmentManager().beginTransaction()
+//                .replace(R.id.main_container, chatFragment).commit(); TODO: Re-enable after demo 2
         if (isOwner) {
             statusTextView.setBackgroundColor(Color.BLUE);
             appendStatus("Connected as owner");
@@ -339,7 +341,7 @@ public class MainActivity extends Activity implements
                 // construct a string from the valid bytes in the buffer
                 String readMessage = new String(readBuf, 0, msg.arg1);
                 Log.d(SERVICE_NAME, readMessage);
-                (chatFragment).pushMessage("Buddy: " + readMessage);
+//                (chatFragment).pushMessage("Buddy: " + readMessage); TODO: Removed for demo 2
                 break;
 
             case MY_HANDLE:
@@ -353,7 +355,7 @@ public class MainActivity extends Activity implements
     @Override
     public void onLocationUpdated(Location location) {
         if (chatFragment != null) {
-            chatFragment.onLocationUpdated(location);
+//            chatFragment.onLocationUpdated(location); TODO: Removed for demo 2
         }
     }
 
