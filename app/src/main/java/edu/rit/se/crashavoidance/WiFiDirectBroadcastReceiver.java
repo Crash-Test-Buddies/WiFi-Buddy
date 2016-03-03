@@ -43,7 +43,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
-    private Activity activity;
+    private MainActivity activity;
 
     /**
      * @param manager WifiP2pManager system service
@@ -55,7 +55,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
         super();
         this.manager = manager;
         this.channel = channel;
-        this.activity = activity;
+        this.activity = (MainActivity) activity;
     }
 
     /*
@@ -86,6 +86,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                         (WifiP2pManager.ConnectionInfoListener) activity);
             } else {
                 // It's a disconnect
+                activity.onDisconnect();
             }
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION
                 .equals(action)) {

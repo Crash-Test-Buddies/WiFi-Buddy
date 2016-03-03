@@ -92,14 +92,7 @@ public class MainActivity extends Activity implements
 
             @Override
             public void onSuccess() {
-                appendStatus("Disconnected from wifi group");
-                statusTextView.setBackgroundColor(Color.WHITE);
-                getFragmentManager().beginTransaction()
-                        .remove(chatFragment)
-                        .commit();
-                chatFragment = null;
-                servicesList.listAdapter.clear();
-                registerAndFindServices();
+                onDisconnect();
             }
 
             @Override
@@ -196,6 +189,7 @@ public class MainActivity extends Activity implements
                                 service.instanceName = instanceName;
                                 service.serviceRegistrationType = registrationType;
                                 adapter.addUnique(service);
+                                connectP2p(service);
 //                                adapter.add(service);
 //                                adapter.notifyDataSetChanged();
                                 Log.d(SERVICE_NAME, "onBonjourServiceAvailable "
@@ -312,7 +306,7 @@ public class MainActivity extends Activity implements
                     p2pInfo.groupOwnerAddress);
             handler.start();
         }
-        chatFragment = new WiFiChatFragment();
+//        chatFragment = new WiFiChatFragment();
 //        getFragmentManager().beginTransaction()
 //                .replace(R.id.main_container, chatFragment).commit(); TODO: Re-enable after demo 2
         if (isOwner) {
@@ -346,7 +340,7 @@ public class MainActivity extends Activity implements
 
             case MY_HANDLE:
                 Object obj = msg.obj;
-                (chatFragment).setChatManager((ChatManager) obj);
+//                (chatFragment).setChatManager((ChatManager) obj);
 
         }
         return true;
@@ -357,6 +351,18 @@ public class MainActivity extends Activity implements
         if (chatFragment != null) {
 //            chatFragment.onLocationUpdated(location); TODO: Removed for demo 2
         }
+    }
+
+    public void onDisconnect() {
+        statusTextView.setText("");
+        appendStatus("Disconnected from wifi group");
+        statusTextView.setBackgroundColor(Color.WHITE);
+//        getFragmentManager().beginTransaction()
+//                .remove(chatFragment)
+//                .commit(); TODO: disabled for demo 2
+        chatFragment = null;
+        servicesList.listAdapter.clear();
+        registerAndFindServices();
     }
 
     private void startLocation() {
