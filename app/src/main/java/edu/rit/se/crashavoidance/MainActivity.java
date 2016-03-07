@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -22,6 +23,10 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -54,6 +59,13 @@ public class MainActivity extends Activity implements
     private ServicesList servicesList;
     private Handler handler = new Handler(this);
     private LocationGooglePlayServicesProvider provider;
+    // Tells us whether or not we are currently connected to a group
+    private boolean inGroup = false;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
 
     @Override
@@ -84,22 +96,30 @@ public class MainActivity extends Activity implements
 
         registerAndFindServices();
         startLocation();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private void resetConnections() {
 //        statusTextView.setText("");
-        wifiP2pManager.removeGroup(channel, new ActionListener() {
+        if (inGroup) {
+            wifiP2pManager.removeGroup(channel, new ActionListener() {
 
-            @Override
-            public void onSuccess() {
-                onDisconnect();
-            }
+                @Override
+                public void onSuccess() {
+                    onDisconnect();
+                }
 
-            @Override
-            public void onFailure(int reason) {
-                appendStatus("Error disconnecting from wifi group");
-            }
-        });
+                @Override
+                public void onFailure(int reason) {
+                    appendStatus("Error disconnecting from wifi group");
+                }
+            });
+        } else {
+            Log.d(SERVICE_NAME, "Not currently connected to a group, do not need to reset connection");
+            registerAndFindServices();
+        }
     }
 
     @Override
@@ -256,10 +276,12 @@ public class MainActivity extends Activity implements
 
                         @Override
                         public void onSuccess() {
+                            Log.d(SERVICE_NAME, "Successfully removed service request");
                         }
 
                         @Override
                         public void onFailure(int arg0) {
+                            Log.d(SERVICE_NAME, "Failed to remove service request");
                         }
                     });
 
@@ -272,10 +294,19 @@ public class MainActivity extends Activity implements
 
             @Override
             public void onFailure(int errorCode) {
-                appendStatus("Failed connecting to service");
+                String failureReason = "";
+                if (errorCode == WifiP2pManager.BUSY) {
+                    failureReason = "Busy";
+                } else if (errorCode == WifiP2pManager.ERROR) {
+                    failureReason = "Error";
+                } else if (errorCode == WifiP2pManager.P2P_UNSUPPORTED) {
+                    failureReason = "P2pUnsupported";
+                }
+                appendStatus("Failed connecting to service wth errorCode of " + failureReason);
             }
+
         });
-    }
+}
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
@@ -285,10 +316,10 @@ public class MainActivity extends Activity implements
          * client socket for every client. This is handled by {@code
          * GroupOwnerSocketHandler}
          */
-        boolean isOwner;
-        if (p2pInfo.isGroupOwner) {
-            isOwner = true;
+        if (p2pInfo.groupFormed && p2pInfo.isGroupOwner) {
+            inGroup = true;
             Log.d(SERVICE_NAME, "Connected as group owner");
+            statusTextView.setBackgroundColor(Color.BLUE);
             try {
                 handler = new GroupOwnerSocketHandler(
                         ((WiFiChatFragment.MessageTarget) this).getHandler());
@@ -298,24 +329,22 @@ public class MainActivity extends Activity implements
                         "Failed to create a server thread - " + e.getMessage());
                 return;
             }
-        } else {
-            isOwner = false;
+        } else if (p2pInfo.groupFormed) {
+            inGroup = true;
             Log.d(SERVICE_NAME, "Connected as peer");
+            statusTextView.setBackgroundColor(Color.GREEN);
             handler = new ClientSocketHandler(
                     ((WiFiChatFragment.MessageTarget) this).getHandler(),
                     p2pInfo.groupOwnerAddress);
             handler.start();
+        } else {
+            inGroup = false;
+            Log.d(SERVICE_NAME, "Group connection was unsuccessful");
+            statusTextView.setBackgroundColor(Color.RED);
         }
 //        chatFragment = new WiFiChatFragment();
 //        getFragmentManager().beginTransaction()
 //                .replace(R.id.main_container, chatFragment).commit(); TODO: Re-enable after demo 2
-        if (isOwner) {
-            statusTextView.setBackgroundColor(Color.BLUE);
-            appendStatus("Connected as owner");
-        } else {
-            statusTextView.setBackgroundColor(Color.GREEN);
-            appendStatus("Connected as peer");
-        }
     }
 
     private void appendStatus(String status) {
@@ -382,5 +411,45 @@ public class MainActivity extends Activity implements
     private void stopLocation() {
         SmartLocation.with(this).location().stop();
         appendStatus("Location stopped");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://edu.rit.se.crashavoidance/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://edu.rit.se.crashavoidance/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
     }
 }
