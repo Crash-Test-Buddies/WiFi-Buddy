@@ -428,7 +428,7 @@ public class MainActivity extends Activity implements
 
     public void onDisconnect() {
         inGroup = false;
-        statusTextView.setText("");
+//        statusTextView.setText("");
         appendStatus("Disconnected from wifi group");
         statusTextView.setBackgroundColor(Color.WHITE);
 //        getFragmentManager().beginTransaction()
