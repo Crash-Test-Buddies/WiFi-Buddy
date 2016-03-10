@@ -83,10 +83,17 @@ public class MainActivity extends Activity implements
 
         statusTextView = (TextView) findViewById(R.id.status_text);
 
-        findViewById(R.id.reset).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.off).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                resetConnections();
+                disableConnections();
+            }
+        });
+
+        findViewById(R.id.on).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enableConnections();
             }
         });
 
@@ -94,15 +101,43 @@ public class MainActivity extends Activity implements
         getFragmentManager().beginTransaction()
                 .add(R.id.main_container, servicesList, "services").commit();
 
-        registerAndFindServices();
-        startLocation();
+//        registerAndFindServices();
+//        startLocation();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    private void resetConnections() {
+    private void enableConnections() {
+        registerAndFindServices();
+    }
+
+    private void disableConnections() {
 //        statusTextView.setText("");
+        wifiP2pManager.clearLocalServices(channel, new ActionListener() {
+            @Override
+            public void onSuccess() {
+                appendStatus("Local services cleared");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                appendStatus("Error clearing local services");
+            }
+        });
+
+        wifiP2pManager.clearServiceRequests(channel, new ActionListener() {
+            @Override
+            public void onSuccess() {
+                appendStatus("Cleared service requests");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                appendStatus("Error clearing service requests");
+            }
+        });
+
         if (inGroup) {
             wifiP2pManager.removeGroup(channel, new ActionListener() {
 
@@ -118,7 +153,6 @@ public class MainActivity extends Activity implements
             });
         } else {
             Log.d(SERVICE_NAME, "Not currently connected to a group, do not need to reset connection");
-            registerAndFindServices();
         }
     }
 
@@ -134,6 +168,7 @@ public class MainActivity extends Activity implements
     protected void onPause() {
         super.onPause();
         unregisterReceiver(receiver);
+        disableConnections();
     }
 
     @Override
@@ -246,8 +281,17 @@ public class MainActivity extends Activity implements
                     }
 
                     @Override
-                    public void onFailure(int arg0) {
-                        appendStatus("Failed adding service discovery request");
+                    public void onFailure(int errorCode) {
+                        switch (errorCode) {
+                            case WifiP2pManager.P2P_UNSUPPORTED:
+                                appendStatus("Failed adding service, P2P unsupported on this device");
+                                break;
+                            case WifiP2pManager.BUSY:
+                                appendStatus("Failed adding service, device is busy");
+                                break;
+                            default:
+                                appendStatus("Failed adding service discovery request");
+                        }
                     }
                 });
         wifiP2pManager.discoverServices(channel, new ActionListener() {
@@ -392,7 +436,7 @@ public class MainActivity extends Activity implements
 //                .commit(); TODO: disabled for demo 2
         chatFragment = null;
         servicesList.listAdapter.clear();
-        registerAndFindServices();
+//        registerAndFindServices();
     }
 
     private void startLocation() {
