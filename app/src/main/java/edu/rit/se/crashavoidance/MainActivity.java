@@ -1,6 +1,5 @@
 package edu.rit.se.crashavoidance;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
@@ -18,11 +17,14 @@ import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -38,7 +40,7 @@ import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
 import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesProvider;
 
-public class MainActivity extends Activity implements
+public class MainActivity extends AppCompatActivity implements
         ServicesList.DeviceClickListener,
         WifiP2pManager.ConnectionInfoListener,
         WiFiChatFragment.MessageTarget,
@@ -72,6 +74,9 @@ public class MainActivity extends Activity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -183,14 +188,39 @@ public class MainActivity extends Activity implements
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_disconnect:
+                onClickMenuDisconnect(item);
+                return true;
+            case R.id.action_toggle_wifi:
+                onClickMenuToggleWifi(item);
+                return true;
+            case R.id.action_view_logs:
+                onClickMenuViewLogs(item);
+                return true;
+            case R.id.action_exit:
+                onClickMenuExit(item);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
+    }
 
-        return super.onOptionsItemSelected(item);
+    public void onClickMenuDisconnect(MenuItem item) {
+        displayToast("Disconnect tapped");
+    }
+
+    public void onClickMenuToggleWifi(MenuItem item) {
+        displayToast("Toggle Wi-Fi tapped");
+    }
+
+    public void onClickMenuViewLogs(MenuItem item) {
+        displayToast("View Logs tapped");
+    }
+
+    public void onClickMenuExit(MenuItem item) {
+        finish();
     }
 
     private void registerAndFindServices() {
@@ -496,5 +526,10 @@ public class MainActivity extends Activity implements
         );
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
+    }
+
+    public void displayToast(String message) {
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        toast.show();
     }
 }
