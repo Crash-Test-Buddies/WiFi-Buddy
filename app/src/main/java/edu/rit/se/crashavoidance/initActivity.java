@@ -1,13 +1,16 @@
 package edu.rit.se.crashavoidance;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-public class initActivity extends AppCompatActivity {
+import edu.rit.se.crashavoidance.views.AvailableServicesActivity;
+
+public class initActivity extends Activity {
 
     WifiManager wifiManager;
 
@@ -57,6 +60,7 @@ public class initActivity extends AppCompatActivity {
     }
 
     private void scanForServices(){
-
+        Intent intent = new Intent(this, AvailableServicesActivity.class);
+        startActivity(intent);
     }
 }
