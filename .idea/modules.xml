@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/CrashAvoidance.iml" filepath="$PROJECT_DIR$/CrashAvoidance.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/crash-avoidance.iml" filepath="$PROJECT_DIR$/crash-avoidance.iml" />
     </modules>
   </component>
 </project>
