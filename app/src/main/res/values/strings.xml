@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">CrashAvoidance</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_disconnect">Disconnect</string>
+    <string name="action_toggle_wifi">Toggle Wi-Fi</string>
+    <string name="action_view_logs">View Logs</string>
+    <string name="action_exit">Exit</string>
+    <string name="title_activity_init">initActivity</string>
 </resources>
