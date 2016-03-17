@@ -17,9 +17,9 @@ import edu.rit.se.crashavoidance.R;
  */
 public class GroupListViewAdapter extends BaseAdapter{
     private List<String> peers;
-    private Activity context;
+    private GroupMessageActivity context;
 
-    public GroupListViewAdapter(Activity context, List<String> peers){
+    public GroupListViewAdapter(GroupMessageActivity context, List<String> peers){
         this.context = context;
         this.peers = peers;
     }
@@ -42,7 +42,7 @@ public class GroupListViewAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // TODO Convert this to the correct object if we change this
-        String peerName = (String)getItem(position);
+        final String peerName = (String)getItem(position);
         // This will inflate the template view inside each ListView item
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/peerNameView"
+        android:id="@+id/peerNameView"/>
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/peerMessageBox"
         android:textIsSelectable="false"
-        android:textSize="18dp" />
+        android:textSize="18dp"
+        android:hint="Input message"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,4 +22,4 @@
         android:textSize="12dp"
         android:singleLine="true"
         android:layout_alignParentRight="true"/>
-</RelativeLayout>
+</LinearLayout>
