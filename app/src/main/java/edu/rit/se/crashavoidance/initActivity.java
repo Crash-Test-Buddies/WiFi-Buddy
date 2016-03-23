@@ -19,6 +19,9 @@ public class initActivity extends AppCompatActivity {
 
     WifiManager wifiManager;
     private Menu menu;
+    private Button toggleWifiButton;
+    private Button createServiceButton;
+    private Button scanServicesButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,11 +33,18 @@ public class initActivity extends AppCompatActivity {
 
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
 
-        Button toggleWifiButton = (Button) findViewById(R.id.wifiToggle_btn);
+        toggleWifiButton = (Button) findViewById(R.id.wifiToggle_btn);
+        createServiceButton = (Button) findViewById(R.id.createService_btn);
+        scanServicesButton = (Button) findViewById(R.id.scanForServices_btn);
+
         if(wifiManager.isWifiEnabled()){
             toggleWifiButton.setText(getString(R.string.action_disable_wifi));
+            createServiceButton.setVisibility(View.VISIBLE);
+            scanServicesButton.setVisibility(View.VISIBLE);
         } else {
             toggleWifiButton.setText(getString(R.string.action_enable_wifi));
+            createServiceButton.setVisibility(View.INVISIBLE);
+            scanServicesButton.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -44,8 +54,8 @@ public class initActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
         this.menu = menu;
-
         MenuItem toggleWifiMenuItem = menu.findItem(R.id.action_toggle_wifi);
+
         if(wifiManager.isWifiEnabled()){
             toggleWifiMenuItem.setTitle(getString(R.string.action_disable_wifi));
         } else {
@@ -106,18 +116,23 @@ public class initActivity extends AppCompatActivity {
     }
 
     private void toggleWifi(){
-        Button toggleWifiButton = (Button) findViewById(R.id.wifiToggle_btn);
         MenuItem toggleWifiMenuItem = menu.findItem(R.id.action_toggle_wifi);
         if(wifiManager.isWifiEnabled()){
+            // Disable Wi-Fi
             wifiManager.setWifiEnabled(false);
             displayToast(getString(R.string.status_wifi_disabled));
             toggleWifiButton.setText(getString(R.string.action_enable_wifi));
             toggleWifiMenuItem.setTitle(getString(R.string.action_enable_wifi));
+            createServiceButton.setVisibility(View.INVISIBLE);
+            scanServicesButton.setVisibility(View.INVISIBLE);
         } else {
+            // Enable Wi-Fi
             wifiManager.setWifiEnabled(true);
             displayToast(getString(R.string.status_wifi_enabled));
             toggleWifiButton.setText(getString(R.string.action_disable_wifi));
             toggleWifiMenuItem.setTitle(getString(R.string.action_disable_wifi));
+            createServiceButton.setVisibility(View.VISIBLE);
+            scanServicesButton.setVisibility(View.VISIBLE);
         }
     }
 
