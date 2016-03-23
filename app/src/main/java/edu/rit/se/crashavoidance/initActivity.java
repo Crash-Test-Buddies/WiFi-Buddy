@@ -72,7 +72,7 @@ public class initActivity extends AppCompatActivity {
     }
 
     public void onClickMenuToggleWifi(MenuItem item) {
-        displayToast("Toggle Wi-Fi tapped");
+        toggleWifi();
     }
 
     public void onClickMenuViewLogs(MenuItem item) {
@@ -86,8 +86,10 @@ public class initActivity extends AppCompatActivity {
     private void toggleWifi(){
         if(wifiManager.isWifiEnabled()){
             wifiManager.setWifiEnabled(false);
+            displayToast(getString(R.string.status_wifi_disabled));
         } else {
             wifiManager.setWifiEnabled(true);
+            displayToast(getString(R.string.status_wifi_enabled));
         }
     }
 
