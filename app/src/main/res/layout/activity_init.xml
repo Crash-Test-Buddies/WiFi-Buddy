@@ -30,14 +30,20 @@
 
     <Button
         style="@style/styleButtonDefault"
-        android:text="@string/action_create_service"
-        android:id="@+id/createService_btn"
-        android:onClick="onClickButtonCreateService"/>
+        android:text="@string/action_register_wifi_direct"
+        android:id="@+id/wifiDirectRegistration_btn"
+        android:onClick="onClickButtonWifiDirectRegistration" />
+
+    <Button
+        style="@style/styleButtonDefault"
+        android:text="@string/action_register_service"
+        android:id="@+id/serviceRegistration_btn"
+        android:onClick="onClickButtonServiceRegistration" />
 
     <Button
         style="@style/styleButtonDefault"
         android:text="@string/action_scan_services"
         android:id="@+id/scanForServices_btn"
-        android:onClick="onClickButtonScanServices"/>
+        android:onClick="onClickButtonScanServices" />
 
 </LinearLayout>
