@@ -12,13 +12,16 @@
     <string name="action_view_logs">View Logs</string>
     <string name="action_exit">Exit</string>
     <string name="action_register_service">Register Local Service</string>
+    <string name="action_unregister_service">Unregister Local Service</string>
     <string name="action_scan_services">Scan for Services</string>
     <string name="status_wifi_enabled">Wi-Fi Enabled</string>
     <string name="status_wifi_disabled">Wi-Fi Disabled</string>
     <string name="status_wifi_direct_initialized">App Registered with Wi-Fi Direct</string>
     <string name="status_wifi_direct_unregistered">Wi-Fi Direct Unregistered</string>
     <string name="status_service_registered">Local Service Registered</string>
+    <string name="status_service_unregistered">Local Service Unregistered</string>
     <string name="warning_service_registration_failed">Failed to Register Local Service</string>
+    <string name="warning_service_unregistration_failed">Failed to Unregister Local Service</string>
 
     <!-- LogsActivity -->
     <string name="title_activity_logs">View Logs</string>

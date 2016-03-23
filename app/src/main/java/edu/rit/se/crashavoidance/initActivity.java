@@ -25,8 +25,8 @@ public class initActivity extends AppCompatActivity {
     private WifiManager wifiManager;
     private Menu menu;
     private Button toggleWifiButton;
-    private Button toggleWifiDirectRegistrationButton;
-    private Button createServiceButton;
+    private Button wifiDirectRegistrationButton;
+    private Button serviceRegistrationButton;
     private Button scanServicesButton;
 
     // TXT RECORD properties
@@ -38,6 +38,7 @@ public class initActivity extends AppCompatActivity {
     public static final int MY_HANDLE = 0x400 + 2;
     private WifiP2pManager wifiP2pManager;
     private WifiP2pManager.Channel wifiP2pChannel;
+    private WifiP2pDnsSdServiceInfo service;
 
     static final int SERVER_PORT = 4545;
 
@@ -53,8 +54,8 @@ public class initActivity extends AppCompatActivity {
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
 
         toggleWifiButton = (Button) findViewById(R.id.wifiToggle_btn);
-        toggleWifiDirectRegistrationButton = (Button) findViewById(R.id.wifiDirectRegister_btn);
-        createServiceButton = (Button) findViewById(R.id.registerService_btn);
+        wifiDirectRegistrationButton = (Button) findViewById(R.id.wifiDirectRegistration_btn);
+        serviceRegistrationButton = (Button) findViewById(R.id.serviceRegistration_btn);
         scanServicesButton = (Button) findViewById(R.id.scanForServices_btn);
 
         if(wifiManager.isWifiEnabled()){
@@ -105,25 +106,29 @@ public class initActivity extends AppCompatActivity {
         toggleWifi();
     }
 
-    public void onClickButtonToggleWifiDirectRegistration(View view) {
+    public void onClickButtonWifiDirectRegistration(View view) {
         if (wifiP2pManager == null && wifiP2pChannel == null) {
             wifiP2pManager = (WifiP2pManager) getSystemService(WIFI_P2P_SERVICE);
             wifiP2pChannel = wifiP2pManager.initialize(this, getMainLooper(), null);
-            toggleWifiDirectRegistrationButton.setText(getString(R.string.action_unregister_wifi_direct));
+            wifiDirectRegistrationButton.setText(getString(R.string.action_unregister_wifi_direct));
             displayToast(getString(R.string.status_wifi_direct_initialized));
         } else {
             wifiP2pManager = null;
             wifiP2pChannel = null;
-            toggleWifiDirectRegistrationButton.setText(getString(R.string.action_register_wifi_direct));
+            wifiDirectRegistrationButton.setText(getString(R.string.action_register_wifi_direct));
             displayToast(getString(R.string.status_wifi_direct_unregistered));
         }
     }
 
-    public void onClickButtonRegisterService(View view) {
-        if (wifiP2pManager != null && wifiP2pChannel != null) {
-            startServiceRegistration();
-        } else {
-            displayToast(getString(R.string.warning_service_registration_failed));
+    public void onClickButtonServiceRegistration(View view) {
+        if (serviceRegistrationButton.getText() == getString(R.string.action_register_service)) {
+            if (wifiP2pManager != null && wifiP2pChannel != null) {
+                startServiceRegistration();
+            } else {
+                displayToast(getString(R.string.warning_service_registration_failed));
+            }
+        } else if (serviceRegistrationButton.getText() == getString(R.string.action_unregister_service)) {
+            unregisterService();
         }
     }
 
@@ -173,11 +178,12 @@ public class initActivity extends AppCompatActivity {
         Map<String, String> record = new HashMap<String, String>();
         record.put(TXTRECORD_PROP_AVAILABLE, "visible");
 
-        WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(
+        service = WifiP2pDnsSdServiceInfo.newInstance(
                 SERVICE_INSTANCE, SERVICE_REG_TYPE, record);
         wifiP2pManager.addLocalService(wifiP2pChannel, service, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
+                serviceRegistrationButton.setText(getString(R.string.action_unregister_service));
                 displayToast(getString(R.string.status_service_registered));
             }
 
@@ -188,6 +194,21 @@ public class initActivity extends AppCompatActivity {
         });
 
         //discoverService();
+    }
+
+    private void unregisterService() {
+        wifiP2pManager.removeLocalService(wifiP2pChannel, service, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                serviceRegistrationButton.setText(getString(R.string.action_register_service));
+                displayToast(getString(R.string.status_service_unregistered));
+            }
+
+            @Override
+            public void onFailure(int error) {
+                displayToast(getString(R.string.warning_service_unregistration_failed));
+            }
+        });
     }
 
     private void scanForServices(){

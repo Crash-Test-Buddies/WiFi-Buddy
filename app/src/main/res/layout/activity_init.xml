@@ -31,14 +31,14 @@
     <Button
         style="@style/styleButtonDefault"
         android:text="@string/action_register_wifi_direct"
-        android:id="@+id/wifiDirectRegister_btn"
-        android:onClick="onClickButtonToggleWifiDirectRegistration" />
+        android:id="@+id/wifiDirectRegistration_btn"
+        android:onClick="onClickButtonWifiDirectRegistration" />
 
     <Button
         style="@style/styleButtonDefault"
         android:text="@string/action_register_service"
-        android:id="@+id/registerService_btn"
-        android:onClick="onClickButtonRegisterService" />
+        android:id="@+id/serviceRegistration_btn"
+        android:onClick="onClickButtonServiceRegistration" />
 
     <Button
         style="@style/styleButtonDefault"
