@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import edu.rit.se.crashavoidance.views.AvailableServicesActivity;
@@ -17,6 +18,7 @@ import edu.rit.se.crashavoidance.views.LogsActivity;
 public class initActivity extends AppCompatActivity {
 
     WifiManager wifiManager;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +29,29 @@ public class initActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+
+        Button toggleWifiButton = (Button) findViewById(R.id.wifiToggle_btn);
+        if(wifiManager.isWifiEnabled()){
+            toggleWifiButton.setText(getString(R.string.action_disable_wifi));
+        } else {
+            toggleWifiButton.setText(getString(R.string.action_enable_wifi));
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Adds Main Menu to the ActionBar
         getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        this.menu = menu;
+
+        MenuItem toggleWifiMenuItem = menu.findItem(R.id.action_toggle_wifi);
+        if(wifiManager.isWifiEnabled()){
+            toggleWifiMenuItem.setTitle(getString(R.string.action_disable_wifi));
+        } else {
+            toggleWifiMenuItem.setTitle(getString(R.string.action_enable_wifi));
+        }
+
         return true;
     }
 
@@ -87,12 +106,18 @@ public class initActivity extends AppCompatActivity {
     }
 
     private void toggleWifi(){
+        Button toggleWifiButton = (Button) findViewById(R.id.wifiToggle_btn);
+        MenuItem toggleWifiMenuItem = menu.findItem(R.id.action_toggle_wifi);
         if(wifiManager.isWifiEnabled()){
             wifiManager.setWifiEnabled(false);
             displayToast(getString(R.string.status_wifi_disabled));
+            toggleWifiButton.setText(getString(R.string.action_enable_wifi));
+            toggleWifiMenuItem.setTitle(getString(R.string.action_enable_wifi));
         } else {
             wifiManager.setWifiEnabled(true);
             displayToast(getString(R.string.status_wifi_enabled));
+            toggleWifiButton.setText(getString(R.string.action_disable_wifi));
+            toggleWifiMenuItem.setTitle(getString(R.string.action_disable_wifi));
         }
     }
 

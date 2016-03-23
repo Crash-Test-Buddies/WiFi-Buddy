@@ -5,6 +5,8 @@
     <string name="title_activity_init">initActivity</string>
     <string name="action_disconnect">Disconnect</string>
     <string name="action_toggle_wifi">Toggle Wi-Fi</string>
+    <string name="action_enable_wifi">Enable Wi-Fi</string>
+    <string name="action_disable_wifi">Disable Wi-Fi</string>
     <string name="action_view_logs">View Logs</string>
     <string name="action_exit">Exit</string>
     <string name="action_create_service">Create Service</string>
