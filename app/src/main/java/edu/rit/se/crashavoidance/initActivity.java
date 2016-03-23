@@ -25,29 +25,7 @@ public class initActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
         setSupportActionBar(toolbar);
 
-        findViewById(R.id.wifiToggle_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toggleWifi();
-            }
-        });
-
-        findViewById(R.id.createService_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createService();
-            }
-        });
-
-        findViewById(R.id.scanForServices_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                scanForServices();
-            }
-        });
-
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
-
     }
 
     @Override
@@ -77,6 +55,18 @@ public class initActivity extends AppCompatActivity {
         }
     }
 
+    public void onClickButtonToggleWifi(View view) {
+        toggleWifi();
+    }
+
+    public void onClickButtonCreateService(View view) {
+        createService();
+    }
+
+    public void onClickButtonScanServices(View view) {
+        scanForServices();
+    }
+
     public void onClickMenuDisconnect(MenuItem item) {
         displayToast("Disconnect tapped");
     }
@@ -102,7 +92,7 @@ public class initActivity extends AppCompatActivity {
     }
 
     private void createService(){
-
+        displayToast("Create Service tapped");
     }
 
     private void scanForServices(){
