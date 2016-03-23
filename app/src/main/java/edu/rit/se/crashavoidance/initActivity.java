@@ -53,8 +53,8 @@ public class initActivity extends AppCompatActivity {
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
 
         toggleWifiButton = (Button) findViewById(R.id.wifiToggle_btn);
-        toggleWifiDirectRegistrationButton = (Button) findViewById(R.id.wifiDirectInitialize_btn);
-        createServiceButton = (Button) findViewById(R.id.createService_btn);
+        toggleWifiDirectRegistrationButton = (Button) findViewById(R.id.wifiDirectRegister_btn);
+        createServiceButton = (Button) findViewById(R.id.registerService_btn);
         scanServicesButton = (Button) findViewById(R.id.scanForServices_btn);
 
         if(wifiManager.isWifiEnabled()){
@@ -114,13 +114,17 @@ public class initActivity extends AppCompatActivity {
         } else {
             wifiP2pManager = null;
             wifiP2pChannel = null;
-            toggleWifiDirectRegistrationButton.setText(getString(R.string.action_initialize_wifi_direct));
+            toggleWifiDirectRegistrationButton.setText(getString(R.string.action_register_wifi_direct));
             displayToast(getString(R.string.status_wifi_direct_unregistered));
         }
     }
 
-    public void onClickButtonCreateService(View view) {
-        createService();
+    public void onClickButtonRegisterService(View view) {
+        if (wifiP2pManager != null && wifiP2pChannel != null) {
+            startServiceRegistration();
+        } else {
+            displayToast(getString(R.string.warning_service_registration_failed));
+        }
     }
 
     public void onClickButtonScanServices(View view) {
@@ -162,12 +166,8 @@ public class initActivity extends AppCompatActivity {
         }
     }
 
-    private void createService(){
-        displayToast("Create Service tapped");
-    }
-
     /**
-     * Registers a local service and then initiates a service discovery
+     * Registers a local service
      */
     private void startServiceRegistration() {
         Map<String, String> record = new HashMap<String, String>();
@@ -176,15 +176,14 @@ public class initActivity extends AppCompatActivity {
         WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(
                 SERVICE_INSTANCE, SERVICE_REG_TYPE, record);
         wifiP2pManager.addLocalService(wifiP2pChannel, service, new WifiP2pManager.ActionListener() {
-
             @Override
             public void onSuccess() {
-                displayToast("Added Local Service");
+                displayToast(getString(R.string.status_service_registered));
             }
 
             @Override
             public void onFailure(int error) {
-                displayToast("Failed to add a service");
+                displayToast(getString(R.string.warning_service_registration_failed));
             }
         });
 
