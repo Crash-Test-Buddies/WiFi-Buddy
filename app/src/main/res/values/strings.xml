@@ -1,8 +1,10 @@
 <resources>
-    <string name="app_name">CrashAvoidance</string>
+    <string name="app_name">Wi-Fi Direct Tester</string>
+    <string name="title_activity_init">initActivity</string>
     <string name="action_disconnect">Disconnect</string>
     <string name="action_toggle_wifi">Toggle Wi-Fi</string>
     <string name="action_view_logs">View Logs</string>
     <string name="action_exit">Exit</string>
-    <string name="title_activity_init">initActivity</string>
+    <string name="action_create_service">Create Service</string>
+    <string name="action_scan_services">Scan for Services</string>
 </resources>

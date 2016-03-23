@@ -20,8 +20,6 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -174,53 +172,6 @@ public class MainActivity extends AppCompatActivity implements
         super.onPause();
         unregisterReceiver(receiver);
         disableConnections();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        switch (item.getItemId()) {
-            case R.id.action_disconnect:
-                onClickMenuDisconnect(item);
-                return true;
-            case R.id.action_toggle_wifi:
-                onClickMenuToggleWifi(item);
-                return true;
-            case R.id.action_view_logs:
-                onClickMenuViewLogs(item);
-                return true;
-            case R.id.action_exit:
-                onClickMenuExit(item);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    public void onClickMenuDisconnect(MenuItem item) {
-        displayToast("Disconnect tapped");
-    }
-
-    public void onClickMenuToggleWifi(MenuItem item) {
-        displayToast("Toggle Wi-Fi tapped");
-    }
-
-    public void onClickMenuViewLogs(MenuItem item) {
-        displayToast("View Logs tapped");
-    }
-
-    public void onClickMenuExit(MenuItem item) {
-        finish();
     }
 
     private void registerAndFindServices() {
