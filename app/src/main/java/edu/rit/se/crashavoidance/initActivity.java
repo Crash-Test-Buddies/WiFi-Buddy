@@ -3,6 +3,8 @@ package edu.rit.se.crashavoidance;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
+import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,16 +14,32 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.rit.se.crashavoidance.views.AvailableServicesActivity;
 import edu.rit.se.crashavoidance.views.LogsActivity;
 
 public class initActivity extends AppCompatActivity {
 
-    WifiManager wifiManager;
+    private WifiManager wifiManager;
     private Menu menu;
     private Button toggleWifiButton;
+    private Button toggleWifiDirectRegistrationButton;
     private Button createServiceButton;
     private Button scanServicesButton;
+
+    // TXT RECORD properties
+    public static final String TXTRECORD_PROP_AVAILABLE = "available";
+    public static final String SERVICE_INSTANCE = "_wifidemotest";
+    public static final String SERVICE_REG_TYPE = "_presence._tcp";
+
+    public static final int MESSAGE_READ = 0x400 + 1;
+    public static final int MY_HANDLE = 0x400 + 2;
+    private WifiP2pManager wifiP2pManager;
+    private WifiP2pManager.Channel wifiP2pChannel;
+
+    static final int SERVER_PORT = 4545;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,20 +49,18 @@ public class initActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
         setSupportActionBar(toolbar);
 
+        // Wi-Fi
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
 
         toggleWifiButton = (Button) findViewById(R.id.wifiToggle_btn);
+        toggleWifiDirectRegistrationButton = (Button) findViewById(R.id.wifiDirectInitialize_btn);
         createServiceButton = (Button) findViewById(R.id.createService_btn);
         scanServicesButton = (Button) findViewById(R.id.scanForServices_btn);
 
         if(wifiManager.isWifiEnabled()){
             toggleWifiButton.setText(getString(R.string.action_disable_wifi));
-            createServiceButton.setVisibility(View.VISIBLE);
-            scanServicesButton.setVisibility(View.VISIBLE);
         } else {
             toggleWifiButton.setText(getString(R.string.action_enable_wifi));
-            createServiceButton.setVisibility(View.INVISIBLE);
-            scanServicesButton.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -89,6 +105,20 @@ public class initActivity extends AppCompatActivity {
         toggleWifi();
     }
 
+    public void onClickButtonToggleWifiDirectRegistration(View view) {
+        if (wifiP2pManager == null && wifiP2pChannel == null) {
+            wifiP2pManager = (WifiP2pManager) getSystemService(WIFI_P2P_SERVICE);
+            wifiP2pChannel = wifiP2pManager.initialize(this, getMainLooper(), null);
+            toggleWifiDirectRegistrationButton.setText(getString(R.string.action_unregister_wifi_direct));
+            displayToast(getString(R.string.status_wifi_direct_initialized));
+        } else {
+            wifiP2pManager = null;
+            wifiP2pChannel = null;
+            toggleWifiDirectRegistrationButton.setText(getString(R.string.action_initialize_wifi_direct));
+            displayToast(getString(R.string.status_wifi_direct_unregistered));
+        }
+    }
+
     public void onClickButtonCreateService(View view) {
         createService();
     }
@@ -123,21 +153,42 @@ public class initActivity extends AppCompatActivity {
             displayToast(getString(R.string.status_wifi_disabled));
             toggleWifiButton.setText(getString(R.string.action_enable_wifi));
             toggleWifiMenuItem.setTitle(getString(R.string.action_enable_wifi));
-            createServiceButton.setVisibility(View.INVISIBLE);
-            scanServicesButton.setVisibility(View.INVISIBLE);
         } else {
             // Enable Wi-Fi
             wifiManager.setWifiEnabled(true);
             displayToast(getString(R.string.status_wifi_enabled));
             toggleWifiButton.setText(getString(R.string.action_disable_wifi));
             toggleWifiMenuItem.setTitle(getString(R.string.action_disable_wifi));
-            createServiceButton.setVisibility(View.VISIBLE);
-            scanServicesButton.setVisibility(View.VISIBLE);
         }
     }
 
     private void createService(){
         displayToast("Create Service tapped");
+    }
+
+    /**
+     * Registers a local service and then initiates a service discovery
+     */
+    private void startServiceRegistration() {
+        Map<String, String> record = new HashMap<String, String>();
+        record.put(TXTRECORD_PROP_AVAILABLE, "visible");
+
+        WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(
+                SERVICE_INSTANCE, SERVICE_REG_TYPE, record);
+        wifiP2pManager.addLocalService(wifiP2pChannel, service, new WifiP2pManager.ActionListener() {
+
+            @Override
+            public void onSuccess() {
+                displayToast("Added Local Service");
+            }
+
+            @Override
+            public void onFailure(int error) {
+                displayToast("Failed to add a service");
+            }
+        });
+
+        //discoverService();
     }
 
     private void scanForServices(){

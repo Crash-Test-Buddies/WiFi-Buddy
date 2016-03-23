@@ -4,6 +4,8 @@
     <!-- InitActivity -->
     <string name="title_activity_init">initActivity</string>
     <string name="action_disconnect">Disconnect</string>
+    <string name="action_initialize_wifi_direct">Initialize Wi-Fi Direct</string>
+    <string name="action_unregister_wifi_direct">Unregister Wi-Fi Direct</string>
     <string name="action_toggle_wifi">Toggle Wi-Fi</string>
     <string name="action_enable_wifi">Enable Wi-Fi</string>
     <string name="action_disable_wifi">Disable Wi-Fi</string>
@@ -13,6 +15,8 @@
     <string name="action_scan_services">Scan for Services</string>
     <string name="status_wifi_enabled">Wi-Fi Enabled</string>
     <string name="status_wifi_disabled">Wi-Fi Disabled</string>
+    <string name="status_wifi_direct_initialized">App Registered with Wi-Fi Direct</string>
+    <string name="status_wifi_direct_unregistered">Wi-Fi Direct Unregistered</string>
 
     <!-- LogsActivity -->
     <string name="title_activity_logs">View Logs</string>
