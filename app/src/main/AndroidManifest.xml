@@ -33,9 +33,17 @@
             android:value="@integer/google_play_services_version"
             tools:replace="android:value" />
 
-        <activity android:name=".views.GroupMessageActivity"></activity>
-        <activity android:name=".views.AvailableServicesActivity"></activity>
-
+        <activity android:name=".views.GroupMessageActivity" />
+        <activity android:name=".views.AvailableServicesActivity" />
+        <activity
+            android:name=".views.LogsActivity"
+            android:label="@string/title_activity_logs"
+            android:parentActivityName=".initActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.rit.se.crashavoidance.initActivity" />
+        </activity>
     </application>
 
 </manifest>

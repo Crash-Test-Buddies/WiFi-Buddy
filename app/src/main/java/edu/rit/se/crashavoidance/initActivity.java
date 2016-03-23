@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import edu.rit.se.crashavoidance.views.AvailableServicesActivity;
+import edu.rit.se.crashavoidance.views.LogsActivity;
 
 public class initActivity extends AppCompatActivity {
 
@@ -77,6 +78,8 @@ public class initActivity extends AppCompatActivity {
 
     public void onClickMenuViewLogs(MenuItem item) {
         displayToast("View Logs tapped");
+        Intent intent = new Intent(this, LogsActivity.class);
+        startActivity(intent);
     }
 
     public void onClickMenuExit(MenuItem item) {
