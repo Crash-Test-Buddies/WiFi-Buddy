@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import edu.rit.se.crashavoidance.views.AvailableServicesActivity;
+import edu.rit.se.crashavoidance.views.LogsActivity;
 
 public class initActivity extends AppCompatActivity {
 
@@ -30,8 +31,8 @@ public class initActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.init_menu, menu);
+        // Adds Main Menu to the ActionBar
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
@@ -72,11 +73,13 @@ public class initActivity extends AppCompatActivity {
     }
 
     public void onClickMenuToggleWifi(MenuItem item) {
-        displayToast("Toggle Wi-Fi tapped");
+        toggleWifi();
     }
 
     public void onClickMenuViewLogs(MenuItem item) {
-        displayToast("View Logs tapped");
+        // Open the View Logs Activity
+        Intent intent = new Intent(this, LogsActivity.class);
+        startActivity(intent);
     }
 
     public void onClickMenuExit(MenuItem item) {
@@ -86,8 +89,10 @@ public class initActivity extends AppCompatActivity {
     private void toggleWifi(){
         if(wifiManager.isWifiEnabled()){
             wifiManager.setWifiEnabled(false);
+            displayToast(getString(R.string.status_wifi_disabled));
         } else {
             wifiManager.setWifiEnabled(true);
+            displayToast(getString(R.string.status_wifi_enabled));
         }
     }
 
