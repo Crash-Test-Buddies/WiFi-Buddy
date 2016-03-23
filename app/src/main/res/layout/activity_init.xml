@@ -17,36 +17,27 @@
             android:id="@+id/initToolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorToolbar"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/styleButtonDefault"
         android:text="@string/action_toggle_wifi"
         android:id="@+id/wifiToggle_btn"
-        android:layout_gravity="center_horizontal"
-        android:padding="2dp"
-        android:onClick="onClickButtonToggleWifi"/>
+        android:onClick="onClickButtonToggleWifi" />
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/styleButtonDefault"
         android:text="@string/action_create_service"
         android:id="@+id/createService_btn"
-        android:layout_gravity="center_horizontal"
-        android:padding="9dp"
         android:onClick="onClickButtonCreateService"/>
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/styleButtonDefault"
         android:text="@string/action_scan_services"
         android:id="@+id/scanForServices_btn"
-        android:layout_gravity="center_horizontal"
-        android:padding="9dp"
         android:onClick="onClickButtonScanServices"/>
 
 </LinearLayout>
