@@ -31,8 +31,8 @@ public class initActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.init_menu, menu);
+        // Adds Main Menu to the ActionBar
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
@@ -77,7 +77,7 @@ public class initActivity extends AppCompatActivity {
     }
 
     public void onClickMenuViewLogs(MenuItem item) {
-        displayToast("View Logs tapped");
+        // Open the View Logs Activity
         Intent intent = new Intent(this, LogsActivity.class);
         startActivity(intent);
     }
