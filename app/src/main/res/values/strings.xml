@@ -13,6 +13,8 @@
     <string name="action_disable_wifi">Disable Wi-Fi</string>
     <string name="action_view_logs">View Logs</string>
     <string name="action_exit">Exit</string>
+    <string name="action_register_receiver">Register Broadcast Receiver</string>
+    <string name="action_unregister_receiver">Unegister Broadcast Receiver</string>
     <string name="action_register_service">Register Local Service</string>
     <string name="action_unregister_service">Unregister Local Service</string>
     <string name="action_scan_services">Scan for Services</string>

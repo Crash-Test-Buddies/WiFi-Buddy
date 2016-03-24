@@ -25,25 +25,31 @@
     <Button
         style="@style/styleButtonDefault"
         android:text="@string/action_toggle_wifi"
-        android:id="@+id/wifiToggle_btn"
+        android:id="@+id/toggleWifiButton"
         android:onClick="onClickButtonToggleWifi" />
 
     <Button
         style="@style/styleButtonDefault"
         android:text="@string/action_register_wifi_direct"
-        android:id="@+id/wifiDirectRegistration_btn"
+        android:id="@+id/wifiDirectRegistrationButton"
         android:onClick="onClickButtonWifiDirectRegistration" />
 
     <Button
         style="@style/styleButtonDefault"
+        android:text="@string/action_register_receiver"
+        android:id="@+id/receiverRegistrationButton"
+        android:onClick="onClickButtonReceiverRegistration" />
+
+    <Button
+        style="@style/styleButtonDefault"
         android:text="@string/action_register_service"
-        android:id="@+id/serviceRegistration_btn"
+        android:id="@+id/serviceRegistrationButton"
         android:onClick="onClickButtonServiceRegistration" />
 
     <Button
         style="@style/styleButtonDefault"
         android:text="@string/action_scan_services"
-        android:id="@+id/scanForServices_btn"
+        android:id="@+id/scanForServicesButton"
         android:onClick="onClickButtonScanServices" />
 
 </LinearLayout>

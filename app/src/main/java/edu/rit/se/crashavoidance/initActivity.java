@@ -24,6 +24,7 @@ public class initActivity extends AppCompatActivity {
 
     // Buttons
     private Button toggleWifiButton;
+    private Button receiverRegistrationButton;
     private Button wifiDirectRegistrationButton;
     private Button serviceRegistrationButton;
     private Button scanServicesButton;
@@ -37,6 +38,7 @@ public class initActivity extends AppCompatActivity {
     private WifiP2pManager wifiP2pManager;
     private WifiP2pManager.Channel wifiP2pChannel;
     private WifiP2pDnsSdServiceInfo wifiP2pService;
+    private WiFiDirectBroadcastReceiver wifiP2pReceiver;
 
     // TXT RECORD properties
     public static final String TXTRECORD_PROP_AVAILABLE = "available";
@@ -59,10 +61,11 @@ public class initActivity extends AppCompatActivity {
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
 
         // Initialize Buttons
-        toggleWifiButton = (Button) findViewById(R.id.wifiToggle_btn);
-        wifiDirectRegistrationButton = (Button) findViewById(R.id.wifiDirectRegistration_btn);
-        serviceRegistrationButton = (Button) findViewById(R.id.serviceRegistration_btn);
-        scanServicesButton = (Button) findViewById(R.id.scanForServices_btn);
+        toggleWifiButton = (Button) findViewById(R.id.toggleWifiButton);
+        wifiDirectRegistrationButton = (Button) findViewById(R.id.wifiDirectRegistrationButton);
+        receiverRegistrationButton = (Button) findViewById(R.id.receiverRegistrationButton);
+        serviceRegistrationButton = (Button) findViewById(R.id.serviceRegistrationButton);
+        scanServicesButton = (Button) findViewById(R.id.scanForServicesButton);
 
         // Set Toggle Wi-Fi Button based on Wi-Fi state
         if(wifiManager.isWifiEnabled()){
@@ -126,6 +129,18 @@ public class initActivity extends AppCompatActivity {
             // Unregister Wi-Fi Direct and Unregister Services
             unregisterService();
             unregisterWifiDirect();
+        }
+    }
+
+    public void onClickButtonReceiverRegistration(View view) {
+        if (receiverRegistrationButton.getText() == getString(R.string.action_register_receiver)) {
+            wifiP2pReceiver = new WiFiDirectBroadcastReceiver(wifiP2pManager, wifiP2pChannel, this);
+            wifiP2pReceiver.registerReceiver();
+        } else if (receiverRegistrationButton.getText() == getString(R.string.action_unregister_receiver)) {
+            if (wifiP2pReceiver != null) {
+                wifiP2pReceiver.unregisterReceiver();
+            }
+            wifiP2pReceiver = null;
         }
     }
 
