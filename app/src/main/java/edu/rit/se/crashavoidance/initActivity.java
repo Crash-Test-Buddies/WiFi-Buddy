@@ -240,9 +240,6 @@ public class initActivity extends AppCompatActivity {
 
             wifiDirectRegistrationButton.setText(getString(R.string.action_register_wifi_direct));
             displayToast(getString(R.string.status_wifi_direct_unregistered));
-        } else {
-            // Failed to unregister Wi-Fi Direct - Hasn't been registered yet
-            displayToast(getString(R.string.action_unregister_wifi_direct));
         }
     }
 
@@ -272,9 +269,6 @@ public class initActivity extends AppCompatActivity {
             wifiP2pReceiver = null;
             receiverRegistrationButton.setText(getString(R.string.action_register_receiver));
             displayToast(getString(R.string.status_receiver_unregistered));
-        } else {
-            // Failed to unregister Broadcast Receiver - Hasn't been registered yet
-            displayToast(getString(R.string.warning_unregister_receiver));
         }
     }
 
@@ -312,9 +306,6 @@ public class initActivity extends AppCompatActivity {
                     displayToast(getString(R.string.warning_service_unregistration_failed));
                 }
             });
-        } else {
-            // Failed to unregister Service - Service hasn't been registered yet
-            displayToast(getString(R.string.warning_service_unregistration_failed));
         }
     }
 
