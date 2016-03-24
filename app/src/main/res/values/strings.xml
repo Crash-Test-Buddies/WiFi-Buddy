@@ -20,8 +20,17 @@
     <string name="status_wifi_direct_unregistered">Wi-Fi Direct Unregistered</string>
     <string name="status_service_registered">Local Service Registered</string>
     <string name="status_service_unregistered">Local Service Unregistered</string>
+    <string name="warning_wifi_already_enabled">Failed to Enable Wi-Fi - Wi-Fi Already Enabled</string>
+    <string name="warning_wifi_already_disabled">Failed to Disable Wi-Fi - Wi-Fi Already Disabled</string>
+    <string name="warning_disable_wifi_failed">Failed to Enable Wi-Fi</string>
     <string name="warning_service_registration_failed">Failed to Register Local Service</string>
+    <string name="warning_service_wifi_direct">
+        Failed to Register Local Service - First Register Wi-Fi Direct</string>
+    <string name="warning_service_wifi">
+        Failed to Register Local Service - First Enable Wi-Fi</string>
     <string name="warning_service_unregistration_failed">Failed to Unregister Local Service</string>
+    <string name="warning_wifi_direct_wifi_disabled">
+        Failed to Register Wi-Fi Direct - First Enabled Wi-Fi</string>
 
     <!-- LogsActivity -->
     <string name="title_activity_logs">View Logs</string>
