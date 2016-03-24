@@ -32,22 +32,32 @@
     <string name="status_service_unregistered">Local Service Unregistered</string>
 
     <!-- Warnings -->
-    <string name="warning_wifi_already_enabled">Failed to Enable Wi-Fi - Wi-Fi Already Enabled</string>
-    <string name="warning_wifi_already_disabled">Failed to Disable Wi-Fi - Wi-Fi Already Disabled</string>
-    <string name="warning_disable_wifi_failed">Failed to Enable Wi-Fi</string>
-    <string name="warning_service_registration_failed">Failed to Register Local Service</string>
+    <string name="warning_wifi_already_enabled">
+        Failed to Enable Wi-Fi - Wi-Fi Already Enabled</string>
+    <string name="warning_wifi_already_disabled">
+        Failed to Disable Wi-Fi - Wi-Fi Already Disabled</string>
+    <string name="warning_disable_wifi_failed">
+        Failed to Enable Wi-Fi</string>
+    <string name="warning_service_registration_failed">
+        Failed to Register Local Service</string>
     <string name="warning_register_service_wifi_direct">
         Failed to Register Local Service - First Register Wi-Fi Direct</string>
     <string name="warning_receiver_wifi">
         Failed to Register Broadcast Receiver - First Enable Wi-Fi</string>
     <string name="warning_receiver_wifi_direct">
         Failed to Register Broadcast Receiver - First Enable Wi-Fi Direct</string>
+    <string name="warning_unregister_receiver">
+        Failed to Unregister Broadcast Receiver</string>
     <string name="warning_register_service_wifi">
         Failed to Register Local Service - First Enable Wi-Fi</string>
-    <string name="warning_service_unregistration_failed">Failed to Unregister Local Service</string>
-    <string name="warning_discover_service_wifi">Failed to Discover Services - First Enable Wi-Fi</string>
+    <string name="warning_service_unregistration_failed">
+        Failed to Unregister Local Service</string>
+    <string name="warning_discover_service_wifi">
+        Failed to Discover Services - First Enable Wi-Fi</string>
     <string name="warning_discover_service_wifi_direct">
         Failed to Discover Services - First Register Wi-Fi Direct</string>
     <string name="warning_wifi_direct_wifi_disabled">
         Failed to Register Wi-Fi Direct - First Enabled Wi-Fi</string>
+    <string name="warning_unregister_wifi_direct">
+        Failed to Unregister Wi-Fi Direct</string>
 </resources>
