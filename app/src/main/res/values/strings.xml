@@ -3,6 +3,8 @@
 
     <!-- InitActivity -->
     <string name="title_activity_init">initActivity</string>
+
+    <!-- Actions -->
     <string name="action_disconnect">Disconnect</string>
     <string name="action_register_wifi_direct">Register Wi-Fi Direct</string>
     <string name="action_unregister_wifi_direct">Unregister Wi-Fi Direct</string>
@@ -14,12 +16,16 @@
     <string name="action_register_service">Register Local Service</string>
     <string name="action_unregister_service">Unregister Local Service</string>
     <string name="action_scan_services">Scan for Services</string>
+
+    <!-- Statuses -->
     <string name="status_wifi_enabled">Wi-Fi Enabled</string>
     <string name="status_wifi_disabled">Wi-Fi Disabled</string>
     <string name="status_wifi_direct_initialized">App Registered with Wi-Fi Direct</string>
     <string name="status_wifi_direct_unregistered">Wi-Fi Direct Unregistered</string>
     <string name="status_service_registered">Local Service Registered</string>
     <string name="status_service_unregistered">Local Service Unregistered</string>
+
+    <!-- Warnings -->
     <string name="warning_wifi_already_enabled">Failed to Enable Wi-Fi - Wi-Fi Already Enabled</string>
     <string name="warning_wifi_already_disabled">Failed to Disable Wi-Fi - Wi-Fi Already Disabled</string>
     <string name="warning_disable_wifi_failed">Failed to Enable Wi-Fi</string>
