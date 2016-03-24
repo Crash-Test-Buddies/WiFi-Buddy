@@ -126,21 +126,20 @@ public class initActivity extends AppCompatActivity {
             // Register Wi-Fi Direct
             registerWifiDirect();
         } else if (wifiDirectRegistrationButton.getText() == getString(R.string.action_unregister_wifi_direct)) {
-            // Unregister Wi-Fi Direct and Unregister Services
+            // Unregister Wi-Fi Direct, Unregister BroadcastReceiver, and Unregister Services
             unregisterService();
+            unregisterReceiver();
             unregisterWifiDirect();
         }
     }
 
     public void onClickButtonReceiverRegistration(View view) {
         if (receiverRegistrationButton.getText() == getString(R.string.action_register_receiver)) {
-            wifiP2pReceiver = new WiFiDirectBroadcastReceiver(wifiP2pManager, wifiP2pChannel, this);
-            wifiP2pReceiver.registerReceiver();
+            // Register Wi-Fi Direct BroadcastReceiver
+            registerReceiver();
         } else if (receiverRegistrationButton.getText() == getString(R.string.action_unregister_receiver)) {
-            if (wifiP2pReceiver != null) {
-                wifiP2pReceiver.unregisterReceiver();
-            }
-            wifiP2pReceiver = null;
+            // Unregister Wi-Fi Direct BroadcastReceiver
+            unregisterReceiver();
         }
     }
 
@@ -180,8 +179,9 @@ public class initActivity extends AppCompatActivity {
             // Enable Wi-Fi
             enableWifi();
         } else if (toggleWifiButton.getText() == getString(R.string.action_disable_wifi)) {
-            // Disable Wi-Fi, Unregister Wi-Fi Direct, Unregister Services
+            // Disable Wi-Fi, Unregister Wi-Fi Direct, Unregister Receiver, Unregister Services
             unregisterService();
+            unregisterReceiver();
             unregisterWifiDirect();
             disableWifi();
         }
@@ -230,6 +230,33 @@ public class initActivity extends AppCompatActivity {
             wifiDirectRegistrationButton.setText(getString(R.string.action_register_wifi_direct));
             displayToast(getString(R.string.status_wifi_direct_unregistered));
         }
+    }
+
+    private void registerReceiver() {
+        if (wifiManager.isWifiEnabled()) {
+            if (wifiP2pManager != null && wifiP2pChannel != null) {
+                // Register Receiver
+                wifiP2pReceiver = new WiFiDirectBroadcastReceiver(wifiP2pManager, wifiP2pChannel, this);
+                wifiP2pReceiver.registerReceiver();
+                receiverRegistrationButton.setText(getString(R.string.action_unregister_receiver));
+                displayToast(getString(R.string.status_receiver_registered));
+            } else {
+                // Wi-Fi Direct hasn't been registered
+                displayToast(getString(R.string.warning_receiver_wifi_direct));
+            }
+        } else {
+            // Wi-Fi hasn't been enabled
+            displayToast(getString(R.string.warning_receiver_wifi));
+        }
+    }
+
+    private void unregisterReceiver() {
+        if (wifiP2pReceiver != null) {
+            wifiP2pReceiver.unregisterReceiver();
+        }
+        wifiP2pReceiver = null;
+        receiverRegistrationButton.setText(getString(R.string.action_register_receiver));
+        displayToast(getString(R.string.status_receiver_unregistered));
     }
 
     private void registerService() {

@@ -65,12 +65,10 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
     public void registerReceiver() {
         initActivity.registerReceiver(this, getIntentFilter());
-        initActivity.displayToast("Registered");
     }
 
     public void unregisterReceiver() {
         initActivity.unregisterReceiver(this);
-        initActivity.displayToast("Unregistered");
     }
 
     public IntentFilter getIntentFilter() {

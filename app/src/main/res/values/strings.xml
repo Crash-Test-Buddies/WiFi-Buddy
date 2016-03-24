@@ -14,7 +14,7 @@
     <string name="action_view_logs">View Logs</string>
     <string name="action_exit">Exit</string>
     <string name="action_register_receiver">Register Broadcast Receiver</string>
-    <string name="action_unregister_receiver">Unegister Broadcast Receiver</string>
+    <string name="action_unregister_receiver">Unregister Broadcast Receiver</string>
     <string name="action_register_service">Register Local Service</string>
     <string name="action_unregister_service">Unregister Local Service</string>
     <string name="action_scan_services">Scan for Services</string>
@@ -22,6 +22,8 @@
     <!-- Statuses -->
     <string name="status_wifi_enabled">Wi-Fi Enabled</string>
     <string name="status_wifi_disabled">Wi-Fi Disabled</string>
+    <string name="status_receiver_registered">BroadcastReceiver Registered</string>
+    <string name="status_receiver_unregistered">BroadcastReceiver Unregistered</string>
     <string name="status_wifi_direct_initialized">App Registered with Wi-Fi Direct</string>
     <string name="status_wifi_direct_unregistered">Wi-Fi Direct Unregistered</string>
     <string name="status_service_registered">Local Service Registered</string>
@@ -34,6 +36,10 @@
     <string name="warning_service_registration_failed">Failed to Register Local Service</string>
     <string name="warning_service_wifi_direct">
         Failed to Register Local Service - First Register Wi-Fi Direct</string>
+    <string name="warning_receiver_wifi">
+        Failed to Register Broadcast Receiver - First Enable Wi-Fi</string>
+    <string name="warning_receiver_wifi_direct">
+        Failed to Register Broadcast Receiver - First Enable Wi-Fi Direct</string>
     <string name="warning_service_wifi">
         Failed to Register Local Service - First Enable Wi-Fi</string>
     <string name="warning_service_unregistration_failed">Failed to Unregister Local Service</string>
