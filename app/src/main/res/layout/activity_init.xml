@@ -48,8 +48,8 @@
 
     <Button
         style="@style/styleButtonDefault"
-        android:text="@string/action_scan_services"
-        android:id="@+id/scanForServicesButton"
-        android:onClick="onClickButtonScanServices" />
+        android:text="@string/action_discover_services"
+        android:id="@+id/discoverServicesButton"
+        android:onClick="onClickButtonDiscoverServices" />
 
 </LinearLayout>

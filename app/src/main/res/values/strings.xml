@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Wi-Fi Direct Tester</string>
 
-    <!-- InitActivity -->
+    <!-- Titles -->
     <string name="title_activity_init">initActivity</string>
+    <string name="title_activity_logs">View Logs</string>
+    <string name="title_activity_discover_services">Discover Services</string>
 
     <!-- Actions -->
     <string name="action_disconnect">Disconnect</string>
@@ -17,7 +19,7 @@
     <string name="action_unregister_receiver">Unregister Broadcast Receiver</string>
     <string name="action_register_service">Register Local Service</string>
     <string name="action_unregister_service">Unregister Local Service</string>
-    <string name="action_scan_services">Scan for Services</string>
+    <string name="action_discover_services">Discover Local Services</string>
 
     <!-- Statuses -->
     <string name="status_wifi_enabled">Wi-Fi Enabled</string>
@@ -34,18 +36,18 @@
     <string name="warning_wifi_already_disabled">Failed to Disable Wi-Fi - Wi-Fi Already Disabled</string>
     <string name="warning_disable_wifi_failed">Failed to Enable Wi-Fi</string>
     <string name="warning_service_registration_failed">Failed to Register Local Service</string>
-    <string name="warning_service_wifi_direct">
+    <string name="warning_register_service_wifi_direct">
         Failed to Register Local Service - First Register Wi-Fi Direct</string>
     <string name="warning_receiver_wifi">
         Failed to Register Broadcast Receiver - First Enable Wi-Fi</string>
     <string name="warning_receiver_wifi_direct">
         Failed to Register Broadcast Receiver - First Enable Wi-Fi Direct</string>
-    <string name="warning_service_wifi">
+    <string name="warning_register_service_wifi">
         Failed to Register Local Service - First Enable Wi-Fi</string>
     <string name="warning_service_unregistration_failed">Failed to Unregister Local Service</string>
+    <string name="warning_discover_service_wifi">Failed to Discover Services - First Enable Wi-Fi</string>
+    <string name="warning_discover_service_wifi_direct">
+        Failed to Discover Services - First Register Wi-Fi Direct</string>
     <string name="warning_wifi_direct_wifi_disabled">
         Failed to Register Wi-Fi Direct - First Enabled Wi-Fi</string>
-
-    <!-- LogsActivity -->
-    <string name="title_activity_logs">View Logs</string>
 </resources>

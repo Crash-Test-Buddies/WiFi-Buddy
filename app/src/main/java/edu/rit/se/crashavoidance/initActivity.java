@@ -65,7 +65,7 @@ public class initActivity extends AppCompatActivity {
         wifiDirectRegistrationButton = (Button) findViewById(R.id.wifiDirectRegistrationButton);
         receiverRegistrationButton = (Button) findViewById(R.id.receiverRegistrationButton);
         serviceRegistrationButton = (Button) findViewById(R.id.serviceRegistrationButton);
-        scanServicesButton = (Button) findViewById(R.id.scanForServicesButton);
+        scanServicesButton = (Button) findViewById(R.id.discoverServicesButton);
 
         // Set Toggle Wi-Fi Button based on Wi-Fi state
         if(wifiManager.isWifiEnabled()){
@@ -151,8 +151,8 @@ public class initActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickButtonScanServices(View view) {
-        scanForServices();
+    public void onClickButtonDiscoverServices(View view) {
+        discoverServices();
     }
 
     public void onClickMenuDisconnect(MenuItem item) {
@@ -266,11 +266,11 @@ public class initActivity extends AppCompatActivity {
                 startServiceRegistration();
             } else {
                 // Wi-Fi Direct hasn't been registered
-                displayToast(getString(R.string.warning_service_wifi_direct));
+                displayToast(getString(R.string.warning_register_service_wifi_direct));
             }
         } else {
             // Wi-Fi hasn't been enabled
-            displayToast(getString(R.string.warning_service_wifi));
+            displayToast(getString(R.string.warning_register_service_wifi));
         }
     }
 
@@ -318,9 +318,20 @@ public class initActivity extends AppCompatActivity {
         //discoverService();
     }
 
-    private void scanForServices(){
-        Intent intent = new Intent(this, AvailableServicesActivity.class);
-        startActivity(intent);
+    private void discoverServices(){
+        if (wifiManager.isWifiEnabled()) {
+            if (wifiP2pManager != null && wifiP2pChannel != null) {
+                // Discover Services
+                Intent intent = new Intent(this, AvailableServicesActivity.class);
+                startActivity(intent);
+            } else {
+                // Wi-Fi Direct hasn't been registered
+                displayToast(getString(R.string.warning_discover_service_wifi_direct));
+            }
+        } else {
+            // Wi-Fi hasn't been enabled
+            displayToast(getString(R.string.warning_discover_service_wifi));
+        }
     }
 
     public void displayToast(String message) {
