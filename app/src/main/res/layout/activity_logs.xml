@@ -21,6 +21,4 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_logs" />
-
 </android.support.design.widget.CoordinatorLayout>
