@@ -1,4 +1,4 @@
-package edu.rit.se.crashavoidance.views;
+package edu.rit.se.crashavoidance;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,8 +17,8 @@ import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.WiFiDirectBroadcastReceiver;
+import edu.rit.se.crashavoidance.views.AvailableServicesActivity;
+import edu.rit.se.crashavoidance.views.LogsActivity;
 
 public class initActivity extends AppCompatActivity {
 
@@ -85,12 +85,30 @@ public class initActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Adds Main Menu to the ActionBar
         getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        toggleWifiMenuItem = menu.findItem(R.id.action_toggle_wifi);
+
+        // Set Toggle Wi-Fi MenuItem based on Wi-Fi state
+        if(wifiManager.isWifiEnabled()){
+            toggleWifiMenuItem.setTitle(getString(R.string.action_disable_wifi));
+        } else {
+            toggleWifiMenuItem.setTitle(getString(R.string.action_enable_wifi));
+        }
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_disconnect:
+                // Disconnect MenuItem tapped
+                onClickMenuDisconnect(item);
+                return true;
+            case R.id.action_toggle_wifi:
+                // Toggle Wi-Fi MenuItem tapped
+                onClickMenuToggleWifi(item);
+                return true;
             case R.id.action_view_logs:
                 // View Logs MenuItem tapped
                 onClickMenuViewLogs(item);
@@ -105,17 +123,7 @@ public class initActivity extends AppCompatActivity {
     }
 
     public void onClickButtonToggleWifi(View view) {
-        String action = toggleWifiButton.getText().toString();
-        if (action.equals(getString(R.string.action_enable_wifi))) {
-            // Enable Wi-Fi
-            enableWifi();
-        } else if (action.equals(getString(R.string.action_disable_wifi))) {
-            // Disable Wi-Fi and other dependent services (Service, Receiver, Wi-Fi Direct Registration)
-            unregisterService();
-            unregisterReceiver();
-            unregisterWifiDirect();
-            disableWifi();
-        }
+        toggleWifi();
     }
 
     public void onClickButtonWifiDirectRegistration(View view) {
@@ -157,6 +165,14 @@ public class initActivity extends AppCompatActivity {
         discoverServices();
     }
 
+    public void onClickMenuDisconnect(MenuItem item) {
+        displayToast("Disconnect tapped");
+    }
+
+    public void onClickMenuToggleWifi(MenuItem item) {
+        toggleWifi();
+    }
+
     public void onClickMenuViewLogs(MenuItem item) {
         // Open the View Logs Activity
         Intent intent = new Intent(this, LogsActivity.class);
@@ -167,6 +183,20 @@ public class initActivity extends AppCompatActivity {
     public void onClickMenuExit(MenuItem item) {
         // Terminate the app
         finish();
+    }
+
+    private void toggleWifi() {
+        String action = toggleWifiButton.getText().toString();
+        if (action.equals(getString(R.string.action_enable_wifi))) {
+            // Enable Wi-Fi
+            enableWifi();
+        } else if (action.equals(getString(R.string.action_disable_wifi))) {
+            // Disable Wi-Fi and other dependent services (Service, Receiver, Wi-Fi Direct Registration)
+            unregisterService();
+            unregisterReceiver();
+            unregisterWifiDirect();
+            disableWifi();
+        }
     }
 
     private void enableWifi() {
