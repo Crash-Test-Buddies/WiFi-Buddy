@@ -1,4 +1,4 @@
-package edu.rit.se.crashavoidance;
+package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,8 +17,8 @@ import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.rit.se.crashavoidance.views.AvailableServicesActivity;
-import edu.rit.se.crashavoidance.views.LogsActivity;
+import edu.rit.se.crashavoidance.R;
+import edu.rit.se.crashavoidance.WiFiDirectBroadcastReceiver;
 
 public class initActivity extends AppCompatActivity {
 
