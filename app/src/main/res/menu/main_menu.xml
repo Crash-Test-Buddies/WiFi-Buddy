@@ -3,14 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="edu.rit.se.crashavoidance.MainActivity">
     <item
-        android:id="@+id/action_disconnect"
-        android:title="@string/action_disconnect"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_toggle_wifi"
-        android:title="@string/action_toggle_wifi"
-        app:showAsAction="never" />
-    <item
         android:id="@+id/action_view_logs"
         android:title="@string/action_view_logs"
         app:showAsAction="never" />

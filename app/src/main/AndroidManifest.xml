@@ -20,7 +20,7 @@
 
         <!-- InitActivity -->
         <activity
-            android:name=".initActivity"
+            android:name=".views.initActivity"
             android:clearTaskOnLaunch="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
@@ -34,17 +34,21 @@
         <activity android:name=".views.GroupMessageActivity" />
 
         <!-- AvailableServicesActivity -->
-        <activity android:name=".views.AvailableServicesActivity" />
+        <activity
+            android:name=".views.AvailableServicesActivity"
+            android:label="@string/title_activity_discover_services"
+            android:parentActivityName=".views.initActivity"
+            android:theme="@style/AppTheme"/>
 
         <!-- LogsActivity -->
         <activity
             android:name=".views.LogsActivity"
             android:label="@string/title_activity_logs"
-            android:parentActivityName=".initActivity"
+            android:parentActivityName=".views.initActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.rit.se.crashavoidance.initActivity" />
+                android:value=".views.initActivity" />
         </activity>
 
         <meta-data
