@@ -27,10 +27,9 @@ public class initActivity extends AppCompatActivity {
     private Button receiverRegistrationButton;
     private Button wifiDirectRegistrationButton;
     private Button serviceRegistrationButton;
-    private Button scanServicesButton;
+    private Button discoverServicesButton;
 
     // Menu
-    private Menu menu;
     private MenuItem toggleWifiMenuItem;
 
     // Services
@@ -48,16 +47,23 @@ public class initActivity extends AppCompatActivity {
     public static final int MY_HANDLE = 0x400 + 2;
     static final int SERVER_PORT = 4545;
 
+    // Log
+    private String log;
+    public final static String EXTRA_LOG = "edu.rit.se.crashavoidance.LOG";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
 
+        // Initialize Log
+        log = "App Started\n";
+
         // Initialize Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
         setSupportActionBar(toolbar);
 
-        // Wi-Fi Service
+        // Wi-Fi Service Manager
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
 
         // Initialize Buttons
@@ -65,7 +71,7 @@ public class initActivity extends AppCompatActivity {
         wifiDirectRegistrationButton = (Button) findViewById(R.id.wifiDirectRegistrationButton);
         receiverRegistrationButton = (Button) findViewById(R.id.receiverRegistrationButton);
         serviceRegistrationButton = (Button) findViewById(R.id.serviceRegistrationButton);
-        scanServicesButton = (Button) findViewById(R.id.discoverServicesButton);
+        discoverServicesButton = (Button) findViewById(R.id.discoverServicesButton);
 
         // Set Toggle Wi-Fi Button based on Wi-Fi state
         if(wifiManager.isWifiEnabled()){
@@ -80,7 +86,6 @@ public class initActivity extends AppCompatActivity {
         // Adds Main Menu to the ActionBar
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
-        this.menu = menu;
         toggleWifiMenuItem = menu.findItem(R.id.action_toggle_wifi);
 
         // Set Toggle Wi-Fi MenuItem based on Wi-Fi state
@@ -122,10 +127,11 @@ public class initActivity extends AppCompatActivity {
     }
 
     public void onClickButtonWifiDirectRegistration(View view) {
-        if (wifiDirectRegistrationButton.getText() == getString(R.string.action_register_wifi_direct)) {
+        String action = wifiDirectRegistrationButton.getText().toString();
+        if (action.equals(getString(R.string.action_register_wifi_direct))) {
             // Register Wi-Fi Direct
             registerWifiDirect();
-        } else if (wifiDirectRegistrationButton.getText() == getString(R.string.action_unregister_wifi_direct)) {
+        } else if (action.equals(getString(R.string.action_unregister_wifi_direct))) {
             // Unregister Wi-Fi Direct, Unregister BroadcastReceiver, and Unregister Services
             unregisterService();
             unregisterReceiver();
@@ -134,19 +140,23 @@ public class initActivity extends AppCompatActivity {
     }
 
     public void onClickButtonReceiverRegistration(View view) {
-        if (receiverRegistrationButton.getText() == getString(R.string.action_register_receiver)) {
+        String action = receiverRegistrationButton.getText().toString();
+        if (action.equals(getString(R.string.action_register_receiver))) {
             // Register Wi-Fi Direct BroadcastReceiver
             registerReceiver();
-        } else if (receiverRegistrationButton.getText() == getString(R.string.action_unregister_receiver)) {
+        } else if (action.equals(getString(R.string.action_unregister_receiver))) {
             // Unregister Wi-Fi Direct BroadcastReceiver
             unregisterReceiver();
         }
     }
 
     public void onClickButtonServiceRegistration(View view) {
-        if (serviceRegistrationButton.getText() == getString(R.string.action_register_service)) {
+        String action = serviceRegistrationButton.getText().toString();
+        if (action.equals(getString(R.string.action_register_service))) {
+            // Register Local Service
             registerService();
-        } else if (serviceRegistrationButton.getText() == getString(R.string.action_unregister_service)) {
+        } else if (action.equals(getString(R.string.action_unregister_service))) {
+            // Unregister Local Service
             unregisterService();
         }
     }
@@ -166,6 +176,7 @@ public class initActivity extends AppCompatActivity {
     public void onClickMenuViewLogs(MenuItem item) {
         // Open the View Logs Activity
         Intent intent = new Intent(this, LogsActivity.class);
+        intent.putExtra(EXTRA_LOG, log);
         startActivity(intent);
     }
 
@@ -175,11 +186,12 @@ public class initActivity extends AppCompatActivity {
     }
 
     private void toggleWifi() {
-        if (toggleWifiButton.getText() == getString(R.string.action_enable_wifi)) {
+        String action = toggleWifiButton.getText().toString();
+        if (action.equals(getString(R.string.action_enable_wifi))) {
             // Enable Wi-Fi
             enableWifi();
-        } else if (toggleWifiButton.getText() == getString(R.string.action_disable_wifi)) {
-            // Disable Wi-Fi, Unregister Wi-Fi Direct, Unregister Receiver, Unregister Services
+        } else if (action.equals(getString(R.string.action_disable_wifi))) {
+            // Disable Wi-Fi and other dependent services (Service, Receiver, Wi-Fi Direct Registration)
             unregisterService();
             unregisterReceiver();
             unregisterWifiDirect();
@@ -188,23 +200,27 @@ public class initActivity extends AppCompatActivity {
     }
 
     private void enableWifi() {
-        if (wifiManager.isWifiEnabled() == false) {
+        if (!wifiManager.isWifiEnabled()) {
+            // Enable Wi-Fi
             wifiManager.setWifiEnabled(true);
-            displayToast(getString(R.string.status_wifi_enabled));
             toggleWifiButton.setText(getString(R.string.action_disable_wifi));
             toggleWifiMenuItem.setTitle(getString(R.string.action_disable_wifi));
+            displayToast(getString(R.string.status_wifi_enabled));
         } else {
+            // Failed to enable Wi-Fi - Wi-Fi is already enabled
             displayToast(getString(R.string.warning_wifi_already_enabled));
         }
     }
 
     private void disableWifi() {
         if (wifiManager.isWifiEnabled()) {
+            // Disable Wi-Fi
             wifiManager.setWifiEnabled(false);
-            displayToast(getString(R.string.status_wifi_disabled));
             toggleWifiButton.setText(getString(R.string.action_enable_wifi));
             toggleWifiMenuItem.setTitle(getString(R.string.action_enable_wifi));
+            displayToast(getString(R.string.status_wifi_disabled));
         } else {
+            // Failed to disable Wi-Fi - Wi-Fi is already disabled
             displayToast(getString(R.string.warning_wifi_already_disabled));
         }
     }
@@ -224,6 +240,7 @@ public class initActivity extends AppCompatActivity {
 
     private void unregisterWifiDirect() {
         if (wifiP2pManager != null || wifiP2pChannel != null) {
+            // Unregister Wi-Fi Direct
             wifiP2pManager = null;
             wifiP2pChannel = null;
 
@@ -234,8 +251,9 @@ public class initActivity extends AppCompatActivity {
 
     private void registerReceiver() {
         if (wifiManager.isWifiEnabled()) {
+            // Wi-Fi is enabled, continue registration
             if (wifiP2pManager != null && wifiP2pChannel != null) {
-                // Register Receiver
+                // Wi-Fi Direct is registered, start Broadcast Receiver Registration
                 wifiP2pReceiver = new WiFiDirectBroadcastReceiver(wifiP2pManager, wifiP2pChannel, this);
                 wifiP2pReceiver.registerReceiver();
                 receiverRegistrationButton.setText(getString(R.string.action_unregister_receiver));
@@ -252,17 +270,19 @@ public class initActivity extends AppCompatActivity {
 
     private void unregisterReceiver() {
         if (wifiP2pReceiver != null) {
+            // Unregister Broadcast Receiver
             wifiP2pReceiver.unregisterReceiver();
+            wifiP2pReceiver = null;
+            receiverRegistrationButton.setText(getString(R.string.action_register_receiver));
+            displayToast(getString(R.string.status_receiver_unregistered));
         }
-        wifiP2pReceiver = null;
-        receiverRegistrationButton.setText(getString(R.string.action_register_receiver));
-        displayToast(getString(R.string.status_receiver_unregistered));
     }
 
     private void registerService() {
         if (wifiManager.isWifiEnabled()) {
+            // Wi-Fi is enabled, continue registration
             if (wifiP2pManager != null && wifiP2pChannel != null) {
-                // Start Service Registration
+                // Wi-Fi Direct is registered, start Service registration
                 startServiceRegistration();
             } else {
                 // Wi-Fi Direct hasn't been registered
@@ -276,10 +296,12 @@ public class initActivity extends AppCompatActivity {
 
     private void unregisterService() {
         if (wifiP2pService != null) {
+            // Unregister Service
             wifiP2pManager.clearLocalServices(wifiP2pChannel, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
-                    // Local Service unregistered successfully
+                    // Local Service successfully unregistered
+                    wifiP2pService = null;
                     serviceRegistrationButton.setText(getString(R.string.action_register_service));
                     displayToast(getString(R.string.status_service_unregistered));
                 }
@@ -290,16 +312,24 @@ public class initActivity extends AppCompatActivity {
                     displayToast(getString(R.string.warning_service_unregistration_failed));
                 }
             });
-            wifiP2pService = null;
         }
     }
 
     private void startServiceRegistration() {
+        // Register Local Service
+        // Create a string map containing information about your service.
         Map<String, String> record = new HashMap<String, String>();
         record.put(TXTRECORD_PROP_AVAILABLE, "visible");
 
+        // Service information.  Pass it an instance name, service type
+        // _protocol._transportlayer , and the map containing
+        // information other devices will want once they connect to this one.
         wifiP2pService = WifiP2pDnsSdServiceInfo.newInstance(
                 SERVICE_INSTANCE, SERVICE_REG_TYPE, record);
+
+        // Add the local service, sending the service info, network channel,
+        // and listener that will be used to indicate success or failure of
+        // the request.
         wifiP2pManager.addLocalService(wifiP2pChannel, wifiP2pService, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
@@ -314,16 +344,14 @@ public class initActivity extends AppCompatActivity {
                 displayToast(getString(R.string.warning_service_registration_failed));
             }
         });
-
-        //discoverService();
     }
 
     private void discoverServices(){
         if (wifiManager.isWifiEnabled()) {
+            // Wi-Fi is enabled, continue Service discovery
             if (wifiP2pManager != null && wifiP2pChannel != null) {
-                // Discover Services
-                Intent intent = new Intent(this, AvailableServicesActivity.class);
-                startActivity(intent);
+                // Wi-Fi Direct is enabled, continue Service discovery
+                startActivity(new Intent(this, AvailableServicesActivity.class));
             } else {
                 // Wi-Fi Direct hasn't been registered
                 displayToast(getString(R.string.warning_discover_service_wifi_direct));
@@ -337,5 +365,6 @@ public class initActivity extends AppCompatActivity {
     public void displayToast(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();
+        log += message + "\n";
     }
 }
