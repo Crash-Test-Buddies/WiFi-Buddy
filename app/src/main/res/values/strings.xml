@@ -57,7 +57,7 @@
     <string name="warning_discover_service_wifi_direct">
         Failed to Discover Services - First Register Wi-Fi Direct</string>
     <string name="warning_wifi_direct_wifi_disabled">
-        Failed to Register Wi-Fi Direct - First Enabled Wi-Fi</string>
+        Failed to Register Wi-Fi Direct - First Enable Wi-Fi</string>
     <string name="warning_unregister_wifi_direct">
         Failed to Unregister Wi-Fi Direct</string>
 </resources>
