@@ -15,6 +15,9 @@ public class WifiTester {
     private Map<String, String> userRecords;
     private int listenPort;
 
+    private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
+    private Map<String, DnsSdService> dnsSdServiceMap;
+
     //Variables created in constructor
     WifiP2pManager.Channel channel;
     WifiP2pManager manager;
@@ -24,6 +27,9 @@ public class WifiTester {
         this.serviceType = builder.serviceType;
         this.userRecords = new HashMap<>(builder.record);
         this.listenPort = builder.listenPort;
+
+        dnsSdTxtRecordMap = new HashMap<>();
+        dnsSdServiceMap = new HashMap<>();
     }
 
     public void startAddingLocalService() {
@@ -52,8 +58,21 @@ public class WifiTester {
             @Override
             public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> txtRecordMap, WifiP2pDevice srcDevice) {
                 //Should probably log that a record is available
+
+                //Record this data for later access?
+                dnsSdTxtRecordMap.put(srcDevice.deviceAddress, new DnsSdTxtRecord(fullDomainName, txtRecordMap, srcDevice));
             }
         };
+
+        WifiP2pManager.DnsSdServiceResponseListener serviceResponseListener = new WifiP2pManager.DnsSdServiceResponseListener() {
+            @Override
+            public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice srcDevice) {
+                dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
+                //TODO: Maybe an observer pattern or something to indicate a change
+            }
+        };
+
+        manager.setDnsSdResponseListeners(channel, serviceResponseListener, txtRecordListener);
     }
 
     public class Builder {
