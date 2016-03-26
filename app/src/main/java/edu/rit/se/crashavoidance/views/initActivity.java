@@ -29,9 +29,6 @@ public class initActivity extends AppCompatActivity {
     private Button serviceRegistrationButton;
     private Button discoverServicesButton;
 
-    // Menu
-    private MenuItem toggleWifiMenuItem;
-
     // Services
     private WifiManager wifiManager;
     private WifiP2pManager wifiP2pManager;
@@ -174,7 +171,6 @@ public class initActivity extends AppCompatActivity {
             // Enable Wi-Fi
             wifiManager.setWifiEnabled(true);
             toggleWifiButton.setText(getString(R.string.action_disable_wifi));
-            toggleWifiMenuItem.setTitle(getString(R.string.action_disable_wifi));
             displayToast(getString(R.string.status_wifi_enabled));
         } else {
             // Failed to enable Wi-Fi - Wi-Fi is already enabled
@@ -187,7 +183,6 @@ public class initActivity extends AppCompatActivity {
             // Disable Wi-Fi
             wifiManager.setWifiEnabled(false);
             toggleWifiButton.setText(getString(R.string.action_enable_wifi));
-            toggleWifiMenuItem.setTitle(getString(R.string.action_enable_wifi));
             displayToast(getString(R.string.status_wifi_disabled));
         } else {
             // Failed to disable Wi-Fi - Wi-Fi is already disabled
