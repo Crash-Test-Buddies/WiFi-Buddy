@@ -1,4 +1,4 @@
-package edu.rit.se.crashavoidance;
+package edu.rit.se.crashavoidance.views;
 
 import android.app.ListFragment;
 import android.content.Context;
@@ -13,6 +13,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.rit.se.crashavoidance.R;
+import edu.rit.se.crashavoidance.WiFiP2pService;
 
 /**
  * Created by Brett on 2/2/2016.
