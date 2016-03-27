@@ -11,8 +11,6 @@ import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import java.util.HashMap;
 import java.util.Map;
 
-import rx.Observable;
-
 public class WifiTester extends BroadcastReceiver {
 
     //Variables provided by builder?
@@ -24,8 +22,6 @@ public class WifiTester extends BroadcastReceiver {
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
     private Map<String, DnsSdService> dnsSdServiceMap;
     private WifiP2pDeviceList peers;
-
-    Observable<Map.Entry<String, DnsSdTxtRecord>> observableDnsSdTxtRecordMap;
 
     //Variables created in constructor
     WifiP2pManager.Channel channel;
@@ -40,7 +36,6 @@ public class WifiTester extends BroadcastReceiver {
         dnsSdTxtRecordMap = new HashMap<>();
         dnsSdServiceMap = new HashMap<>();
         peers = new WifiP2pDeviceList();
-        observableDnsSdTxtRecordMap = Observable.from(dnsSdTxtRecordMap.entrySet());
     }
 
     public void startAddingLocalService() {
@@ -87,7 +82,18 @@ public class WifiTester extends BroadcastReceiver {
     }
 
     private void requestPeers() {
+        manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                //TODO: Log that this was successful.
+                //No data about peers can be collected here.
+            }
 
+            @Override
+            public void onFailure(int reason) {
+                //TODO: log why this failed
+            }
+        });
     }
 
     @Override

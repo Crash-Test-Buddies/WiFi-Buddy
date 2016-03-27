@@ -26,8 +26,4 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile 'io.nlopez.smartlocation:library:3.2.1'
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
-    compile 'io.reactivex:rxandroid:1.1.0'
-// Because RxAndroid releases are few and far between, it is recommended you also
-// explicitly depend on RxJava's latest version for bug fixes and new features.
-    compile 'io.reactivex:rxjava:1.1.2'
 }
