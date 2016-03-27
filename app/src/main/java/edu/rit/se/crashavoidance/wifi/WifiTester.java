@@ -1,13 +1,19 @@
 package edu.rit.se.crashavoidance.wifi;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class WifiTester {
+import rx.Observable;
+
+public class WifiTester extends BroadcastReceiver {
 
     //Variables provided by builder?
     private String serviceName;
@@ -17,6 +23,9 @@ public class WifiTester {
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
     private Map<String, DnsSdService> dnsSdServiceMap;
+    private WifiP2pDeviceList peers;
+
+    Observable<Map.Entry<String, DnsSdTxtRecord>> observableDnsSdTxtRecordMap;
 
     //Variables created in constructor
     WifiP2pManager.Channel channel;
@@ -30,6 +39,8 @@ public class WifiTester {
 
         dnsSdTxtRecordMap = new HashMap<>();
         dnsSdServiceMap = new HashMap<>();
+        peers = new WifiP2pDeviceList();
+        observableDnsSdTxtRecordMap = Observable.from(dnsSdTxtRecordMap.entrySet());
     }
 
     public void startAddingLocalService() {
@@ -73,6 +84,26 @@ public class WifiTester {
         };
 
         manager.setDnsSdResponseListeners(channel, serviceResponseListener, txtRecordListener);
+    }
+
+    private void requestPeers() {
+
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        String action = intent.getAction();
+
+        if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
+            if(manager != null) {
+                manager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
+                    @Override
+                    public void onPeersAvailable(WifiP2pDeviceList peers) {
+                        WifiTester.this.peers = peers;
+                    }
+                });
+            }
+        }
     }
 
     public class Builder {
