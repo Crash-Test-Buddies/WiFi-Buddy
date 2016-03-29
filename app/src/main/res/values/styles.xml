@@ -28,8 +28,14 @@
         <item name="android:textColor">#33B5E5</item>
     </style>
 
-    <!--<style name="buttonStyle">-->
-        <!--<item name="android:background">@color/buttonBackground</item>-->
-        <!--<item name="android:textColor">@color/buttonText</item>-->
-    <!--</style>-->
+    <style name="styleButtonDefault">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_marginLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:layout_marginRight">@dimen/activity_horizontal_margin</item>
+    </style>
 </resources>
