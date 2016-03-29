@@ -120,11 +120,22 @@ public class WifiTester extends BroadcastReceiver {
 
         public Builder() {}
 
-        public void setServiceName(String serviceName) { this.serviceName = serviceName; }
-        public void setServiceType(ServiceType serviceType) { this.serviceType = serviceType; }
-        public void addRecord(String key, String value) { this.record.put(key, value); }
-        public void setListenPort(int listenPort) { this.listenPort = listenPort; }
-
+        public Builder setServiceName(String serviceName) {
+            this.serviceName = serviceName;
+            return this;
+        }
+        public Builder setServiceType(ServiceType serviceType) {
+            this.serviceType = serviceType;
+            return this;
+        }
+        public Builder addRecord(String key, String value) {
+            this.record.put(key, value);
+            return this;
+        }
+        public Builder setListenPort(int listenPort) {
+            this.listenPort = listenPort;
+            return this;
+        }
 
         public WifiTester build() {
             return new WifiTester(this);
