@@ -1,8 +1,5 @@
 package edu.rit.se.crashavoidance.wifi;
 
-/**
- * Created by Brett on 3/27/2016.
- */
 public enum FailureReason {
     ERROR("ERROR"),
     P2P_UNSUPPORTED("P2P UNSUPPORTED"),

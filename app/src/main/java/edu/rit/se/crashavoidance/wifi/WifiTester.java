@@ -7,21 +7,23 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class WifiTester extends BroadcastReceiver {
 
-    //Variables provided by builder?
     private String serviceName;
     private ServiceType serviceType;
     private Map<String, String> userRecords;
     private int listenPort;
+    private Context context;
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
     private Map<String, DnsSdService> dnsSdServiceMap;
     private WifiP2pDeviceList peers;
+    private LocalBroadcastManager localBroadcastManager;
 
     //Variables created in constructor
     WifiP2pManager.Channel channel;
@@ -32,10 +34,13 @@ public class WifiTester extends BroadcastReceiver {
         this.serviceType = builder.serviceType;
         this.userRecords = new HashMap<>(builder.record);
         this.listenPort = builder.listenPort;
+        this.context = builder.context;
 
         dnsSdTxtRecordMap = new HashMap<>();
         dnsSdServiceMap = new HashMap<>();
         peers = new WifiP2pDeviceList();
+
+        localBroadcastManager = LocalBroadcastManager.getInstance(this.context);
     }
 
     public void startAddingLocalService() {
@@ -65,7 +70,8 @@ public class WifiTester extends BroadcastReceiver {
             public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> txtRecordMap, WifiP2pDevice srcDevice) {
                 //Should probably log that a record is available
 
-                //Record this data for later access?
+                Intent intent = new Intent(Event.DNS_SD_TXT_RECORD_ADDED.toString());
+                localBroadcastManager.sendBroadcast(intent);
                 dnsSdTxtRecordMap.put(srcDevice.deviceAddress, new DnsSdTxtRecord(fullDomainName, txtRecordMap, srcDevice));
             }
         };
@@ -117,6 +123,7 @@ public class WifiTester extends BroadcastReceiver {
         protected ServiceType serviceType = ServiceType.PRESENCE_TCP;
         protected Map<String, String> record = new HashMap<>();
         protected int listenPort = 4545;
+        protected Context context;
 
         public Builder() {}
 
@@ -137,8 +144,24 @@ public class WifiTester extends BroadcastReceiver {
             return this;
         }
 
-        public WifiTester build() {
+        public WifiTester build(Context context) {
+            this.context = context;
             return new WifiTester(this);
+        }
+    }
+
+    public enum Event {
+        DNS_SD_TXT_RECORD_ADDED("dnsSdTxtRecordAdded");
+
+        private String eventName;
+
+        private Event(String eventName) {
+            this.eventName = eventName;
+        }
+
+        @Override
+        public String toString() {
+            return eventName;
         }
     }
 }
