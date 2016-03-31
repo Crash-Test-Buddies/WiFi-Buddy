@@ -45,17 +45,10 @@ public class initActivity extends AppCompatActivity {
     public static final int MY_HANDLE = 0x400 + 2;
     static final int SERVER_PORT = 4545;
 
-    // Log
-    private String log;
-    public final static String EXTRA_LOG = "edu.rit.se.crashavoidance.LOG";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
-
-        // Initialize Log
-        log = "App Started\n";
 
         // Initialize Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
@@ -158,8 +151,8 @@ public class initActivity extends AppCompatActivity {
     public void onClickMenuViewLogs(MenuItem item) {
         // Open the View Logs Activity
         Intent intent = new Intent(this, LogsActivity.class);
-        intent.putExtra(EXTRA_LOG, log);
         startActivity(intent);
+        Log.i(getString(R.string.log_tag), "Viewing Logs");
     }
 
     public void onClickMenuExit(MenuItem item) {
@@ -331,7 +324,6 @@ public class initActivity extends AppCompatActivity {
     public void displayToast(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();
-        Log.i("TEST-TAG", message);
-        log += message + "\n";
+        Log.i(getString(R.string.log_tag), message);
     }
 }

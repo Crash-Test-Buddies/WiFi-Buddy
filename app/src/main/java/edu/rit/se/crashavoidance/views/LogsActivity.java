@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -15,9 +14,7 @@ import edu.rit.se.crashavoidance.R;
 
 public class LogsActivity extends AppCompatActivity {
 
-    private String log;
     private TextView logTextView;
-    private Thread mThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,27 +27,23 @@ public class LogsActivity extends AppCompatActivity {
 
         logTextView = (TextView) findViewById(R.id.logTextView);
         logTextView.setMovementMethod(new ScrollingMovementMethod());
-        Log.i("TEST-TAG", "Viewing Logs");
+
         try {
             Process process = Runtime.getRuntime().exec("logcat -d");
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
 
-            StringBuilder log=new StringBuilder();
+            StringBuilder log = new StringBuilder();
             String line = "";
             while ((line = bufferedReader.readLine()) != null) {
-                if (line.contains("TEST-TAG")){
+                if (line.contains(getString(R.string.log_tag))){
+                    // Removes log tag and PID from the log line
                     log.append(line.substring(line.indexOf(": ") + 2) + "\n");
                 }
             }
             logTextView.setText(log.toString());
         } catch (IOException e) {
         }
-
-//        Intent intent = getIntent();
-//        String log = intent.getStringExtra(initActivity.EXTRA_LOG);
-//
-//        logTextView.setText(log);
     }
 
 }
