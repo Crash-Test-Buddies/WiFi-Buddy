@@ -51,8 +51,11 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
         }
 
         TextView instanceName = (TextView) convertView.findViewById(R.id.instanceName);
+        TextView deviceName = (TextView) convertView.findViewById(R.id.deviceName);
         //TODO: This will need updates once real devices are in use
         instanceName.setText(service.instanceName);
+
+        deviceName.setText(service.device.deviceName);
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override

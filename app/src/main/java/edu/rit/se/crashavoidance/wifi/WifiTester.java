@@ -24,8 +24,9 @@ public class WifiTester extends BroadcastReceiver {
     private WifiP2pDeviceList peers;
 
     //Variables created in constructor
-    WifiP2pManager.Channel channel;
-    WifiP2pManager manager;
+    private WifiP2pManager.Channel channel;
+    private WifiP2pManager manager;
+
 
     private WifiTester(Builder builder) {
         this.serviceName = builder.serviceName;
@@ -112,13 +113,33 @@ public class WifiTester extends BroadcastReceiver {
         }
     }
 
-    public class Builder {
+
+
+    public WifiP2pManager.Channel getChannel() {
+        return channel;
+    }
+
+    public void setChannel(WifiP2pManager.Channel channel) {
+        this.channel = channel;
+    }
+
+    public WifiP2pManager getManager() {
+        return manager;
+    }
+
+    public void setManager(WifiP2pManager manager) {
+        this.manager = manager;
+    }
+
+    public static class Builder {
         protected String serviceName = "testService";
         protected ServiceType serviceType = ServiceType.PRESENCE_TCP;
         protected Map<String, String> record = new HashMap<>();
         protected int listenPort = 4545;
+        private WifiTester wifiInstance;
+        private static Builder builderInstance;
 
-        public Builder() {}
+        private Builder() {}
 
         public Builder setServiceName(String serviceName) {
             this.serviceName = serviceName;
@@ -138,7 +159,17 @@ public class WifiTester extends BroadcastReceiver {
         }
 
         public WifiTester build() {
-            return new WifiTester(this);
+            if (wifiInstance == null){
+                wifiInstance = new WifiTester(this);
+            }
+            return wifiInstance;
+        }
+
+        public static Builder getInstance(){
+            if (builderInstance == null){
+                builderInstance = new Builder();
+            }
+            return builderInstance;
         }
     }
 }
