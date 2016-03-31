@@ -6,6 +6,7 @@ import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.WiFiDirectBroadcastReceiver;
+import edu.rit.se.crashavoidance.wifi.WifiTester;
 
 public class initActivity extends AppCompatActivity {
 
@@ -47,6 +49,8 @@ public class initActivity extends AppCompatActivity {
     // Log
     private String log;
     public final static String EXTRA_LOG = "edu.rit.se.crashavoidance.LOG";
+    private WifiTester wifiTester;
+    private WifiTester.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,7 @@ public class initActivity extends AppCompatActivity {
 
         // Wi-Fi Service Manager
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+        wifiTester = WifiTester.Builder.getInstance().build();
 
         // Initialize Buttons
         toggleWifiButton = (Button) findViewById(R.id.toggleWifiButton);
@@ -195,6 +200,8 @@ public class initActivity extends AppCompatActivity {
             // Wi-Fi is enabled, continue registration
             wifiP2pManager = (WifiP2pManager) getSystemService(WIFI_P2P_SERVICE);
             wifiP2pChannel = wifiP2pManager.initialize(this, getMainLooper(), null);
+            wifiTester.setManager(wifiP2pManager);
+            wifiTester.setChannel(wifiP2pChannel);
             wifiDirectRegistrationButton.setText(getString(R.string.action_unregister_wifi_direct));
             displayToast(getString(R.string.status_wifi_direct_initialized));
         } else {

@@ -6,10 +6,10 @@ import java.util.Map;
 
 public class DnsSdTxtRecord {
     private String fullDomain;
-    private Map record;
+    private Map<String, String> record;
     private WifiP2pDevice device;
 
-    public DnsSdTxtRecord(String fullDomain, Map record, WifiP2pDevice device) {
+    public DnsSdTxtRecord(String fullDomain, Map<String, String> record, WifiP2pDevice device) {
         this.fullDomain = fullDomain;
         this.record = record;
         this.device = device;

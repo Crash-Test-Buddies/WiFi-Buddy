@@ -7,35 +7,41 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class WifiTester extends BroadcastReceiver {
 
-    //Variables provided by builder?
     private String serviceName;
     private ServiceType serviceType;
     private Map<String, String> userRecords;
     private int listenPort;
+    private Context context;
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
     private Map<String, DnsSdService> dnsSdServiceMap;
     private WifiP2pDeviceList peers;
+    private LocalBroadcastManager localBroadcastManager;
 
     //Variables created in constructor
-    WifiP2pManager.Channel channel;
-    WifiP2pManager manager;
+    private WifiP2pManager.Channel channel;
+    private WifiP2pManager manager;
+
 
     private WifiTester(Builder builder) {
         this.serviceName = builder.serviceName;
         this.serviceType = builder.serviceType;
         this.userRecords = new HashMap<>(builder.record);
         this.listenPort = builder.listenPort;
+        this.context = builder.context;
 
         dnsSdTxtRecordMap = new HashMap<>();
         dnsSdServiceMap = new HashMap<>();
         peers = new WifiP2pDeviceList();
+
+        localBroadcastManager = LocalBroadcastManager.getInstance(this.context);
     }
 
     public void startAddingLocalService() {
@@ -65,7 +71,8 @@ public class WifiTester extends BroadcastReceiver {
             public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> txtRecordMap, WifiP2pDevice srcDevice) {
                 //Should probably log that a record is available
 
-                //Record this data for later access?
+                Intent intent = new Intent(Event.DNS_SD_TXT_RECORD_ADDED.toString());
+                localBroadcastManager.sendBroadcast(intent);
                 dnsSdTxtRecordMap.put(srcDevice.deviceAddress, new DnsSdTxtRecord(fullDomainName, txtRecordMap, srcDevice));
             }
         };
@@ -112,13 +119,34 @@ public class WifiTester extends BroadcastReceiver {
         }
     }
 
-    public class Builder {
+
+
+    public WifiP2pManager.Channel getChannel() {
+        return channel;
+    }
+
+    public void setChannel(WifiP2pManager.Channel channel) {
+        this.channel = channel;
+    }
+
+    public WifiP2pManager getManager() {
+        return manager;
+    }
+
+    public void setManager(WifiP2pManager manager) {
+        this.manager = manager;
+    }
+
+    public static class Builder {
         protected String serviceName = "testService";
         protected ServiceType serviceType = ServiceType.PRESENCE_TCP;
         protected Map<String, String> record = new HashMap<>();
         protected int listenPort = 4545;
+        protected Context context;
+        private WifiTester wifiInstance;
+        private static Builder builderInstance;
 
-        public Builder() {}
+        private Builder() {}
 
         public Builder setServiceName(String serviceName) {
             this.serviceName = serviceName;
@@ -137,8 +165,35 @@ public class WifiTester extends BroadcastReceiver {
             return this;
         }
 
-        public WifiTester build() {
-            return new WifiTester(this);
+        public WifiTester build(Context context) {
+            this.context = context;
+
+            if (wifiInstance == null){
+                wifiInstance = new WifiTester(this);
+            }
+            return wifiInstance;
+        }
+
+        public static Builder getInstance(){
+            if (builderInstance == null){
+                builderInstance = new Builder();
+            }
+            return builderInstance;
+        }
+    }
+
+    public enum Event {
+        DNS_SD_TXT_RECORD_ADDED("dnsSdTxtRecordAdded");
+
+        private String eventName;
+
+        private Event(String eventName) {
+            this.eventName = eventName;
+        }
+
+        @Override
+        public String toString() {
+            return eventName;
         }
     }
 }
