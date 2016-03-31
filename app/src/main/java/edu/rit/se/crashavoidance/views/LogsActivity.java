@@ -40,7 +40,7 @@ public class LogsActivity extends AppCompatActivity {
             String line = "";
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.contains("TEST-TAG")){
-                    log.append(line);
+                    log.append(line.substring(line.indexOf(": ") + 2) + "\n");
                 }
             }
             logTextView.setText(log.toString());
