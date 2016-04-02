@@ -3,54 +3,79 @@ package edu.rit.se.crashavoidance.wifi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
+import android.os.Binder;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class WifiTester extends BroadcastReceiver {
+public class WifiTester extends NonStopIntentService {
 
-    private String serviceName;
-    private ServiceType serviceType;
-    private Map<String, String> userRecords;
-    private int listenPort;
-    private Context context;
+    public static final String androidServiceName = "WifiTester";
+
+    private final IBinder binder = new WifiTesterBinder();
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
     private Map<String, DnsSdService> dnsSdServiceMap;
     private WifiP2pDeviceList peers;
     private LocalBroadcastManager localBroadcastManager;
+    private BroadcastReceiver receiver;
 
     //Variables created in constructor
     private WifiP2pManager.Channel channel;
     private WifiP2pManager manager;
 
 
-    private WifiTester(Builder builder) {
-        this.serviceName = builder.serviceName;
-        this.serviceType = builder.serviceType;
-        this.userRecords = new HashMap<>(builder.record);
-        this.listenPort = builder.listenPort;
-        this.context = builder.context;
+    public WifiTester() {
+        super(androidServiceName);
 
         dnsSdTxtRecordMap = new HashMap<>();
         dnsSdServiceMap = new HashMap<>();
         peers = new WifiP2pDeviceList();
 
-        localBroadcastManager = LocalBroadcastManager.getInstance(this.context);
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+
+                if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
+                    if(manager != null) {
+                        manager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
+                            @Override
+                            public void onPeersAvailable(WifiP2pDeviceList peers) {
+                                WifiTester.this.peers = peers;
+                            }
+                        });
+                    }
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        registerReceiver(receiver, filter);
+
     }
 
-    public void startAddingLocalService() {
-        Map<String, String> records = new HashMap<String,String>(userRecords);
-        records.put("listenport", Integer.toString(listenPort));
+    public void startAddingLocalService(ServiceData serviceData) {
+        Map<String, String> records = new HashMap<String,String>(serviceData.getRecord());
+        records.put("listenport", Integer.toString(serviceData.getPort()));
         records.put("available", "visible");
 
-        WifiP2pDnsSdServiceInfo serviceInfo = WifiP2pDnsSdServiceInfo.newInstance(serviceName,
-                serviceType.toString(), records);
+        WifiP2pDnsSdServiceInfo serviceInfo = WifiP2pDnsSdServiceInfo.newInstance(
+                serviceData.getServiceName(),
+                serviceData.getServiceType().toString(),
+                records
+        );
 
         manager.addLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
             @Override
@@ -103,8 +128,14 @@ public class WifiTester extends BroadcastReceiver {
         });
     }
 
+    @Nullable
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
         String action = intent.getAction();
 
         if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
@@ -119,65 +150,9 @@ public class WifiTester extends BroadcastReceiver {
         }
     }
 
-
-
-    public WifiP2pManager.Channel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(WifiP2pManager.Channel channel) {
-        this.channel = channel;
-    }
-
-    public WifiP2pManager getManager() {
-        return manager;
-    }
-
-    public void setManager(WifiP2pManager manager) {
-        this.manager = manager;
-    }
-
-    public static class Builder {
-        protected String serviceName = "testService";
-        protected ServiceType serviceType = ServiceType.PRESENCE_TCP;
-        protected Map<String, String> record = new HashMap<>();
-        protected int listenPort = 4545;
-        protected Context context;
-
-        private WifiTester wifiInstance;
-        private static Builder builderInstance;
-
-        private Builder() {}
-
-        public Builder setServiceName(String serviceName) {
-            this.serviceName = serviceName;
-            return this;
-        }
-        public Builder setServiceType(ServiceType serviceType) {
-            this.serviceType = serviceType;
-            return this;
-        }
-        public Builder addRecord(String key, String value) {
-            this.record.put(key, value);
-            return this;
-        }
-        public Builder setListenPort(int listenPort) {
-            this.listenPort = listenPort;
-            return this;
-        }
-
-        public WifiTester build(Context context) {
-            if (wifiInstance == null){
-                wifiInstance = new WifiTester(this);
-            }
-            return wifiInstance;
-        }
-
-        public static Builder getInstance(){
-            if (builderInstance == null){
-                builderInstance = new Builder();
-            }
-            return builderInstance;
+    public class WifiTesterBinder extends Binder {
+        WifiTester getService() {
+            return WifiTester.this;
         }
     }
 
