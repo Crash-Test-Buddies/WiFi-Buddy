@@ -36,20 +36,9 @@
         <!-- AvailableServicesActivity -->
         <activity
             android:name=".views.AvailableServicesActivity"
-            android:label="@string/title_activity_discover_services"
+            android:label="@string/title_discover_services"
             android:parentActivityName=".views.initActivity"
             android:theme="@style/AppTheme"/>
-
-        <!-- LogsActivity -->
-        <activity
-            android:name=".views.LogsActivity"
-            android:label="@string/title_activity_logs"
-            android:parentActivityName=".views.initActivity"
-            android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".views.initActivity" />
-        </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"

@@ -46,7 +46,8 @@ public class initActivity extends AppCompatActivity {
     public static final int MY_HANDLE = 0x400 + 2;
     static final int SERVER_PORT = 4545;
 
-    FragmentManager fm;
+    // Fragment Manager
+    private FragmentManager fragmentManager;
 
 
     @Override
@@ -57,6 +58,9 @@ public class initActivity extends AppCompatActivity {
         // Initialize Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
         setSupportActionBar(toolbar);
+
+        // Fragmnet Manager
+        fragmentManager = getSupportFragmentManager();
 
         // Wi-Fi Service Manager
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
@@ -74,8 +78,6 @@ public class initActivity extends AppCompatActivity {
         } else {
             toggleWifiButton.setText(getString(R.string.action_enable_wifi));
         }
-
-        fm = getSupportFragmentManager();
     }
 
     @Override
@@ -155,14 +157,10 @@ public class initActivity extends AppCompatActivity {
     }
 
     public void onClickMenuViewLogs(MenuItem item) {
-        // Open the View Logs Activity
-//        Intent intent = new Intent(this, LogsActivity.class);
-//        startActivity(intent);
-
+        // Open the View Logs Dialog Fragment
+        Log.i(getString(R.string.log_tag), getString(R.string.status_viewing_logs));
         LogsDialogFragment logsDialogFragment = new LogsDialogFragment();
-        logsDialogFragment.show(getFragmentManager(), "Dialog");
-
-        Log.i(getString(R.string.log_tag), "Viewing Logs");
+        logsDialogFragment.show(getFragmentManager(), "dialog");
     }
 
     public void onClickMenuExit(MenuItem item) {
