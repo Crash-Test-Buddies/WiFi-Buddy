@@ -6,6 +6,7 @@ import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -45,6 +46,9 @@ public class initActivity extends AppCompatActivity {
     public static final int MY_HANDLE = 0x400 + 2;
     static final int SERVER_PORT = 4545;
 
+    FragmentManager fm;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +74,8 @@ public class initActivity extends AppCompatActivity {
         } else {
             toggleWifiButton.setText(getString(R.string.action_enable_wifi));
         }
+
+        fm = getSupportFragmentManager();
     }
 
     @Override
@@ -150,8 +156,12 @@ public class initActivity extends AppCompatActivity {
 
     public void onClickMenuViewLogs(MenuItem item) {
         // Open the View Logs Activity
-        Intent intent = new Intent(this, LogsActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(this, LogsActivity.class);
+//        startActivity(intent);
+
+        LogsDialogFragment logsDialogFragment = new LogsDialogFragment();
+        logsDialogFragment.show(getFragmentManager(), "Dialog");
+
         Log.i(getString(R.string.log_tag), "Viewing Logs");
     }
 
