@@ -6,6 +6,7 @@ import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -45,6 +46,10 @@ public class initActivity extends AppCompatActivity {
     public static final int MY_HANDLE = 0x400 + 2;
     static final int SERVER_PORT = 4545;
 
+    // Fragment Manager
+    private FragmentManager fragmentManager;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +58,9 @@ public class initActivity extends AppCompatActivity {
         // Initialize Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
         setSupportActionBar(toolbar);
+
+        // Fragmnet Manager
+        fragmentManager = getSupportFragmentManager();
 
         // Wi-Fi Service Manager
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
@@ -149,10 +157,10 @@ public class initActivity extends AppCompatActivity {
     }
 
     public void onClickMenuViewLogs(MenuItem item) {
-        // Open the View Logs Activity
-        Intent intent = new Intent(this, LogsActivity.class);
-        startActivity(intent);
-        Log.i(getString(R.string.log_tag), "Viewing Logs");
+        // Open the View Logs Dialog Fragment
+        Log.i(getString(R.string.log_tag), getString(R.string.status_viewing_logs));
+        LogsDialogFragment logsDialogFragment = new LogsDialogFragment();
+        logsDialogFragment.show(getFragmentManager(), "dialog");
     }
 
     public void onClickMenuExit(MenuItem item) {

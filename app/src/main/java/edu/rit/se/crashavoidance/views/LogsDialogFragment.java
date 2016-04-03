@@ -1,9 +1,13 @@
 package edu.rit.se.crashavoidance.views;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.AlertDialog;
 import android.text.method.ScrollingMovementMethod;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -12,20 +16,26 @@ import java.io.InputStreamReader;
 
 import edu.rit.se.crashavoidance.R;
 
-public class LogsActivity extends AppCompatActivity {
+public class LogsDialogFragment extends DialogFragment {
 
     private TextView logTextView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_logs);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder dialogBuilder =  new  AlertDialog.Builder(getActivity())
+            .setTitle(getString(R.string.title_logs))
+            .setNegativeButton(getString(R.string.action_close),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.dismiss();
+                    }
+                }
+            );
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        LayoutInflater i = getActivity().getLayoutInflater();
+        View rootView = i.inflate(R.layout.fragment_logs_dialog,null);
 
-        logTextView = (TextView) findViewById(R.id.logTextView);
+        logTextView =  (TextView) rootView.findViewById(R.id.logTextView);
         logTextView.setMovementMethod(new ScrollingMovementMethod());
 
         try {
@@ -44,6 +54,8 @@ public class LogsActivity extends AppCompatActivity {
             logTextView.setText(log.toString());
         } catch (IOException e) {
         }
-    }
 
+        dialogBuilder.setView(rootView);
+        return dialogBuilder.create();
+    }
 }
