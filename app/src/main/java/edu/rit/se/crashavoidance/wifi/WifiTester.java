@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -30,7 +31,8 @@ public class WifiTester extends NonStopIntentService {
 
     //Variables created in constructor
     private WifiP2pManager.Channel channel;
-    private WifiP2pManager manager;
+    private WifiP2pManager wifiP2pManager;
+    private WifiManager wifiManager;
 
 
     public WifiTester() {
@@ -48,8 +50,8 @@ public class WifiTester extends NonStopIntentService {
                 String action = intent.getAction();
 
                 if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-                    if(manager != null) {
-                        manager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
+                    if(wifiP2pManager != null) {
+                        wifiP2pManager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
                             @Override
                             public void onPeersAvailable(WifiP2pDeviceList peers) {
                                 WifiTester.this.peers = peers;
@@ -77,7 +79,7 @@ public class WifiTester extends NonStopIntentService {
                 records
         );
 
-        manager.addLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
+        wifiP2pManager.addLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
                 //Nothing needed here, maybe just logs
@@ -110,11 +112,15 @@ public class WifiTester extends NonStopIntentService {
             }
         };
 
-        manager.setDnsSdResponseListeners(channel, serviceResponseListener, txtRecordListener);
+        wifiP2pManager.setDnsSdResponseListeners(channel, serviceResponseListener, txtRecordListener);
+    }
+
+    public boolean isWifiEnabled() {
+        return wifiManager.isWifiEnabled();
     }
 
     private void requestPeers() {
-        manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
+        wifiP2pManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
                 //TODO: Log that this was successful.
@@ -139,8 +145,8 @@ public class WifiTester extends NonStopIntentService {
         String action = intent.getAction();
 
         if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-            if(manager != null) {
-                manager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
+            if(wifiP2pManager != null) {
+                wifiP2pManager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
                     @Override
                     public void onPeersAvailable(WifiP2pDeviceList peers) {
                         WifiTester.this.peers = peers;
@@ -150,8 +156,12 @@ public class WifiTester extends NonStopIntentService {
         }
     }
 
+    public void setWifiEnabled(boolean wifiEnabled) {
+        wifiManager.setWifiEnabled(wifiEnabled);
+    }
+
     public class WifiTesterBinder extends Binder {
-        WifiTester getService() {
+        public WifiTester getService() {
             return WifiTester.this;
         }
     }
