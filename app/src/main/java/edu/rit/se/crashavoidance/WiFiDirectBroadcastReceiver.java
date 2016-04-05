@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pManager;
 
-import edu.rit.se.crashavoidance.views.initActivity;
+import edu.rit.se.crashavoidance.views.MainActivity;
 
 /**
  * A BroadcastReceiver that notifies of important wifi p2p events.
@@ -16,7 +16,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager wifiP2pManager;
     private WifiP2pManager.Channel wifiP2pChannel;
-    private edu.rit.se.crashavoidance.views.initActivity initActivity;
+    private edu.rit.se.crashavoidance.views.MainActivity mainActivity;
 
     private IntentFilter intentFilter = null;
 
@@ -25,7 +25,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
         super();
         this.wifiP2pManager = manager;
         this.wifiP2pChannel = channel;
-        this.initActivity = (initActivity) activity;
+        this.mainActivity = (MainActivity) activity;
     }
 
     @Override
@@ -66,11 +66,11 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
     }
 
     public void registerReceiver() {
-        initActivity.registerReceiver(this, getIntentFilter());
+        mainActivity.registerReceiver(this, getIntentFilter());
     }
 
     public void unregisterReceiver() {
-        initActivity.unregisterReceiver(this);
+        mainActivity.unregisterReceiver(this);
     }
 
     public IntentFilter getIntentFilter() {
