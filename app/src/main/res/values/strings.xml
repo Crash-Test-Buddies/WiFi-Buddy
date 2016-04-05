@@ -61,16 +61,4 @@
         Failed to Register Wi-Fi Direct:\n  First Enable Wi-Fi</string>
     <string name="warning_unregister_wifi_direct">
         Failed to Unregister Wi-Fi Direct</string>
-
-    <string-array name="Planets">
-        <item>Sun</item>
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
-    </string-array>
 </resources>
