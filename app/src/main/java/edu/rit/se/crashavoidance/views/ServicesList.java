@@ -1,6 +1,5 @@
 package edu.rit.se.crashavoidance.views;
 
-import android.app.ListFragment;
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
@@ -20,7 +19,7 @@ import edu.rit.se.crashavoidance.WiFiP2pService;
 /**
  * Created by Brett on 2/2/2016.
  */
-public class ServicesList extends ListFragment {
+public class ServicesList extends android.support.v4.app.ListFragment {
 
     WiFiDevicesAdapter listAdapter = null;
 
