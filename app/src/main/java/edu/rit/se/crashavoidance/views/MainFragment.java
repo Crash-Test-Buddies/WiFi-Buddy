@@ -48,10 +48,8 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
 
+        // Main Activity, where the service managers are
         mainActivity = (MainActivity) getActivity();
-
-        // Fragmnet Manager
-        //fragmentManager = getSupportFragmentManager();
 
         // Wi-Fi Service Manager
         wifiManager = mainActivity.getWifiManger();
@@ -65,7 +63,6 @@ public class MainFragment extends Fragment {
                 onClickButtonToggleWifi(view);
             }
         });
-
         wifiDirectRegistrationButton = (Button) view.findViewById(R.id.wifiDirectRegistrationButton);
         wifiDirectRegistrationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,7 +71,6 @@ public class MainFragment extends Fragment {
                 onClickButtonWifiDirectRegistration(view);
             }
         });
-
         receiverRegistrationButton = (Button) view.findViewById(R.id.receiverRegistrationButton);
         receiverRegistrationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +79,6 @@ public class MainFragment extends Fragment {
                 onClickButtonReceiverRegistration(view);
             }
         });
-
         serviceRegistrationButton = (Button) view.findViewById(R.id.serviceRegistrationButton);
         serviceRegistrationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +87,6 @@ public class MainFragment extends Fragment {
                 onClickButtonServiceRegistration(view);
             }
         });
-
         discoverServicesButton = (Button) view.findViewById(R.id.discoverServicesButton);
         discoverServicesButton.setOnClickListener(new View.OnClickListener() {
             @Override
