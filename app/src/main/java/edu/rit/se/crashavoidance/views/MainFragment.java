@@ -310,6 +310,8 @@ public class MainFragment extends Fragment {
             if (wifiP2pManager != null && wifiP2pChannel != null) {
                 // Wi-Fi Direct is enabled, continue Service discovery
                 //startActivity(new Intent(this, AvailableServicesActivity.class));
+                ServiceListFragment serviceListFragment = new ServiceListFragment();
+                mainActivity.replaceFragment(serviceListFragment);
             } else {
                 // Wi-Fi Direct hasn't been registered
                 displayToast(getString(R.string.warning_discover_service_wifi_direct));
