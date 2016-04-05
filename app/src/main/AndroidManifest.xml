@@ -18,9 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- InitActivity -->
+        <!-- MainActivity -->
         <activity
-            android:name=".views.initActivity"
+            android:name=".views.MainActivity"
             android:clearTaskOnLaunch="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
