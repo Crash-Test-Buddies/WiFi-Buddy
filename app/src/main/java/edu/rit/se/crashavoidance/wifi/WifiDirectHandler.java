@@ -34,23 +34,27 @@ public class WifiDirectHandler extends NonStopIntentService {
     private WifiP2pManager wifiP2pManager;
     private WifiManager wifiManager;
 
-
     public WifiDirectHandler() {
         super(androidServiceName);
 
         dnsSdTxtRecordMap = new HashMap<>();
         dnsSdServiceMap = new HashMap<>();
         peers = new WifiP2pDeviceList();
+    }
+
+    @Override
+    public void onCreate() {
+        wifiP2pManager = (WifiP2pManager) getSystemService(WIFI_P2P_SERVICE);
+        wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
 
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
-        receiver = new WiFiDirectBroadcastReceiver(wifiP2pManager, channel, this);// {
+        receiver = new WiFiDirectBroadcastReceiver(wifiP2pManager, channel, this);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         //TODO: Should this receiver be optional?
         registerReceiver(receiver, filter);
-
     }
 
     public void startAddingLocalService(ServiceData serviceData) {
