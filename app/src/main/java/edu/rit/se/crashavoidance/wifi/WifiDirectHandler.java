@@ -1,7 +1,5 @@
 package edu.rit.se.crashavoidance.wifi;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
@@ -9,6 +7,7 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
+import android.net.wifi.p2p.nsd.WifiP2pServiceInfo;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -17,7 +16,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WifiTester extends NonStopIntentService {
+public class WifiDirectHandler extends NonStopIntentService {
 
     public static final String androidServiceName = "WifiTester";
 
@@ -27,7 +26,8 @@ public class WifiTester extends NonStopIntentService {
     private Map<String, DnsSdService> dnsSdServiceMap;
     private WifiP2pDeviceList peers;
     private LocalBroadcastManager localBroadcastManager;
-    private BroadcastReceiver receiver;
+    private WiFiDirectBroadcastReceiver receiver;
+    private WifiP2pServiceInfo serviceInfo;
 
     //Variables created in constructor
     private WifiP2pManager.Channel channel;
@@ -35,7 +35,7 @@ public class WifiTester extends NonStopIntentService {
     private WifiManager wifiManager;
 
 
-    public WifiTester() {
+    public WifiDirectHandler() {
         super(androidServiceName);
 
         dnsSdTxtRecordMap = new HashMap<>();
@@ -44,26 +44,11 @@ public class WifiTester extends NonStopIntentService {
 
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
-        receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-
-                if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-                    if(wifiP2pManager != null) {
-                        wifiP2pManager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
-                            @Override
-                            public void onPeersAvailable(WifiP2pDeviceList peers) {
-                                WifiTester.this.peers = peers;
-                            }
-                        });
-                    }
-                }
-            }
-        };
+        receiver = new WiFiDirectBroadcastReceiver(wifiP2pManager, channel, this);// {
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        //TODO: Should this receiver be optional?
         registerReceiver(receiver, filter);
 
     }
@@ -108,7 +93,8 @@ public class WifiTester extends NonStopIntentService {
             @Override
             public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice srcDevice) {
                 dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
-                //TODO: Maybe an observer pattern or something to indicate a change
+                Intent intent = new Intent(Event.DNS_SD_SERVICE_AVAILABLE.toString());
+                localBroadcastManager.sendBroadcast(intent);
             }
         };
 
@@ -117,6 +103,10 @@ public class WifiTester extends NonStopIntentService {
 
     public boolean isWifiEnabled() {
         return wifiManager.isWifiEnabled();
+    }
+
+    public void removeService() {
+
     }
 
     private void requestPeers() {
@@ -149,7 +139,7 @@ public class WifiTester extends NonStopIntentService {
                 wifiP2pManager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
                     @Override
                     public void onPeersAvailable(WifiP2pDeviceList peers) {
-                        WifiTester.this.peers = peers;
+                        WifiDirectHandler.this.peers = peers;
                     }
                 });
             }
@@ -161,13 +151,14 @@ public class WifiTester extends NonStopIntentService {
     }
 
     public class WifiTesterBinder extends Binder {
-        public WifiTester getService() {
-            return WifiTester.this;
+        public WifiDirectHandler getService() {
+            return WifiDirectHandler.this;
         }
     }
 
     public enum Event {
-        DNS_SD_TXT_RECORD_ADDED("dnsSdTxtRecordAdded");
+        DNS_SD_TXT_RECORD_ADDED("dnsSdTxtRecordAdded"),
+        DNS_SD_SERVICE_AVAILABLE("dnsSdServiceAvailable");
 
         private String eventName;
 

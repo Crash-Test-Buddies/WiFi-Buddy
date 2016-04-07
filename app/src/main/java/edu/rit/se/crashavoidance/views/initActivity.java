@@ -1,15 +1,12 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,8 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.WiFiDirectBroadcastReceiver;
-import edu.rit.se.crashavoidance.wifi.WifiTester;
+import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 public class initActivity extends AppCompatActivity {
 
@@ -36,20 +32,12 @@ public class initActivity extends AppCompatActivity {
     private Button discoverServicesButton;
 
     // Services
-    private WifiTester wifiTester;
-    private boolean wifiTesterBound = false;
-//    private WifiManager wifiManager;
-//    private WifiP2pManager wifiP2pManager;
-//    private WifiP2pManager.Channel wifiP2pChannel;
-//    private WifiP2pDnsSdServiceInfo wifiP2pService;
-//    private WiFiDirectBroadcastReceiver wifiP2pReceiver;
+    private WifiDirectHandler wifiDirectHandler;
+    private boolean wifiDirectHandlerBound = false;
 
     // TXT RECORD properties
     public static final String TXTRECORD_PROP_AVAILABLE = "available";
     public static final String SERVICE_INSTANCE = "_wifidemotest";
-    public static final String SERVICE_REG_TYPE = "_presence._tcp";
-    public static final int MESSAGE_READ = 0x400 + 1;
-    public static final int MY_HANDLE = 0x400 + 2;
     static final int SERVER_PORT = 4545;
 
     // Log
@@ -65,10 +53,6 @@ public class initActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
         setSupportActionBar(toolbar);
 
-        // Wi-Fi Service Manager
-//        wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
-//        wifiTester = WifiTester.Builder.getInstance().build(this);
-
         // Initialize Buttons
         toggleWifiButton = (Button) findViewById(R.id.toggleWifiButton);
         wifiDirectRegistrationButton = (Button) findViewById(R.id.wifiDirectRegistrationButton);
@@ -77,7 +61,7 @@ public class initActivity extends AppCompatActivity {
         discoverServicesButton = (Button) findViewById(R.id.discoverServicesButton);
 
         // Set Toggle Wi-Fi Button based on Wi-Fi state
-        if(wifiTester.isWifiEnabled()){
+        if(wifiDirectHandler.isWifiEnabled()){
             toggleWifiButton.setText(getString(R.string.action_disable_wifi));
         } else {
             toggleWifiButton.setText(getString(R.string.action_enable_wifi));
@@ -88,9 +72,9 @@ public class initActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
 
-        if(wifiTesterBound) {
+        if(wifiDirectHandlerBound) {
             unbindService(wifiServiceConnection);
-            wifiTesterBound = false;
+            wifiDirectHandlerBound = false;
         }
     }
 
@@ -98,7 +82,7 @@ public class initActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        Intent intent = new Intent(this, WifiTester.class);
+        Intent intent = new Intent(this, WifiDirectHandler.class);
         bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
     }
 
@@ -156,7 +140,7 @@ public class initActivity extends AppCompatActivity {
         String action = receiverRegistrationButton.getText().toString();
         if (action.equals(getString(R.string.action_register_receiver))) {
             // Register Wi-Fi Direct BroadcastReceiver
-            registerReceiver();
+            //TODO: What does this do - registerReceiver();
         } else if (action.equals(getString(R.string.action_unregister_receiver))) {
             // Unregister Wi-Fi Direct BroadcastReceiver
             unregisterReceiver();
@@ -191,9 +175,9 @@ public class initActivity extends AppCompatActivity {
     }
 
     private void enableWifi() {
-        if (!wifiTester.isWifiEnabled()) {
+        if (!wifiDirectHandler.isWifiEnabled()) {
             // Enable Wi-Fi
-            wifiTester.setWifiEnabled(true);
+            wifiDirectHandler.setWifiEnabled(true);
             toggleWifiButton.setText(getString(R.string.action_disable_wifi));
             displayToast(getString(R.string.status_wifi_enabled));
         } else {
@@ -203,9 +187,9 @@ public class initActivity extends AppCompatActivity {
     }
 
     private void disableWifi() {
-        if (wifiTester.isWifiEnabled()) {
+        if (wifiDirectHandler.isWifiEnabled()) {
             // Disable Wi-Fi
-            wifiTester.setWifiEnabled(false);
+            wifiDirectHandler.setWifiEnabled(false);
             toggleWifiButton.setText(getString(R.string.action_enable_wifi));
             displayToast(getString(R.string.status_wifi_disabled));
         } else {
@@ -215,12 +199,12 @@ public class initActivity extends AppCompatActivity {
     }
 
     private void registerWifiDirect() {
-        if (wifiTester.isWifiEnabled()) {
+        if (wifiDirectHandler.isWifiEnabled()) {
             // Wi-Fi is enabled, continue registration
 //            wifiP2pManager = (WifiP2pManager) getSystemService(WIFI_P2P_SERVICE);
 //            wifiP2pChannel = wifiP2pManager.initialize(this, getMainLooper(), null);
-//            wifiTester.setManager(wifiP2pManager);
-//            wifiTester.setChannel(wifiP2pChannel);
+//            wifiDirectHandler.setManager(wifiP2pManager);
+//            wifiDirectHandler.setChannel(wifiP2pChannel);
             wifiDirectRegistrationButton.setText(getString(R.string.action_unregister_wifi_direct));
             displayToast(getString(R.string.status_wifi_direct_initialized));
         } else {
@@ -237,40 +221,40 @@ public class initActivity extends AppCompatActivity {
 
             wifiDirectRegistrationButton.setText(getString(R.string.action_register_wifi_direct));
             displayToast(getString(R.string.status_wifi_direct_unregistered));
-        }
+//        }
     }
 
-    private void registerReceiver() {
-        if (wifiTester.isWifiEnabled()) {
-            // Wi-Fi is enabled, continue registration
-            if (wifiP2pManager != null && wifiP2pChannel != null) {
-                // Wi-Fi Direct is registered, start Broadcast Receiver Registration
-                wifiP2pReceiver = new WiFiDirectBroadcastReceiver(wifiP2pManager, wifiP2pChannel, this);
-                wifiP2pReceiver.registerReceiver();
-                receiverRegistrationButton.setText(getString(R.string.action_unregister_receiver));
-                displayToast(getString(R.string.status_receiver_registered));
-            } else {
-                // Wi-Fi Direct hasn't been registered
-                displayToast(getString(R.string.warning_receiver_wifi_direct));
-            }
-        } else {
-            // Wi-Fi hasn't been enabled
-            displayToast(getString(R.string.warning_receiver_wifi));
-        }
-    }
+//    private void registerReceiver() {
+//        if (wifiDirectHandler.isWifiEnabled()) {
+//            // Wi-Fi is enabled, continue registration
+//            if (wifiP2pManager != null && wifiP2pChannel != null) {
+//                // Wi-Fi Direct is registered, start Broadcast Receiver Registration
+//                wifiP2pReceiver = new WiFiDirectBroadcastReceiver(wifiP2pManager, wifiP2pChannel, this);
+//                wifiP2pReceiver.registerReceiver();
+//                receiverRegistrationButton.setText(getString(R.string.action_unregister_receiver));
+//                displayToast(getString(R.string.status_receiver_registered));
+//            } else {
+//                // Wi-Fi Direct hasn't been registered
+//                displayToast(getString(R.string.warning_receiver_wifi_direct));
+//            }
+//        } else {
+//            // Wi-Fi hasn't been enabled
+//            displayToast(getString(R.string.warning_receiver_wifi));
+//        }
+//    }
 
-    private void unregisterReceiver() {
-        if (wifiP2pReceiver != null) {
-            // Unregister Broadcast Receiver
-            wifiP2pReceiver.unregisterReceiver();
-            wifiP2pReceiver = null;
-            receiverRegistrationButton.setText(getString(R.string.action_register_receiver));
-            displayToast(getString(R.string.status_receiver_unregistered));
-        }
-    }
+//    private void unregisterReceiver() {
+//        if (wifiP2pReceiver != null) {
+//            // Unregister Broadcast Receiver
+//            wifiP2pReceiver.unregisterReceiver();
+//            wifiP2pReceiver = null;
+//            receiverRegistrationButton.setText(getString(R.string.action_register_receiver));
+//            displayToast(getString(R.string.status_receiver_unregistered));
+//        }
+//    }
 
     private void registerService() {
-        if (wifiManager.isWifiEnabled()) {
+        if (wifiDirectHandler.isWifiEnabled()) {
             // Wi-Fi is enabled, continue registration
             if (wifiP2pManager != null && wifiP2pChannel != null) {
                 // Wi-Fi Direct is registered, start Service registration
@@ -338,7 +322,7 @@ public class initActivity extends AppCompatActivity {
     }
 
     private void discoverServices(){
-        if (wifiManager.isWifiEnabled()) {
+        if (wifiDirectHandler.isWifiEnabled()) {
             // Wi-Fi is enabled, continue Service discovery
             if (wifiP2pManager != null && wifiP2pChannel != null) {
                 // Wi-Fi Direct is enabled, continue Service discovery
@@ -362,15 +346,15 @@ public class initActivity extends AppCompatActivity {
     private ServiceConnection wifiServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            WifiTester.WifiTesterBinder binder = (WifiTester.WifiTesterBinder) service;
+            WifiDirectHandler.WifiTesterBinder binder = (WifiDirectHandler.WifiTesterBinder) service;
 
-            wifiTester = binder.getService();
-            wifiTesterBound = true;
+            wifiDirectHandler = binder.getService();
+            wifiDirectHandlerBound = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            wifiTesterBound = false;
+            wifiDirectHandlerBound = false;
         }
-    }
+    };
 }
