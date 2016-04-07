@@ -6,7 +6,11 @@ import android.content.ServiceConnection;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.os.Bundle;
+<<<<<<< HEAD
 import android.os.IBinder;
+=======
+import android.support.v4.app.FragmentManager;
+>>>>>>> wifiTester
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -40,9 +44,8 @@ public class initActivity extends AppCompatActivity {
     public static final String SERVICE_INSTANCE = "_wifidemotest";
     static final int SERVER_PORT = 4545;
 
-    // Log
-    private String log;
-    public final static String EXTRA_LOG = "edu.rit.se.crashavoidance.LOG";
+    // Fragment Manager
+    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,9 @@ public class initActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
         setSupportActionBar(toolbar);
 
+        // Fragmnet Manager
+        fragmentManager = getSupportFragmentManager();
+        
         // Initialize Buttons
         toggleWifiButton = (Button) findViewById(R.id.toggleWifiButton);
         wifiDirectRegistrationButton = (Button) findViewById(R.id.wifiDirectRegistrationButton);
@@ -163,10 +169,10 @@ public class initActivity extends AppCompatActivity {
     }
 
     public void onClickMenuViewLogs(MenuItem item) {
-        // Open the View Logs Activity
-        Intent intent = new Intent(this, LogsActivity.class);
-        startActivity(intent);
-        Log.i(getString(R.string.log_tag), "Viewing Logs");
+        // Open the View Logs Dialog Fragment
+        Log.i(getString(R.string.log_tag), getString(R.string.status_viewing_logs));
+        LogsDialogFragment logsDialogFragment = new LogsDialogFragment();
+        logsDialogFragment.show(getFragmentManager(), "dialog");
     }
 
     public void onClickMenuExit(MenuItem item) {
