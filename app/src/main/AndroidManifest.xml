@@ -20,7 +20,7 @@
 
         <!-- InitActivity -->
         <activity
-            android:name=".views.initActivity"
+            android:name=".views.MainActivity"
             android:clearTaskOnLaunch="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
