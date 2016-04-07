@@ -1,15 +1,25 @@
 package edu.rit.se.crashavoidance.views;
 
+import android.content.ComponentName;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import edu.rit.se.crashavoidance.R;
+import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor {
+
+    // Services
+    private WifiDirectHandler wifiDirectHandler;
+    private boolean wifiDirectHandlerBound = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,5 +69,43 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+    public void displayToast(String message) {
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        toast.show();
+    }
 
+    private ServiceConnection wifiServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            WifiDirectHandler.WifiTesterBinder binder = (WifiDirectHandler.WifiTesterBinder) service;
+
+            wifiDirectHandler = binder.getService();
+            wifiDirectHandlerBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            wifiDirectHandlerBound = false;
+        }
+    };
+
+    @Override
+    public void enableWifi() {
+
+    }
+
+    @Override
+    public void disableWifi() {
+
+    }
+
+    @Override
+    public void setWifiEnabled(Boolean enabled) {
+
+    }
+
+    @Override
+    public void getWifiEnabled() {
+
+    }
 }
