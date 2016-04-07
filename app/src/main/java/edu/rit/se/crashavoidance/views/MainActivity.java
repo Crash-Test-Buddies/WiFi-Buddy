@@ -1,6 +1,7 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -50,6 +51,24 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        Intent intent = new Intent(this, WifiDirectHandler.class);
+        bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(wifiDirectHandlerBound) {
+            unbindService(wifiServiceConnection);
+            wifiDirectHandlerBound = false;
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Adds Main Menu to the ActionBar
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -92,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     };
 
     @Override
-    public void getWifiHandler() {
-
+    public WifiDirectHandler getWifiHandler() {
+        return wifiDirectHandler;
     }
 }

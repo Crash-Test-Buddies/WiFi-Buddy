@@ -34,6 +34,8 @@ public class WifiDirectHandler extends NonStopIntentService {
     private WifiP2pManager wifiP2pManager;
     private WifiManager wifiManager;
 
+    private boolean initializationCompleted = false;
+
 
     public WifiDirectHandler() {
         super(androidServiceName);
@@ -41,16 +43,6 @@ public class WifiDirectHandler extends NonStopIntentService {
         dnsSdTxtRecordMap = new HashMap<>();
         dnsSdServiceMap = new HashMap<>();
         peers = new WifiP2pDeviceList();
-
-        localBroadcastManager = LocalBroadcastManager.getInstance(this);
-
-        receiver = new WiFiDirectBroadcastReceiver(wifiP2pManager, channel, this);// {
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-        //TODO: Should this receiver be optional?
-        registerReceiver(receiver, filter);
-
     }
 
     public void startAddingLocalService(ServiceData serviceData) {
@@ -127,11 +119,18 @@ public class WifiDirectHandler extends NonStopIntentService {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        if(!initializationCompleted) {
+            completeInitializion();
+        }
         return binder;
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        if(!initializationCompleted) {
+            completeInitializion();
+        }
+
         String action = intent.getAction();
 
         if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
@@ -148,6 +147,22 @@ public class WifiDirectHandler extends NonStopIntentService {
 
     public void setWifiEnabled(boolean wifiEnabled) {
         wifiManager.setWifiEnabled(wifiEnabled);
+    }
+
+    private void completeInitializion() {
+        wifiP2pManager = (WifiP2pManager) getSystemService(WIFI_P2P_SERVICE);
+        wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+
+        receiver = new WiFiDirectBroadcastReceiver(wifiP2pManager, channel, this);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        //TODO: Should this receiver be optional?
+        registerReceiver(receiver, filter);
+
+        initializationCompleted = true;
     }
 
     public class WifiTesterBinder extends Binder {
