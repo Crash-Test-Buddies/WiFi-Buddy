@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:gravity="fill">
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Input message"
+                android:id="@+id/messageView"
+                android:layout_toLeftOf="@+id/sendAllButton"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Send to all"
+                android:id="@+id/sendAllButton"
+                android:layout_alignBottom="@+id/messageView"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+            </LinearLayout>
+
+
+            <ListView
+                tools:listitem="@layout/group_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/peerListView"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+</LinearLayout>
