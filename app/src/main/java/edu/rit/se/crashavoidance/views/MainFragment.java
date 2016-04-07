@@ -9,11 +9,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import edu.rit.se.crashavoidance.R;
+import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 
 public class MainFragment extends Fragment {
 
-    private WiFiDirectHandlerAccessor callback;
+    private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
 
     // Buttons
     private Button toggleWifiButton;
@@ -33,7 +34,14 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
-                onClickToggleWifi(v);
+                WifiDirectHandler handler = wifiDirectHandlerAccessor.getWifiHandler();
+                if(wifiDirectHandlerAccessor.getWifiHandler().isWifiEnabled()) {
+                    wifiDirectHandlerAccessor.getWifiHandler().setWifiEnabled(false);
+                    toggleWifiButton.setText("Enable Wifi");
+                } else {
+                    wifiDirectHandlerAccessor.getWifiHandler().setWifiEnabled(true);
+                    toggleWifiButton.setText("Disable Wifi");
+                }
             }
         });
         wifiDirectRegistrationButton = (Button) view.findViewById(R.id.wifiDirectRegistrationButton);
@@ -72,13 +80,9 @@ public class MainFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            callback = (WiFiDirectHandlerAccessor) getActivity();
+            wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
-    }
-
-    private void onClickToggleWifi(View v) {
-
     }
 }
