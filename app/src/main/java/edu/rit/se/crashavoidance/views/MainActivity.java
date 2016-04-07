@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         switch (item.getItemId()) {
             case R.id.action_view_logs:
                 // View Logs MenuItem tapped
+                LogsDialogFragment logsDialogFragment = new LogsDialogFragment();
+                logsDialogFragment.show(getFragmentManager(), "dialog");
                 return true;
             case R.id.action_exit:
                 // Exit MenuItem tapped
@@ -90,22 +92,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     };
 
     @Override
-    public void enableWifi() {
-
-    }
-
-    @Override
-    public void disableWifi() {
-
-    }
-
-    @Override
-    public void setWifiEnabled(Boolean enabled) {
-
-    }
-
-    @Override
-    public void getWifiEnabled() {
+    public void getWifiHandler() {
 
     }
 }
