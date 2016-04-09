@@ -1,5 +1,7 @@
 package edu.rit.se.crashavoidance.wifi;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
@@ -26,7 +28,7 @@ public class WifiDirectHandler extends NonStopIntentService {
     private Map<String, DnsSdService> dnsSdServiceMap;
     private WifiP2pDeviceList peers;
     private LocalBroadcastManager localBroadcastManager;
-    private WiFiDirectBroadcastReceiver receiver;
+    private BroadcastReceiver receiver;
     private WifiP2pServiceInfo serviceInfo;
 
     //Variables created in constructor
@@ -49,10 +51,13 @@ public class WifiDirectHandler extends NonStopIntentService {
 
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
-        receiver = new WiFiDirectBroadcastReceiver(wifiP2pManager, channel, this);
+        receiver = new WifiDirectBroadcastReceiver();
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        filter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+        filter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+        filter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
         //TODO: Should this receiver be optional?
         registerReceiver(receiver, filter);
     }
@@ -144,6 +149,8 @@ public class WifiDirectHandler extends NonStopIntentService {
                     @Override
                     public void onPeersAvailable(WifiP2pDeviceList peers) {
                         WifiDirectHandler.this.peers = peers;
+                        Intent intent = new Intent(Event.PEERS_CHANGED.toString());
+                        localBroadcastManager.sendBroadcast(intent);
                     }
                 });
             }
@@ -162,7 +169,8 @@ public class WifiDirectHandler extends NonStopIntentService {
 
     public enum Event {
         DNS_SD_TXT_RECORD_ADDED("dnsSdTxtRecordAdded"),
-        DNS_SD_SERVICE_AVAILABLE("dnsSdServiceAvailable");
+        DNS_SD_SERVICE_AVAILABLE("dnsSdServiceAvailable"),
+        PEERS_CHANGED("peersChanged");
 
         private String eventName;
 
@@ -173,6 +181,13 @@ public class WifiDirectHandler extends NonStopIntentService {
         @Override
         public String toString() {
             return eventName;
+        }
+    }
+
+    private class WifiDirectBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            onHandleIntent(intent);
         }
     }
 }
