@@ -46,6 +46,7 @@ public class WifiDirectHandler extends NonStopIntentService {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         wifiP2pManager = (WifiP2pManager) getSystemService(WIFI_P2P_SERVICE);
         wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
 
