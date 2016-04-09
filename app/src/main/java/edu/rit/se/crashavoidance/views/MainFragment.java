@@ -23,10 +23,14 @@ public class MainFragment extends Fragment {
     private Button serviceRegistrationButton;
     private Button discoverServicesButton;
 
+    private MainActivity mainActivity;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
+
+        mainActivity = (MainActivity) getActivity();
 
         // Initialize Buttons
         toggleWifiButton = (Button) view.findViewById(R.id.toggleWifiButton);
@@ -70,6 +74,8 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
+                ServicesList servicesList = new ServicesList();
+                mainActivity.replaceFragment(servicesList);
             }
         });
 
