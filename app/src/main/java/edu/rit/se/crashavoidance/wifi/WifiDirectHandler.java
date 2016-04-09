@@ -149,6 +149,8 @@ public class WifiDirectHandler extends NonStopIntentService {
                     @Override
                     public void onPeersAvailable(WifiP2pDeviceList peers) {
                         WifiDirectHandler.this.peers = peers;
+                        Intent intent = new Intent(Event.PEERS_CHANGED.toString());
+                        localBroadcastManager.sendBroadcast(intent);
                     }
                 });
             }
@@ -167,7 +169,8 @@ public class WifiDirectHandler extends NonStopIntentService {
 
     public enum Event {
         DNS_SD_TXT_RECORD_ADDED("dnsSdTxtRecordAdded"),
-        DNS_SD_SERVICE_AVAILABLE("dnsSdServiceAvailable");
+        DNS_SD_SERVICE_AVAILABLE("dnsSdServiceAvailable"),
+        PEERS_CHANGED("peersChanged");
 
         private String eventName;
 
