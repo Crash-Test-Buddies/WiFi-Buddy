@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class WifiDirectHandler extends NonStopIntentService {
 
-    public static final String androidServiceName = "WifiTester";
+    public static final String androidServiceName = "WiFi Direct Handler";
 
     private final IBinder binder = new WifiTesterBinder();
 

@@ -1,6 +1,7 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -34,14 +35,14 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
-                WifiDirectHandler handler = wifiDirectHandlerAccessor.getWifiHandler();
-                if(wifiDirectHandlerAccessor.getWifiHandler().isWifiEnabled()) {
-                    wifiDirectHandlerAccessor.getWifiHandler().setWifiEnabled(false);
-                    toggleWifiButton.setText("Enable Wifi");
-                } else {
-                    wifiDirectHandlerAccessor.getWifiHandler().setWifiEnabled(true);
-                    toggleWifiButton.setText("Disable Wifi");
-                }
+            WifiDirectHandler handler = wifiDirectHandlerAccessor.getWifiHandler();
+            if(wifiDirectHandlerAccessor.getWifiHandler().isWifiEnabled()) {
+                wifiDirectHandlerAccessor.getWifiHandler().setWifiEnabled(false);
+                toggleWifiButton.setText("Enable Wifi");
+            } else {
+                wifiDirectHandlerAccessor.getWifiHandler().setWifiEnabled(true);
+                toggleWifiButton.setText("Disable Wifi");
+            }
             }
         });
         wifiDirectRegistrationButton = (Button) view.findViewById(R.id.wifiDirectRegistrationButton);
@@ -70,6 +71,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
+                startActivity(new Intent(getActivity(), AvailableServicesActivity.class));
             }
         });
 

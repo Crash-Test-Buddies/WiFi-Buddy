@@ -14,7 +14,6 @@ import android.widget.Toast;
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
-
 public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor {
 
     // Services
