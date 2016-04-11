@@ -8,7 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import java.util.HashMap;
+
 import edu.rit.se.crashavoidance.R;
+import edu.rit.se.crashavoidance.wifi.ServiceData;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 
@@ -49,6 +52,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
+
             }
         });
         receiverRegistrationButton = (Button) view.findViewById(R.id.receiverRegistrationButton);
@@ -63,6 +67,8 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
+                ServiceData serviceData = new ServiceData("wifiTester", 4545, new HashMap<String, String>());
+                wifiDirectHandlerAccessor.getWifiHandler().startAddingLocalService(serviceData);
             }
         });
         discoverServicesButton = (Button) view.findViewById(R.id.discoverServicesButton);
