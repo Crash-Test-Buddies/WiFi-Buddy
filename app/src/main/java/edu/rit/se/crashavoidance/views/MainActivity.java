@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.WiFiP2pService;
+import edu.rit.se.crashavoidance.wifi.DnsSdService;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor {
@@ -128,6 +128,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         return wifiDirectHandler;
     }
 
-    public void onServiceClick(WiFiP2pService service) {
+    public void onServiceClick(DnsSdService service) {
     }
 }

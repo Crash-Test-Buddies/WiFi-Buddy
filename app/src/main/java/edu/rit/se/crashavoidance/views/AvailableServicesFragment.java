@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.WiFiP2pService;
+import edu.rit.se.crashavoidance.wifi.DnsSdService;
 
 public class AvailableServicesFragment extends ListFragment implements AdapterView.OnItemClickListener {
-    List<WiFiP2pService> services = new ArrayList<WiFiP2pService>();
+    List<DnsSdService> services = new ArrayList<DnsSdService>();
     AvailableServicesListViewAdapter serviceListAdapter;
     MainActivity mainActivity;
 

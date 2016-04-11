@@ -10,17 +10,17 @@ import android.widget.TextView;
 import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.WiFiP2pService;
+import edu.rit.se.crashavoidance.wifi.DnsSdService;
 
 /**
  * Created by Brett on 3/16/2016.
  */
 public class AvailableServicesListViewAdapter extends BaseAdapter {
 
-    private List<WiFiP2pService> serviceList;
+    private List<DnsSdService> serviceList;
     private MainActivity context;
 
-    public AvailableServicesListViewAdapter(MainActivity context, List<WiFiP2pService> serviceList) {
+    public AvailableServicesListViewAdapter(MainActivity context, List<DnsSdService> serviceList) {
         this.serviceList = serviceList;
         this.context = context;
     }
@@ -31,7 +31,7 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
     }
 
     @Override
-    public WiFiP2pService getItem(int position) {
+    public DnsSdService getItem(int position) {
         return serviceList.get(position);
     }
 
@@ -42,7 +42,7 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final WiFiP2pService service = getItem(position);
+        final DnsSdService service = getItem(position);
 
         // This will inflate the template view inside each ListView item
         if (convertView == null) {
@@ -53,9 +53,9 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
         TextView instanceName = (TextView) convertView.findViewById(R.id.instanceName);
         TextView deviceName = (TextView) convertView.findViewById(R.id.deviceName);
         //TODO: This will need updates once real devices are in use
-        instanceName.setText(service.instanceName);
+        instanceName.setText(service.getInstanceName());
 
-        deviceName.setText(service.device.deviceName);
+        deviceName.setText(service.getSrcDevice().deviceName);
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override

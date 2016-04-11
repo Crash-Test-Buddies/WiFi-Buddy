@@ -113,7 +113,7 @@ public class WifiDirectHandler extends NonStopIntentService {
                 // what it wants with it
                 dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
                 Intent intent = new Intent(Event.DNS_SD_SERVICE_AVAILABLE.toString());
-                intent.putExtra("serviceRecord", dnsSdServiceMap.get(srcDevice));
+                //intent.putExtra("serviceRecord", dnsSdServiceMap.get(srcDevice));
                 localBroadcastManager.sendBroadcast(intent);
             }
         };
