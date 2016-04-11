@@ -6,6 +6,7 @@ public enum FailureReason {
     BUSY("BUSY"),
     NO_SERVICE_REQUESTS("NO SERVICE REQUESTS");
 
+    private static FailureReason[] values;
     private String reason;
 
     private FailureReason(String reason) {
@@ -15,5 +16,12 @@ public enum FailureReason {
     @Override
     public String toString() {
         return reason;
+    }
+
+    public static FailureReason fromInteger(int value) {
+        if(values == null) {
+            values = FailureReason.values();
+        }
+        return values[value];
     }
 }

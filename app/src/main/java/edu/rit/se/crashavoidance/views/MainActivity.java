@@ -63,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         super.onStop();
 
         if(wifiDirectHandlerBound) {
+            Intent intent = new Intent(this, WifiDirectHandler.class);
+            stopService(intent);
             unbindService(wifiServiceConnection);
             wifiDirectHandlerBound = false;
         }
