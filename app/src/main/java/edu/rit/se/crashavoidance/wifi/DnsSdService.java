@@ -1,10 +1,8 @@
 package edu.rit.se.crashavoidance.wifi;
 
 import android.net.wifi.p2p.WifiP2pDevice;
-import android.os.Parcel;
-import android.os.Parcelable;
 
-public class DnsSdService implements Parcelable{
+public class DnsSdService{
     private String instanceName;
     private String registrationType;
     private WifiP2pDevice srcDevice;
@@ -28,19 +26,14 @@ public class DnsSdService implements Parcelable{
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof DnsSdService)) {
+            return false;
+        } else {
+            DnsSdService other = (DnsSdService) o;
+            return other.srcDevice.deviceName.equals(this.srcDevice.deviceName)
+                    && other.instanceName.equals(this.instanceName);
+        }
     }
 
-    /**
-     * Write Service record to parcelable
-     * @param dest InstanceName, RegistrationType, then SrcDevice object
-     * @param flags
-     */
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(instanceName);
-        dest.writeString(registrationType);
-        dest.writeValue(srcDevice);
-    }
 }
