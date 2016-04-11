@@ -96,8 +96,11 @@ public class WifiDirectHandler extends NonStopIntentService {
         WifiP2pManager.DnsSdServiceResponseListener serviceResponseListener = new WifiP2pManager.DnsSdServiceResponseListener() {
             @Override
             public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice srcDevice) {
+                // Not sure if we want to track the map here or just send the service in the request to let the caller do
+                // what it wants with it
                 dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
                 Intent intent = new Intent(Event.DNS_SD_SERVICE_AVAILABLE.toString());
+                intent.putExtra("serviceRecord", dnsSdServiceMap.get(srcDevice));
                 localBroadcastManager.sendBroadcast(intent);
             }
         };

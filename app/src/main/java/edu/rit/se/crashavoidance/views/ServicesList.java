@@ -20,6 +20,7 @@ import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.WiFiP2pService;
+import edu.rit.se.crashavoidance.wifi.DnsSdService;
 import edu.rit.se.crashavoidance.wifi.WiFiDirectBroadcastReceiver;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
@@ -69,8 +70,14 @@ public class ServicesList extends ListFragment {
     public class WifiDirectReceiver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
-            serviceList.add(new WiFiP2pService());
-            listAdapter.notifyDataSetChanged();
+            if (intent.getAction().equals(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString()))
+            {
+                // TODO Which service record type do we want to use?
+                DnsSdService service = intent.getParcelableExtra("serviceRecord");
+                //listAdapter.addUnique(service);
+                // TODO Capture an intent that indicates the peer list has changed
+                // and see if we need to remove anything from our list
+            }
         }
     }
     public class WiFiDevicesAdapter extends ArrayAdapter<WiFiP2pService> {
