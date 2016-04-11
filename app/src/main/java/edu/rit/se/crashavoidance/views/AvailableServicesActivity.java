@@ -1,7 +1,6 @@
 //package edu.rit.se.crashavoidance.views;
 //
 //import android.content.Intent;
-//import android.net.wifi.p2p.WifiP2pConfig;
 //import android.net.wifi.p2p.WifiP2pDevice;
 //import android.net.wifi.p2p.WifiP2pManager;
 //import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
@@ -17,19 +16,9 @@
 //
 //import edu.rit.se.crashavoidance.R;
 //import edu.rit.se.crashavoidance.WiFiP2pService;
-//import edu.rit.se.crashavoidance.wifi.DnsSdService;
-//import edu.rit.se.crashavoidance.wifi.DnsSdTxtRecord;
-//import edu.rit.se.crashavoidance.wifi.WifiTester;
 //
 //public class AvailableServicesActivity extends AppCompatActivity {
 //
-//    private WifiP2pManager wifiP2pManager;
-//    private WifiP2pManager.Channel wifiP2pChannel;
-//    private WiFiP2pService wifiService;
-//    private WifiTester wifiTester;
-//    private WifiTester.Builder builder;
-//    private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
-//    private Map<String, DnsSdService> dnsSdServiceMap;
 //    List<WiFiP2pService> services = new ArrayList<WiFiP2pService>();
 //    AvailableServicesListViewAdapter serviceListAdapter;
 //
@@ -50,15 +39,11 @@
 //
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 //        setServiceList();
-//        startDiscoveringServices();
+//        //startDiscoveringServices();
 //    }
 //
 //    //TODO: There will need to be a way to dynamically add/remove services
 //    private void setServiceList(){
-//        wifiTester = WifiTester.Builder.getInstance().build();
-//        wifiP2pManager = wifiTester.getManager();
-//        wifiP2pChannel = wifiTester.getChannel();
-//
 //        ListView listView = (ListView) findViewById(R.id.availableServicesList);
 //        serviceListAdapter = new AvailableServicesListViewAdapter(this, services);
 //        listView.setAdapter(serviceListAdapter);
