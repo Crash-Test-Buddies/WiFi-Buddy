@@ -1,8 +1,6 @@
 package edu.rit.se.crashavoidance.wifi;
 
 import android.net.wifi.p2p.WifiP2pDevice;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 public class DnsSdService{
     private String instanceName;
@@ -25,6 +23,17 @@ public class DnsSdService{
 
     public WifiP2pDevice getSrcDevice() {
         return srcDevice;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof DnsSdService)) {
+            return false;
+        } else {
+            DnsSdService other = (DnsSdService) o;
+            return other.srcDevice.deviceName.equals(this.srcDevice.deviceName)
+                    && other.instanceName.equals(this.instanceName);
+        }
     }
 
 }

@@ -30,6 +30,7 @@ public class ServicesList extends ListFragment {
 
     WiFiDevicesAdapter listAdapter = null;
     List<DnsSdService> serviceList;
+    WifiDirectHandler handler;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,6 +41,7 @@ public class ServicesList extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        handler = new WifiDirectHandler();
         serviceList = new ArrayList<DnsSdService>();
         listAdapter = new WiFiDevicesAdapter(this.getActivity(),
                 android.R.layout.simple_list_item_2, android.R.id.text1,
@@ -55,7 +57,7 @@ public class ServicesList extends ListFragment {
     }
 
     private void initiateServiceDiscovery(){
-
+        handler.startDiscoveringServices();
     }
 
     interface DeviceClickListener {
@@ -71,9 +73,9 @@ public class ServicesList extends ListFragment {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString()))
             {
-                // TODO Insert key of DnsSdServiceMap
-                DnsSdService service = intent.getParcelableExtra("serviceRecord");
-                //listAdapter.addUnique(service);
+                String serviceKey = intent.getParcelableExtra("dnsSdServiceKey");
+                DnsSdService service = handler.getDnsSdServiceMap().get(serviceKey);
+                listAdapter.addUnique(service);
                 // TODO Capture an intent that indicates the peer list has changed
                 // and see if we need to remove anything from our list
             }
