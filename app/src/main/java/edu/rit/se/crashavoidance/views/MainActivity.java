@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -12,8 +14,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import edu.rit.se.crashavoidance.R;
+import edu.rit.se.crashavoidance.wifi.DnsSdService;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
-
 
 public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor {
 
@@ -112,8 +114,20 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         }
     };
 
+    public void replaceFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+    }
+
     @Override
     public WifiDirectHandler getWifiHandler() {
         return wifiDirectHandler;
+    }
+
+    public void onServiceClick(DnsSdService service) {
     }
 }

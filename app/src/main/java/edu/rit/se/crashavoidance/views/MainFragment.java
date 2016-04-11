@@ -26,10 +26,15 @@ public class MainFragment extends Fragment {
     private Button serviceRegistrationButton;
     private Button discoverServicesButton;
 
+    AvailableServicesFragment availableServicesFragment;
+    MainActivity mainActivity;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
+
+        mainActivity = (MainActivity) getActivity();
 
         // Initialize Buttons
         toggleWifiButton = (Button) view.findViewById(R.id.toggleWifiButton);
@@ -37,14 +42,14 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
-                WifiDirectHandler handler = wifiDirectHandlerAccessor.getWifiHandler();
-                if(wifiDirectHandlerAccessor.getWifiHandler().isWifiEnabled()) {
-                    wifiDirectHandlerAccessor.getWifiHandler().setWifiEnabled(false);
-                    toggleWifiButton.setText("Enable Wifi");
-                } else {
-                    wifiDirectHandlerAccessor.getWifiHandler().setWifiEnabled(true);
-                    toggleWifiButton.setText("Disable Wifi");
-                }
+            WifiDirectHandler handler = wifiDirectHandlerAccessor.getWifiHandler();
+            if(wifiDirectHandlerAccessor.getWifiHandler().isWifiEnabled()) {
+                wifiDirectHandlerAccessor.getWifiHandler().setWifiEnabled(false);
+                toggleWifiButton.setText("Enable Wifi");
+            } else {
+                wifiDirectHandlerAccessor.getWifiHandler().setWifiEnabled(true);
+                toggleWifiButton.setText("Disable Wifi");
+            }
             }
         });
         wifiDirectRegistrationButton = (Button) view.findViewById(R.id.wifiDirectRegistrationButton);
@@ -76,6 +81,10 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
+                if (availableServicesFragment == null) {
+                    availableServicesFragment = new AvailableServicesFragment();
+                }
+                mainActivity.replaceFragment(availableServicesFragment);
             }
         });
 
