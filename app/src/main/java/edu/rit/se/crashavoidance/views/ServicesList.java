@@ -21,7 +21,6 @@ import java.util.List;
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.WiFiP2pService;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
-import edu.rit.se.crashavoidance.wifi.WiFiDirectBroadcastReceiver;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 /**
@@ -30,7 +29,7 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 public class ServicesList extends ListFragment {
 
     WiFiDevicesAdapter listAdapter = null;
-    List<WiFiP2pService> serviceList;
+    List<DnsSdService> serviceList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,7 +40,7 @@ public class ServicesList extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        serviceList = new ArrayList<WiFiP2pService>();
+        serviceList = new ArrayList<DnsSdService>();
         listAdapter = new WiFiDevicesAdapter(this.getActivity(),
                 android.R.layout.simple_list_item_2, android.R.id.text1,
                 serviceList);
@@ -72,7 +71,7 @@ public class ServicesList extends ListFragment {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString()))
             {
-                // TODO Which service record type do we want to use?
+                // TODO Insert key of DnsSdServiceMap
                 DnsSdService service = intent.getParcelableExtra("serviceRecord");
                 //listAdapter.addUnique(service);
                 // TODO Capture an intent that indicates the peer list has changed
@@ -80,12 +79,12 @@ public class ServicesList extends ListFragment {
             }
         }
     }
-    public class WiFiDevicesAdapter extends ArrayAdapter<WiFiP2pService> {
+    public class WiFiDevicesAdapter extends ArrayAdapter<DnsSdService> {
 
-        private List<WiFiP2pService> items;
+        private List<DnsSdService> items;
 
         public WiFiDevicesAdapter(Context context, int resource,
-                                  int textViewResourceId, List<WiFiP2pService> items) {
+                                  int textViewResourceId, List<DnsSdService> items) {
             super(context, resource, textViewResourceId, items);
             this.items = items;
         }
@@ -98,17 +97,17 @@ public class ServicesList extends ListFragment {
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 v = vi.inflate(android.R.layout.simple_list_item_2, null);
             }
-            WiFiP2pService service = items.get(position);
+            DnsSdService service = items.get(position);
             if (service != null) {
                 TextView nameText = (TextView) v
                         .findViewById(android.R.id.text1);
 
                 if (nameText != null) {
-                    nameText.setText(service.device.deviceName + " - " + service.instanceName);
+                    nameText.setText(service.getSrcDevice().deviceName + " - " + service.getInstanceName());
                 }
                 TextView statusText = (TextView) v
                         .findViewById(android.R.id.text2);
-                statusText.setText(getDeviceStatus(service.device.status));
+                statusText.setText(getDeviceStatus(service.getSrcDevice().status));
             }
             return v;
         }
@@ -118,7 +117,7 @@ public class ServicesList extends ListFragment {
          * @param service Service to be added to list
          * @return false if item was already in the list
          */
-        public Boolean addUnique(WiFiP2pService service) {
+        public Boolean addUnique(DnsSdService service) {
             if (items.contains(service)) {
                 return false;
             } else {
