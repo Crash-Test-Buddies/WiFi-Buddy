@@ -45,7 +45,6 @@ public class WifiDirectHandler extends NonStopIntentService {
 
     public WifiDirectHandler() {
         super(androidServiceName);
-
         dnsSdTxtRecordMap = new HashMap<>();
         dnsSdServiceMap = new HashMap<>();
         peers = new WifiP2pDeviceList();
@@ -113,7 +112,7 @@ public class WifiDirectHandler extends NonStopIntentService {
                 // what it wants with it
                 dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
                 Intent intent = new Intent(Event.DNS_SD_SERVICE_AVAILABLE.toString());
-                //intent.putExtra("serviceRecord", dnsSdServiceMap.get(srcDevice));
+                intent.putExtra("dndSdServiceMapKey", srcDevice.deviceAddress);
                 localBroadcastManager.sendBroadcast(intent);
             }
         };
@@ -148,6 +147,9 @@ public class WifiDirectHandler extends NonStopIntentService {
 
     }
 
+    public Map<String, DnsSdService> getDnsSdServiceMap(){
+        return dnsSdServiceMap;
+    }
     public boolean isWifiEnabled() {
         return wifiManager.isWifiEnabled();
     }

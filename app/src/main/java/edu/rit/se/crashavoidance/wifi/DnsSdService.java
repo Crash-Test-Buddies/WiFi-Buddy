@@ -32,7 +32,8 @@ public class DnsSdService{
         } else {
             DnsSdService other = (DnsSdService) o;
             return other.srcDevice.deviceName.equals(this.srcDevice.deviceName)
-                    && other.instanceName.equals(this.instanceName);
+                    && other.instanceName.equals(this.instanceName)
+                    && other.srcDevice.deviceAddress.equals(this.srcDevice.deviceAddress);
         }
     }
 

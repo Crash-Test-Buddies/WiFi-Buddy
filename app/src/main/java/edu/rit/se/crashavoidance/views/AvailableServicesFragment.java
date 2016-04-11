@@ -1,6 +1,9 @@
 package edu.rit.se.crashavoidance.views;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -13,11 +16,13 @@ import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
+import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 public class AvailableServicesFragment extends ListFragment implements AdapterView.OnItemClickListener {
     List<DnsSdService> services = new ArrayList<DnsSdService>();
     AvailableServicesListViewAdapter serviceListAdapter;
     MainActivity mainActivity;
+    WifiDirectHandler handler;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,5 +57,23 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+    }
+
+        /**
+     * Receiver for receiving intents from the WifiDirectHandler to update UI
+     * when Wifi Direct commands are completed
+     */
+    public class WifiDirectReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString()))
+            {
+                String serviceKey = intent.getParcelableExtra("dnsSdServiceKey");
+                DnsSdService service = handler.getDnsSdServiceMap().get(serviceKey);
+                serviceListAdapter.addUnique(service);
+                // TODO Capture an intent that indicates the peer list has changed
+                // and see if we need to remove anything from our list
+            }
+        }
     }
 }
