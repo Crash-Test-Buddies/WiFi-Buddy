@@ -18,10 +18,10 @@ import edu.rit.se.crashavoidance.WiFiP2pService;
 public class AvailableServicesListViewAdapter extends BaseAdapter {
 
     private List<WiFiP2pService> serviceList;
-    private AvailableServicesActivity context;
+    private MainActivity context;
 
-    public AvailableServicesListViewAdapter(AvailableServicesActivity context, List<WiFiP2pService> serviceList) {
-        this. serviceList = serviceList;
+    public AvailableServicesListViewAdapter(MainActivity context, List<WiFiP2pService> serviceList) {
+        this.serviceList = serviceList;
         this.context = context;
     }
 

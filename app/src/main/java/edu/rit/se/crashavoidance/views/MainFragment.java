@@ -1,7 +1,6 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -24,10 +23,15 @@ public class MainFragment extends Fragment {
     private Button serviceRegistrationButton;
     private Button discoverServicesButton;
 
+    AvailableServicesFragment availableServicesFragment;
+    MainActivity mainActivity;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
+
+        mainActivity = (MainActivity) getActivity();
 
         // Initialize Buttons
         toggleWifiButton = (Button) view.findViewById(R.id.toggleWifiButton);
@@ -71,7 +75,10 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
-                startActivity(new Intent(getActivity(), AvailableServicesActivity.class));
+                if (availableServicesFragment == null) {
+                    availableServicesFragment = new AvailableServicesFragment();
+                }
+                mainActivity.replaceFragment(availableServicesFragment);
             }
         });
 

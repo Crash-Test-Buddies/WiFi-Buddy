@@ -1,49 +1,54 @@
-package edu.rit.se.crashavoidance.views;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.widget.ListView;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.WiFiP2pService;
-
-public class AvailableServicesActivity extends AppCompatActivity {
-
-    List<WiFiP2pService> services = new ArrayList<WiFiP2pService>();
-    AvailableServicesListViewAdapter serviceListAdapter;
-
-    public void onServiceClick(WiFiP2pService service) {
-        //TODO: call actual connection logic.
-        Intent intent = new Intent(this, GroupMessageActivity.class);
-        //TODO: pass data between the activities?
-        startActivity(intent);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_available_services);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setServiceList();
-        //startDiscoveringServices();
-    }
-
-    //TODO: There will need to be a way to dynamically add/remove services
-    private void setServiceList(){
-        ListView listView = (ListView) findViewById(R.id.availableServicesList);
-        serviceListAdapter = new AvailableServicesListViewAdapter(this, services);
-        listView.setAdapter(serviceListAdapter);
-    }
-
+//package edu.rit.se.crashavoidance.views;
+//
+//import android.content.Intent;
+//import android.net.wifi.p2p.WifiP2pDevice;
+//import android.net.wifi.p2p.WifiP2pManager;
+//import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
+//import android.os.Bundle;
+//import android.support.v7.app.AppCompatActivity;
+//import android.support.v7.widget.Toolbar;
+//import android.util.Log;
+//import android.widget.ListView;
+//
+//import java.util.ArrayList;
+//import java.util.List;
+//import java.util.Map;
+//
+//import edu.rit.se.crashavoidance.R;
+//import edu.rit.se.crashavoidance.WiFiP2pService;
+//
+//public class AvailableServicesActivity extends AppCompatActivity {
+//
+//    List<WiFiP2pService> services = new ArrayList<WiFiP2pService>();
+//    AvailableServicesListViewAdapter serviceListAdapter;
+//
+//    public void onServiceClick(WiFiP2pService service) {
+//        //TODO: call actual connection logic.
+//        Intent intent = new Intent(this, GroupMessageActivity.class);
+//        //TODO: pass data between the activities?
+//        startActivity(intent);
+//    }
+//
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_available_services);
+//
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        setServiceList();
+//        //startDiscoveringServices();
+//    }
+//
+//    //TODO: There will need to be a way to dynamically add/remove services
+//    private void setServiceList(){
+//        ListView listView = (ListView) findViewById(R.id.availableServicesList);
+//        serviceListAdapter = new AvailableServicesListViewAdapter(this, services);
+//        listView.setAdapter(serviceListAdapter);
+//    }
+//
 //    // TODO move this to use the one in WifiTester
 //    public void startDiscoveringServices() {
 //        WifiP2pManager.DnsSdTxtRecordListener txtRecordListener = new WifiP2pManager.DnsSdTxtRecordListener() {
@@ -100,4 +105,4 @@ public class AvailableServicesActivity extends AppCompatActivity {
 //        });
 //
 //    }
-}
+//}
