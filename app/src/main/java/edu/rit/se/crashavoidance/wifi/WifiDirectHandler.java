@@ -71,6 +71,12 @@ public class WifiDirectHandler extends NonStopIntentService {
         registerReceiver(receiver, filter);
     }
 
+  @Override
+  public void onDestroy() {
+    unregisterReceiver(receiver);
+    super.onDestroy();
+  }
+
     public void startAddingLocalService(ServiceData serviceData) {
         Map<String, String> records = new HashMap<String,String>(serviceData.getRecord());
         records.put("listenport", Integer.toString(serviceData.getPort()));

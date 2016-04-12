@@ -13,19 +13,7 @@
         android:text="@string/action_toggle_wifi"
         android:id="@+id/toggleWifiButton"
         android:onClick="onClickButtonToggleWifi" />
-
-    <Button
-        style="@style/styleButtonDefault"
-        android:text="@string/action_register_wifi_direct"
-        android:id="@+id/wifiDirectRegistrationButton"
-        android:onClick="onClickButtonWifiDirectRegistration" />
-
-    <Button
-        style="@style/styleButtonDefault"
-        android:text="@string/action_register_receiver"
-        android:id="@+id/receiverRegistrationButton"
-        android:onClick="onClickButtonReceiverRegistration" />
-
+  
     <Button
         style="@style/styleButtonDefault"
         android:text="@string/action_register_service"
