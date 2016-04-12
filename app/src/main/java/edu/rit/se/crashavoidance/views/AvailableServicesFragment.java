@@ -19,10 +19,12 @@ import edu.rit.se.crashavoidance.wifi.DnsSdService;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 public class AvailableServicesFragment extends ListFragment implements AdapterView.OnItemClickListener {
+
+    private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
+
     List<DnsSdService> services = new ArrayList<DnsSdService>();
     AvailableServicesListViewAdapter serviceListAdapter;
     MainActivity mainActivity;
-    WifiDirectHandler handler;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,15 +47,13 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
     }
 
     private void setServiceList() {
-        //ListView listView = (ListView) findViewById(R.id.availableServicesList);
         serviceListAdapter = new AvailableServicesListViewAdapter((MainActivity) getActivity(), services);
         setListAdapter(serviceListAdapter);
         getListView().setOnItemClickListener(null);
     }
 
     private void startDiscoveringServices() {
-        handler.startDiscoveringServices();
-        //mainActivity.getWifiHandler().startDiscoveringServices();
+        wifiDirectHandlerAccessor.getWifiHandler().startDiscoveringServices();
     }
 
     @Override
@@ -71,11 +71,21 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
             if (intent.getAction().equals(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString()))
             {
                 String serviceKey = intent.getParcelableExtra("dnsSdServiceKey");
-                DnsSdService service = handler.getDnsSdServiceMap().get(serviceKey);
+                DnsSdService service = wifiDirectHandlerAccessor.getWifiHandler().getDnsSdServiceMap().get(serviceKey);
                 serviceListAdapter.addUnique(service);
                 // TODO Capture an intent that indicates the peer list has changed
                 // and see if we need to remove anything from our list
             }
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
     }
 }

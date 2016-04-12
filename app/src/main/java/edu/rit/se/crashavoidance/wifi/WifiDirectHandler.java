@@ -55,6 +55,8 @@ public class WifiDirectHandler extends NonStopIntentService {
         wifiP2pManager = (WifiP2pManager) getSystemService(WIFI_P2P_SERVICE);
         wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
 
+        channel = wifiP2pManager.initialize(this, getMainLooper(), null);
+
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
         receiver = new WifiDirectBroadcastReceiver();
