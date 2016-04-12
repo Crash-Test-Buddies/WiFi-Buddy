@@ -31,6 +31,8 @@ public class WifiDirectHandler extends NonStopIntentService {
 
     private final String SERVICE_MAP_KEY = "serviceMapKey";
 
+    private final String PEERS = "peers";
+
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
     private Map<String, DnsSdService> dnsSdServiceMap;
     private WifiP2pDeviceList peers;
@@ -161,6 +163,12 @@ public class WifiDirectHandler extends NonStopIntentService {
         return dnsSdServiceMap;
     }
 
+
+    public String getPEERS() {
+        return PEERS;
+    }
+
+
     public String getSERVICE_MAP_KEY() {
         return SERVICE_MAP_KEY;
     }
@@ -246,12 +254,15 @@ public class WifiDirectHandler extends NonStopIntentService {
                     public void onPeersAvailable(WifiP2pDeviceList peers) {
                         WifiDirectHandler.this.peers = peers;
                         Intent intent = new Intent(Event.PEERS_CHANGED.toString());
+                        intent.putExtra(PEERS, peers);
                         localBroadcastManager.sendBroadcast(intent);
                     }
                 });
             }
         }
     }
+
+
 
     public void setWifiEnabled(boolean wifiEnabled) {
         wifiManager.setWifiEnabled(wifiEnabled);

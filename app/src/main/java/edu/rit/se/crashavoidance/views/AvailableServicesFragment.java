@@ -29,6 +29,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
     AvailableServicesListViewAdapter serviceListAdapter;
     MainActivity mainActivity;
     private final String LOG_TAG = "AvailableServicesFrag";
+    WifiDirectReceiver receiver;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,15 +49,21 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
         mainActivity = (MainActivity) getActivity();
     }
 
-
+    /**
+     * Set the service list adapter to display available services
+     */
     private void setServiceList() {
         serviceListAdapter = new AvailableServicesListViewAdapter((MainActivity) getActivity(), services);
         setListAdapter(serviceListAdapter);
 //        getListView().setOnItemClickListener(null);
     }
 
+    /**
+     * Register the receiver to listen for the intents broadcasted by WifiDirectHandler
+     * and call service discovery
+     */
     private void startDiscoveringServices() {
-        WifiDirectReceiver receiver = new WifiDirectReceiver();
+        receiver = new WifiDirectReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString());
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
@@ -89,6 +96,11 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
         }
     }
 
+    /**
+     * This is called when the Fragment is opened and is attached to MainActivity
+     * Sets the ListAdapter for the Service List and initiates the service discovery
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
