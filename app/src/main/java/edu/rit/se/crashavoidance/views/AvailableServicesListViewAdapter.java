@@ -66,4 +66,21 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
 
         return convertView;
     }
+
+
+    /**
+     * Add service to the Services list if it has not already been added
+     * @param service Service to be added to list
+     * @return false if item was already in the list
+     */
+    public Boolean addUnique(DnsSdService service) {
+        if (serviceList.contains(service)) {
+            return false;
+        } else {
+            serviceList.add(service);
+            this.notifyDataSetChanged();
+            return true;
+        }
+    }
 }
+
