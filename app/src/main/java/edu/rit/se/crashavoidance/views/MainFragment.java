@@ -22,8 +22,6 @@ public class MainFragment extends Fragment {
 
     // Buttons
     private Button toggleWifiButton;
-    private Button receiverRegistrationButton;
-    private Button wifiDirectRegistrationButton;
     private Button serviceRegistrationButton;
     private Button discoverServicesButton;
 
@@ -51,21 +49,6 @@ public class MainFragment extends Fragment {
                 wifiDirectHandlerAccessor.getWifiHandler().setWifiEnabled(true);
                 toggleWifiButton.setText("Disable Wifi");
             }
-            }
-        });
-        wifiDirectRegistrationButton = (Button) view.findViewById(R.id.wifiDirectRegistrationButton);
-        wifiDirectRegistrationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-
-            }
-        });
-        receiverRegistrationButton = (Button) view.findViewById(R.id.receiverRegistrationButton);
-        receiverRegistrationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
             }
         });
         serviceRegistrationButton = (Button) view.findViewById(R.id.serviceRegistrationButton);
