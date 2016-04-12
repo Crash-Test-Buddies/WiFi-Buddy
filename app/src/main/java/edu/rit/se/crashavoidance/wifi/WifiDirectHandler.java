@@ -108,7 +108,6 @@ public class WifiDirectHandler extends NonStopIntentService {
             @Override
             public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> txtRecordMap, WifiP2pDevice srcDevice) {
                 //Should probably log that a record is available
-
                 Intent intent = new Intent(Event.DNS_SD_TXT_RECORD_ADDED.toString());
                 localBroadcastManager.sendBroadcast(intent);
                 dnsSdTxtRecordMap.put(srcDevice.deviceAddress, new DnsSdTxtRecord(fullDomainName, txtRecordMap, srcDevice));

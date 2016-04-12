@@ -75,11 +75,12 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
     public class WifiDirectReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            // Get the intent sent by WifiDirectHandler when a service is found
             if (intent.getAction().equals(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString()))
             {
-                String serviceKey = intent.getParcelableExtra(wifiDirectHandlerAccessor.getWifiHandler().getSERVICE_MAP_KEY());
-                Log.d(LOG_TAG, "Service Key: " + serviceKey);
+                String serviceKey = intent.getStringExtra(wifiDirectHandlerAccessor.getWifiHandler().getSERVICE_MAP_KEY());
                 DnsSdService service = wifiDirectHandlerAccessor.getWifiHandler().getDnsSdServiceMap().get(serviceKey);
+                // Add the service to the UI and update
                 serviceListAdapter.addUnique(service);
                 Log.d(LOG_TAG, "Found service for device " + service.getSrcDevice().deviceName);
                 // TODO Capture an intent that indicates the peer list has changed
