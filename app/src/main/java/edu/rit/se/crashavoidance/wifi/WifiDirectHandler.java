@@ -104,12 +104,18 @@ public class WifiDirectHandler extends NonStopIntentService {
         });
     }
 
+  /**
+   * Starts discovering services. First registers DnsSdTxtRecordListener and a
+   * DnsSdServiceResponseListener. Then adds a service request and begins to discover services. The
+   * callbacks within the registered listeners are called when services are found.
+   */
     public void startDiscoveringServices() {
         //Add listeners
         WifiP2pManager.DnsSdTxtRecordListener txtRecordListener = new WifiP2pManager.DnsSdTxtRecordListener() {
             @Override
             public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> txtRecordMap, WifiP2pDevice srcDevice) {
-                //Should probably log that a record is available
+                Log.i(LOG_TAG, "DnsSDTxtRecord available");
+
                 Intent intent = new Intent(Event.DNS_SD_TXT_RECORD_ADDED.toString());
                 localBroadcastManager.sendBroadcast(intent);
                 dnsSdTxtRecordMap.put(srcDevice.deviceAddress, new DnsSdTxtRecord(fullDomainName, txtRecordMap, srcDevice));
@@ -176,6 +182,9 @@ public class WifiDirectHandler extends NonStopIntentService {
         return wifiManager.isWifiEnabled();
     }
 
+  /**
+   * Removes a registered local service.
+   */
     public void removeService() {
         wifiP2pManager.removeLocalService(channel, this.serviceInfo, new WifiP2pManager.ActionListener() {
             @Override
@@ -206,6 +215,10 @@ public class WifiDirectHandler extends NonStopIntentService {
         });
     }
 
+  /**
+   * Connects to a service
+   * @param service The service to connect to.
+   */
     public void connectToService(DnsSdService service) {
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = service.getSrcDevice().deviceAddress;
@@ -262,18 +275,26 @@ public class WifiDirectHandler extends NonStopIntentService {
         }
     }
 
-
-
+  /**
+   * Toggle wifi
+   * @param wifiEnabled whether or not wifi should be enabled
+   */
     public void setWifiEnabled(boolean wifiEnabled) {
         wifiManager.setWifiEnabled(wifiEnabled);
     }
 
+  /**
+   * Allows for binding to the service.
+   */
     public class WifiTesterBinder extends Binder {
         public WifiDirectHandler getService() {
             return WifiDirectHandler.this;
         }
     }
 
+  /**
+   * Actions that can be broadcasted by the handler
+   */
     public enum Event {
         DNS_SD_TXT_RECORD_ADDED("dnsSdTxtRecordAdded"),
         DNS_SD_SERVICE_AVAILABLE("dnsSdServiceAvailable"),
