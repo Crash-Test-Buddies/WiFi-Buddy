@@ -8,10 +8,11 @@ public class ServiceData {
     private HashMap<String, String> record;
     private ServiceType serviceType;
 
-    public ServiceData(String serviceName, int port, HashMap<String, String> record) {
+    public ServiceData(String serviceName, int port, HashMap<String, String> record, ServiceType serviceType) {
         this.serviceName = serviceName;
         this.port = port;
         this.record = record;
+        this.serviceType = serviceType;
     }
 
     public String getServiceName() {
