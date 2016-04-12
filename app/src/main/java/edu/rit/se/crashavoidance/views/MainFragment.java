@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.wifi.ServiceData;
+import edu.rit.se.crashavoidance.wifi.ServiceType;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 
@@ -72,7 +73,12 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
-                ServiceData serviceData = new ServiceData("wifiTester", 4545, new HashMap<String, String>());
+                ServiceData serviceData = new ServiceData(
+                        "wifiTester",
+                        4545,
+                        new HashMap<String, String>(),
+                        ServiceType.PRESENCE_TCP
+                );
                 wifiDirectHandlerAccessor.getWifiHandler().startAddingLocalService(serviceData);
             }
         });

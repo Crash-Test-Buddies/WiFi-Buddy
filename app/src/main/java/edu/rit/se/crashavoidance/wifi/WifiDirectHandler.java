@@ -84,6 +84,7 @@ public class WifiDirectHandler extends NonStopIntentService {
             @Override
             public void onSuccess() {
                 Log.i(LOG_TAG, "Local service added");
+                Log.d(LOG_TAG, "Local service added");
             }
 
             @Override
