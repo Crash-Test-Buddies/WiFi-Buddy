@@ -27,7 +27,6 @@ public class WifiDirectHandler extends NonStopIntentService {
 
     public static final String androidServiceName = "WiFi Direct Handler";
     public static final String LOG_TAG = "wifiDirectHandler";
-
     private final IBinder binder = new WifiTesterBinder();
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;

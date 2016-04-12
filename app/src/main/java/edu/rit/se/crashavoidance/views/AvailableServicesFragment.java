@@ -41,6 +41,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
         super.onActivityCreated(savedInstanceState);
         mainActivity = (MainActivity) getActivity();
         setServiceList();
+        startDiscoveringServices();
     }
 
     private void setServiceList() {
@@ -51,6 +52,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
     }
 
     private void startDiscoveringServices() {
+        handler.startDiscoveringServices();
         //mainActivity.getWifiHandler().startDiscoveringServices();
     }
 
