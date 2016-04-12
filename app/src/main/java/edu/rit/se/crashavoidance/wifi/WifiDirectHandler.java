@@ -29,6 +29,8 @@ public class WifiDirectHandler extends NonStopIntentService {
     public static final String LOG_TAG = "wifiDirectHandler";
     private final IBinder binder = new WifiTesterBinder();
 
+    private final String SERVICE_MAP_KEY = "serviceMapKey";
+
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
     private Map<String, DnsSdService> dnsSdServiceMap;
     private WifiP2pDeviceList peers;
@@ -106,7 +108,6 @@ public class WifiDirectHandler extends NonStopIntentService {
             @Override
             public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> txtRecordMap, WifiP2pDevice srcDevice) {
                 //Should probably log that a record is available
-
                 Intent intent = new Intent(Event.DNS_SD_TXT_RECORD_ADDED.toString());
                 localBroadcastManager.sendBroadcast(intent);
                 dnsSdTxtRecordMap.put(srcDevice.deviceAddress, new DnsSdTxtRecord(fullDomainName, txtRecordMap, srcDevice));
@@ -118,9 +119,10 @@ public class WifiDirectHandler extends NonStopIntentService {
             public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice srcDevice) {
                 // Not sure if we want to track the map here or just send the service in the request to let the caller do
                 // what it wants with it
+                Log.d(LOG_TAG, "Found service at address " + srcDevice.deviceAddress + " with name " + srcDevice.deviceName);
                 dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
                 Intent intent = new Intent(Event.DNS_SD_SERVICE_AVAILABLE.toString());
-                intent.putExtra("dndSdServiceMapKey", srcDevice.deviceAddress);
+                intent.putExtra(SERVICE_MAP_KEY, srcDevice.deviceAddress);
                 localBroadcastManager.sendBroadcast(intent);
             }
         };
@@ -157,6 +159,10 @@ public class WifiDirectHandler extends NonStopIntentService {
 
     public Map<String, DnsSdService> getDnsSdServiceMap(){
         return dnsSdServiceMap;
+    }
+
+    public String getSERVICE_MAP_KEY() {
+        return SERVICE_MAP_KEY;
     }
     public boolean isWifiEnabled() {
         return wifiManager.isWifiEnabled();
