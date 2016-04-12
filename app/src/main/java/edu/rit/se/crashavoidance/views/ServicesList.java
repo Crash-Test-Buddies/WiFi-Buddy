@@ -1,9 +1,13 @@
 //package edu.rit.se.crashavoidance.views;
 //
 //import android.app.ListFragment;
+//import android.content.BroadcastReceiver;
 //import android.content.Context;
+//import android.content.Intent;
 //import android.net.wifi.p2p.WifiP2pDevice;
+//import android.net.wifi.p2p.WifiP2pManager;
 //import android.os.Bundle;
+//import android.os.Handler;
 //import android.view.LayoutInflater;
 //import android.view.View;
 //import android.view.ViewGroup;
@@ -16,6 +20,8 @@
 //
 //import edu.rit.se.crashavoidance.R;
 //import edu.rit.se.crashavoidance.WiFiP2pService;
+//import edu.rit.se.crashavoidance.wifi.DnsSdService;
+//import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 //
 ///**
 // * Created by Brett on 2/2/2016.
@@ -23,6 +29,8 @@
 //public class ServicesList extends ListFragment {
 //
 //    WiFiDevicesAdapter listAdapter = null;
+//    List<DnsSdService> serviceList;
+//    WifiDirectHandler handler;
 //
 //    @Override
 //    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -33,9 +41,11 @@
 //    @Override
 //    public void onActivityCreated(Bundle savedInstanceState) {
 //        super.onActivityCreated(savedInstanceState);
+//        handler = new WifiDirectHandler();
+//        serviceList = new ArrayList<DnsSdService>();
 //        listAdapter = new WiFiDevicesAdapter(this.getActivity(),
 //                android.R.layout.simple_list_item_2, android.R.id.text1,
-//                new ArrayList<WiFiP2pService>());
+//                serviceList);
 //        setListAdapter(listAdapter);
 //    }
 //
@@ -46,16 +56,37 @@
 //        ((TextView) v.findViewById(android.R.id.text2)).setText("Connecting");
 //    }
 //
+//    private void initiateServiceDiscovery(){
+//        handler.startDiscoveringServices();
+//    }
+//
 //    interface DeviceClickListener {
 //        public void connectP2p(WiFiP2pService wifiP2pService);
 //    }
 //
-//    public class WiFiDevicesAdapter extends ArrayAdapter<WiFiP2pService> {
+//    /**
+//     * Receiver for receiving intents from the WifiDirectHandler to update UI
+//     * when Wifi Direct commands are completed
+//     */
+//    public class WifiDirectReceiver extends BroadcastReceiver{
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            if (intent.getAction().equals(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString()))
+//            {
+//                String serviceKey = intent.getParcelableExtra("dnsSdServiceKey");
+//                DnsSdService service = handler.getDnsSdServiceMap().get(serviceKey);
+//                listAdapter.addUnique(service);
+//                // TODO Capture an intent that indicates the peer list has changed
+//                // and see if we need to remove anything from our list
+//            }
+//        }
+//    }
+//    public class WiFiDevicesAdapter extends ArrayAdapter<DnsSdService> {
 //
-//        private List<WiFiP2pService> items;
+//        private List<DnsSdService> items;
 //
 //        public WiFiDevicesAdapter(Context context, int resource,
-//                                  int textViewResourceId, List<WiFiP2pService> items) {
+//                                  int textViewResourceId, List<DnsSdService> items) {
 //            super(context, resource, textViewResourceId, items);
 //            this.items = items;
 //        }
@@ -68,23 +99,27 @@
 //                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 //                v = vi.inflate(android.R.layout.simple_list_item_2, null);
 //            }
-//            WiFiP2pService service = items.get(position);
+//            DnsSdService service = items.get(position);
 //            if (service != null) {
 //                TextView nameText = (TextView) v
 //                        .findViewById(android.R.id.text1);
 //
 //                if (nameText != null) {
-//                    nameText.setText(service.device.deviceName + " - " + service.instanceName);
+//                    nameText.setText(service.getSrcDevice().deviceName + " - " + service.getInstanceName());
 //                }
 //                TextView statusText = (TextView) v
 //                        .findViewById(android.R.id.text2);
-//                statusText.setText(getDeviceStatus(service.device.status));
+//                statusText.setText(getDeviceStatus(service.getSrcDevice().status));
 //            }
 //            return v;
 //        }
 //
-//        //This should prevent duplicates from appearing in the list
-//        public Boolean addUnique(WiFiP2pService service) {
+//        /**
+//         * Add service to the Services list if it has not already been added
+//         * @param service Service to be added to list
+//         * @return false if item was already in the list
+//         */
+//        public Boolean addUnique(DnsSdService service) {
 //            if (items.contains(service)) {
 //                return false;
 //            } else {
