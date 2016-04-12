@@ -78,6 +78,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
             if (intent.getAction().equals(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString()))
             {
                 String serviceKey = intent.getParcelableExtra(wifiDirectHandlerAccessor.getWifiHandler().getSERVICE_MAP_KEY());
+                Log.d(LOG_TAG, "Service Key: " + serviceKey);
                 DnsSdService service = wifiDirectHandlerAccessor.getWifiHandler().getDnsSdServiceMap().get(serviceKey);
                 serviceListAdapter.addUnique(service);
                 Log.d(LOG_TAG, "Found service for device " + service.getSrcDevice().deviceName);
