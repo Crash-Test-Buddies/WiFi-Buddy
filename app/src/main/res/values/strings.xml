@@ -1,5 +1,5 @@
 <resources>
-    <string name="log_tag">crash_avoidance_log</string>
+    <string name="log_tag">wifiDirectHandler</string>
 
     <!-- Titles -->
     <string name="title_logs">Logs</string>

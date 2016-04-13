@@ -11,15 +11,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
+/**
+ * The main Activity of the application, which is a container for Fragments and
+ * contains the Toolbar
+ */
 public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor {
 
-    // Services
     private WifiDirectHandler wifiDirectHandler;
     private boolean wifiDirectHandlerBound = false;
 
@@ -72,9 +74,11 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         }
     }
 
+    /**
+     * Adds Main Menu to the ActionBar
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Adds Main Menu to the ActionBar
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
@@ -93,10 +97,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-    public void displayToast(String message) {
-        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
-        toast.show();
     }
 
     private ServiceConnection wifiServiceConnection = new ServiceConnection() {

@@ -21,26 +21,27 @@ import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
+/**
+ * ListFragment that shows a list of available discovered services
+ */
 public class AvailableServicesFragment extends ListFragment implements AdapterView.OnItemClickListener {
 
     private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
 
     List<DnsSdService> services = new ArrayList<DnsSdService>();
-    AvailableServicesListViewAdapter serviceListAdapter;
+    AvailableServicesListViewAdapter servicesListAdapter;
     MainActivity mainActivity;
-    private final String LOG_TAG = "AvailableServicesFrag";
     WifiDirectReceiver receiver;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_available_services, container, false);
+        return inflater.inflate(R.layout.fragment_available_services, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        startDiscoveringServices();
     }
 
     @Override
@@ -53,13 +54,12 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
      * Set the service list adapter to display available services
      */
     private void setServiceList() {
-        serviceListAdapter = new AvailableServicesListViewAdapter((MainActivity) getActivity(), services);
-        setListAdapter(serviceListAdapter);
-//        getListView().setOnItemClickListener(null);
+        servicesListAdapter = new AvailableServicesListViewAdapter((MainActivity) getActivity(), services);
+        setListAdapter(servicesListAdapter);
     }
 
     /**
-     * Register the receiver to listen for the intents broadcasted by WifiDirectHandler
+     * Register the receiver to listen for the intents broadcast by WifiDirectHandler
      * and call service discovery
      */
     private void startDiscoveringServices() {
@@ -75,7 +75,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
 
     }
 
-        /**
+    /**
      * Receiver for receiving intents from the WifiDirectHandler to update UI
      * when Wifi Direct commands are completed
      */
@@ -83,13 +83,12 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found
-            if (intent.getAction().equals(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString()))
-            {
+            if (intent.getAction().equals(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString())) {
                 String serviceKey = intent.getStringExtra(wifiDirectHandlerAccessor.getWifiHandler().getSERVICE_MAP_KEY());
                 DnsSdService service = wifiDirectHandlerAccessor.getWifiHandler().getDnsSdServiceMap().get(serviceKey);
                 // Add the service to the UI and update
-                serviceListAdapter.addUnique(service);
-                Log.d(LOG_TAG, "Found service for device " + service.getSrcDevice().deviceName);
+                servicesListAdapter.addUnique(service);
+                Log.d(getString(R.string.log_tag), "Found service for device " + service.getSrcDevice().deviceName);
                 // TODO Capture an intent that indicates the peer list has changed
                 // and see if we need to remove anything from our list
             }
@@ -99,7 +98,6 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
     /**
      * This is called when the Fragment is opened and is attached to MainActivity
      * Sets the ListAdapter for the Service List and initiates the service discovery
-     * @param context
      */
     @Override
     public void onAttach(Context context) {

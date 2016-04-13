@@ -23,6 +23,9 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ */
 public class WifiDirectHandler extends NonStopIntentService {
 
     public static final String androidServiceName = "WiFi Direct Handler";
@@ -30,7 +33,6 @@ public class WifiDirectHandler extends NonStopIntentService {
     private final IBinder binder = new WifiTesterBinder();
 
     private final String SERVICE_MAP_KEY = "serviceMapKey";
-
     private final String PEERS = "peers";
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
@@ -41,7 +43,7 @@ public class WifiDirectHandler extends NonStopIntentService {
     private WifiP2pServiceInfo serviceInfo;
     private WifiP2pServiceRequest serviceRequest;
 
-    //Variables created in constructor
+    // Variables created in constructor
     private WifiP2pManager.Channel channel;
     private WifiP2pManager wifiP2pManager;
     private WifiManager wifiManager;
@@ -60,9 +62,7 @@ public class WifiDirectHandler extends NonStopIntentService {
         wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
 
         channel = wifiP2pManager.initialize(this, getMainLooper(), null);
-
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
-
         receiver = new WifiDirectBroadcastReceiver();
 
         IntentFilter filter = new IntentFilter();
@@ -73,28 +73,27 @@ public class WifiDirectHandler extends NonStopIntentService {
         registerReceiver(receiver, filter);
     }
 
-  @Override
-  public void onDestroy() {
-    unregisterReceiver(receiver);
-    super.onDestroy();
-  }
+    @Override
+    public void onDestroy() {
+        unregisterReceiver(receiver);
+        super.onDestroy();
+    }
 
     public void startAddingLocalService(ServiceData serviceData) {
-        Map<String, String> records = new HashMap<String,String>(serviceData.getRecord());
+        Map<String, String> records = new HashMap<>(serviceData.getRecord());
         records.put("listenport", Integer.toString(serviceData.getPort()));
         records.put("available", "visible");
 
         WifiP2pDnsSdServiceInfo serviceInfo = WifiP2pDnsSdServiceInfo.newInstance(
-                serviceData.getServiceName(),
-                serviceData.getServiceType().toString(),
-                records
+            serviceData.getServiceName(),
+            serviceData.getServiceType().toString(),
+            records
         );
 
         wifiP2pManager.addLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
                 Log.i(LOG_TAG, "Local service added");
-                Log.d(LOG_TAG, "Local service added");
             }
 
             @Override
@@ -114,32 +113,33 @@ public class WifiDirectHandler extends NonStopIntentService {
         WifiP2pManager.DnsSdTxtRecordListener txtRecordListener = new WifiP2pManager.DnsSdTxtRecordListener() {
             @Override
             public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> txtRecordMap, WifiP2pDevice srcDevice) {
-                Log.i(LOG_TAG, "DnsSDTxtRecord available");
+            Log.i(LOG_TAG, "DnsSDTxtRecord available");
 
-                Intent intent = new Intent(Event.DNS_SD_TXT_RECORD_ADDED.toString());
-                localBroadcastManager.sendBroadcast(intent);
-                dnsSdTxtRecordMap.put(srcDevice.deviceAddress, new DnsSdTxtRecord(fullDomainName, txtRecordMap, srcDevice));
+            Intent intent = new Intent(Event.DNS_SD_TXT_RECORD_ADDED.toString());
+            localBroadcastManager.sendBroadcast(intent);
+            dnsSdTxtRecordMap.put(srcDevice.deviceAddress, new DnsSdTxtRecord(fullDomainName, txtRecordMap, srcDevice));
             }
         };
 
         WifiP2pManager.DnsSdServiceResponseListener serviceResponseListener = new WifiP2pManager.DnsSdServiceResponseListener() {
             @Override
             public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice srcDevice) {
-                // Not sure if we want to track the map here or just send the service in the request to let the caller do
-                // what it wants with it
-                Log.d(LOG_TAG, "Found service at address " + srcDevice.deviceAddress + " with name " + srcDevice.deviceName);
-                dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
-                Intent intent = new Intent(Event.DNS_SD_SERVICE_AVAILABLE.toString());
-                intent.putExtra(SERVICE_MAP_KEY, srcDevice.deviceAddress);
-                localBroadcastManager.sendBroadcast(intent);
+            // Not sure if we want to track the map here or just send the service in the request to let the caller do
+            // what it wants with it
+            Log.d(LOG_TAG, "Found service at address " + srcDevice.deviceAddress + " with name " + srcDevice.deviceName);
+            dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
+            Intent intent = new Intent(Event.DNS_SD_SERVICE_AVAILABLE.toString());
+            intent.putExtra(SERVICE_MAP_KEY, srcDevice.deviceAddress);
+            localBroadcastManager.sendBroadcast(intent);
             }
         };
 
         wifiP2pManager.setDnsSdResponseListeners(channel, serviceResponseListener, txtRecordListener);
 
-        //Now that we are listening for services, begin to find them
+        // Now that we are listening for services, begin to find them
         serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
-        //Tell the framework we want to scan for services. Prerequisite for discovering services
+
+        // Tell the framework we want to scan for services. Prerequisite for discovering services
         wifiP2pManager.addServiceRequest(channel, serviceRequest, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
@@ -151,6 +151,7 @@ public class WifiDirectHandler extends NonStopIntentService {
                 Log.e(LOG_TAG, "Failure adding service discovery request: " + FailureReason.fromInteger(reason).toString());
             }
         });
+
         wifiP2pManager.discoverServices(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
@@ -169,22 +170,17 @@ public class WifiDirectHandler extends NonStopIntentService {
         return dnsSdServiceMap;
     }
 
-
-    public String getPEERS() {
-        return PEERS;
-    }
-
-
     public String getSERVICE_MAP_KEY() {
         return SERVICE_MAP_KEY;
     }
+
     public boolean isWifiEnabled() {
         return wifiManager.isWifiEnabled();
     }
 
-  /**
-   * Removes a registered local service.
-   */
+    /**
+     * Removes a registered local service.
+     */
     public void removeService() {
         wifiP2pManager.removeLocalService(channel, this.serviceInfo, new WifiP2pManager.ActionListener() {
             @Override
@@ -204,8 +200,8 @@ public class WifiDirectHandler extends NonStopIntentService {
         wifiP2pManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
+                // No data about peers can be collected here.
                 Log.i(LOG_TAG, "Discover peers successful");
-                //No data about peers can be collected here.
             }
 
             @Override
@@ -217,7 +213,7 @@ public class WifiDirectHandler extends NonStopIntentService {
 
   /**
    * Connects to a service
-   * @param service The service to connect to.
+   * @param service The service to connect to
    */
     public void connectToService(DnsSdService service) {
         WifiP2pConfig config = new WifiP2pConfig();
@@ -265,10 +261,10 @@ public class WifiDirectHandler extends NonStopIntentService {
                 wifiP2pManager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
                     @Override
                     public void onPeersAvailable(WifiP2pDeviceList peers) {
-                        WifiDirectHandler.this.peers = peers;
-                        Intent intent = new Intent(Event.PEERS_CHANGED.toString());
-                        intent.putExtra(PEERS, peers);
-                        localBroadcastManager.sendBroadcast(intent);
+                    WifiDirectHandler.this.peers = peers;
+                    Intent intent = new Intent(Event.PEERS_CHANGED.toString());
+                    intent.putExtra(PEERS, peers);
+                    localBroadcastManager.sendBroadcast(intent);
                     }
                 });
             }
@@ -303,7 +299,7 @@ public class WifiDirectHandler extends NonStopIntentService {
 
         private String eventName;
 
-        private Event(String eventName) {
+        Event(String eventName) {
             this.eventName = eventName;
         }
 
