@@ -16,9 +16,10 @@ import java.io.InputStreamReader;
 
 import edu.rit.se.crashavoidance.R;
 
+/**
+ * DialogFragment that shows a list of log messages
+ */
 public class LogsDialogFragment extends DialogFragment {
-
-    private TextView logTextView;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -33,9 +34,9 @@ public class LogsDialogFragment extends DialogFragment {
             );
 
         LayoutInflater i = getActivity().getLayoutInflater();
-        View rootView = i.inflate(R.layout.fragment_logs_dialog,null);
+        View rootView = i.inflate(R.layout.fragment_logs_dialog, null);
 
-        logTextView =  (TextView) rootView.findViewById(R.id.logTextView);
+        TextView logTextView = (TextView) rootView.findViewById(R.id.logTextView);
         logTextView.setMovementMethod(new ScrollingMovementMethod());
 
         try {
@@ -44,11 +45,11 @@ public class LogsDialogFragment extends DialogFragment {
                     new InputStreamReader(process.getInputStream()));
 
             StringBuilder log = new StringBuilder();
-            String line = "";
+            String line;
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.contains(getString(R.string.log_tag))){
                     // Removes log tag and PID from the log line
-                    log.append(line.substring(line.indexOf(": ") + 2) + "\n");
+                    log.append(line.substring(line.indexOf(": ") + 2)).append("\n");
                 }
             }
             logTextView.setText(log.toString());

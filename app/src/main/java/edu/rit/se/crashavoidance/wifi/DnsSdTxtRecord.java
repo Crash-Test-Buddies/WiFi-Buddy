@@ -4,6 +4,9 @@ import android.net.wifi.p2p.WifiP2pDevice;
 
 import java.util.Map;
 
+/**
+ *
+ */
 public class DnsSdTxtRecord {
     private String fullDomain;
     private Map<String, String> record;

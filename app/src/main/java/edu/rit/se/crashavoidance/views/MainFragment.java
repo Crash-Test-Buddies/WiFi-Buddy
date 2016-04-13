@@ -15,16 +15,13 @@ import edu.rit.se.crashavoidance.wifi.ServiceData;
 import edu.rit.se.crashavoidance.wifi.ServiceType;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
-
+/**
+ * The main Fragment of the application, which contains the buttons to perform P2P actions
+ */
 public class MainFragment extends Fragment {
 
     private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
-
-    // Buttons
     private Button toggleWifiButton;
-    private Button serviceRegistrationButton;
-    private Button discoverServicesButton;
-
     AvailableServicesFragment availableServicesFragment;
     MainActivity mainActivity;
 
@@ -35,41 +32,42 @@ public class MainFragment extends Fragment {
 
         mainActivity = (MainActivity) getActivity();
 
-        // Initialize Buttons
+        // Initialize Toggle WiFi Button
         toggleWifiButton = (Button) view.findViewById(R.id.toggleWifiButton);
         toggleWifiButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
-            WifiDirectHandler handler = wifiDirectHandlerAccessor.getWifiHandler();
-            if(wifiDirectHandlerAccessor.getWifiHandler().isWifiEnabled()) {
-                wifiDirectHandlerAccessor.getWifiHandler().setWifiEnabled(false);
-                toggleWifiButton.setText("Enable Wifi");
-            } else {
-                wifiDirectHandlerAccessor.getWifiHandler().setWifiEnabled(true);
-                toggleWifiButton.setText("Disable Wifi");
-            }
+            public void onClick(View v) {
+                WifiDirectHandler handler = wifiDirectHandlerAccessor.getWifiHandler();
+                if(handler.isWifiEnabled()) {
+                    handler.setWifiEnabled(false);
+                    toggleWifiButton.setText(getString(R.string.action_enable_wifi));
+                } else {
+                    handler.setWifiEnabled(true);
+                    toggleWifiButton.setText(getString(R.string.action_disable_wifi));
+                }
             }
         });
-        serviceRegistrationButton = (Button) view.findViewById(R.id.serviceRegistrationButton);
+
+        // Initialize Add Local Service Button
+        Button serviceRegistrationButton = (Button) view.findViewById(R.id.serviceRegistrationButton);
         serviceRegistrationButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 ServiceData serviceData = new ServiceData(
-                        "wifiTester",
-                        4545,
-                        new HashMap<String, String>(),
-                        ServiceType.PRESENCE_TCP
+                    "wifiTester",
+                    4545,
+                    new HashMap<String, String>(),
+                    ServiceType.PRESENCE_TCP
                 );
                 wifiDirectHandlerAccessor.getWifiHandler().startAddingLocalService(serviceData);
             }
         });
-        discoverServicesButton = (Button) view.findViewById(R.id.discoverServicesButton);
+
+        // Initialize Discover Services Button
+        Button discoverServicesButton = (Button) view.findViewById(R.id.discoverServicesButton);
         discoverServicesButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 if (availableServicesFragment == null) {
                     availableServicesFragment = new AvailableServicesFragment();
                 }

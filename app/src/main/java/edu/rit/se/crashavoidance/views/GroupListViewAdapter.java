@@ -1,5 +1,4 @@
 package edu.rit.se.crashavoidance.views;
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +12,10 @@ import java.util.List;
 import edu.rit.se.crashavoidance.R;
 
 /**
- * Created by Chris on 3/16/2016.
+ *
  */
 public class GroupListViewAdapter extends BaseAdapter{
+
     private List<String> peers;
     private GroupMessageActivity context;
 
@@ -23,6 +23,7 @@ public class GroupListViewAdapter extends BaseAdapter{
         this.context = context;
         this.peers = peers;
     }
+
     @Override
     public int getCount() {
         return peers.size();
@@ -43,7 +44,7 @@ public class GroupListViewAdapter extends BaseAdapter{
     public View getView(int position, View convertView, ViewGroup parent) {
         // TODO Convert this to the correct object if we change this
         final String peerName = (String)getItem(position);
-        // This will inflate the template view inside each ListView item
+        // Inflates the template view inside each ListView item
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.group_item, parent, false);

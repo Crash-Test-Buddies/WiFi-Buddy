@@ -1,6 +1,10 @@
 package edu.rit.se.crashavoidance.wifi;
 
+/**
+ *
+ */
 public enum FailureReason {
+
     ERROR("ERROR"),
     P2P_UNSUPPORTED("P2P UNSUPPORTED"),
     BUSY("BUSY"),
@@ -9,7 +13,7 @@ public enum FailureReason {
     private static FailureReason[] values;
     private String reason;
 
-    private FailureReason(String reason) {
+    FailureReason(String reason) {
         this.reason = reason;
     }
 

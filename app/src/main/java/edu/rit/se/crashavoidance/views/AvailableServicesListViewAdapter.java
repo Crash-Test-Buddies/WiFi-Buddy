@@ -13,7 +13,7 @@ import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
 
 /**
- * Created by Brett on 3/16/2016.
+ *
  */
 public class AvailableServicesListViewAdapter extends BaseAdapter {
 
@@ -44,7 +44,7 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         final DnsSdService service = getItem(position);
 
-        // This will inflate the template view inside each ListView item
+        // Inflates the template view inside each ListView item
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.service_item, parent, false);
@@ -52,7 +52,7 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
 
         TextView instanceName = (TextView) convertView.findViewById(R.id.instanceName);
         TextView deviceName = (TextView) convertView.findViewById(R.id.deviceName);
-        //TODO: This will need updates once real devices are in use
+        // TODO: This will need updates once real devices are in use
         instanceName.setText(service.getInstanceName());
 
         deviceName.setText(service.getSrcDevice().deviceName);
@@ -66,7 +66,6 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
 
         return convertView;
     }
-
 
     /**
      * Add service to the Services list if it has not already been added
@@ -83,4 +82,3 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
         }
     }
 }
-
