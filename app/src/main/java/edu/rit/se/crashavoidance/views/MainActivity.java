@@ -129,5 +129,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     }
 
     public void onServiceClick(DnsSdService service) {
+        wifiDirectHandler.connectToService(service);
     }
 }
