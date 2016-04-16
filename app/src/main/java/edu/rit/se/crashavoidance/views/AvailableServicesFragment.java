@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +26,7 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 public class AvailableServicesFragment extends ListFragment implements AdapterView.OnItemClickListener {
 
     private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
+    private WifiDirectHandler wiFiDirectHandler;
 
     List<DnsSdService> services = new ArrayList<DnsSdService>();
     AvailableServicesListViewAdapter servicesListAdapter;
@@ -67,7 +67,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString());
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
-        wifiDirectHandlerAccessor.getWifiHandler().startDiscoveringServices();
+        wiFiDirectHandler.startDiscoveringServices();
     }
 
     @Override
@@ -84,11 +84,11 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found
             if (intent.getAction().equals(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString())) {
-                String serviceKey = intent.getStringExtra(wifiDirectHandlerAccessor.getWifiHandler().getSERVICE_MAP_KEY());
-                DnsSdService service = wifiDirectHandlerAccessor.getWifiHandler().getDnsSdServiceMap().get(serviceKey);
+                String serviceKey = intent.getStringExtra(wiFiDirectHandler.getSERVICE_MAP_KEY());
+                DnsSdService service = wiFiDirectHandler.getDnsSdServiceMap().get(serviceKey);
                 // Add the service to the UI and update
                 servicesListAdapter.addUnique(service);
-                Log.d(getString(R.string.log_tag), "Found service for device " + service.getSrcDevice().deviceName);
+                wiFiDirectHandler.logMessage("Found service for device " + service.getSrcDevice().deviceName);
                 // TODO Capture an intent that indicates the peer list has changed
                 // and see if we need to remove anything from our list
             }
@@ -104,6 +104,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
         super.onAttach(context);
         try {
             wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
+            wiFiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
             setServiceList();
             startDiscoveringServices();
         } catch (ClassCastException e) {
