@@ -2,27 +2,46 @@ package edu.rit.se.crashavoidance.views;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 import edu.rit.se.crashavoidance.R;
+import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 /**
  * DialogFragment that shows a list of log messages
  */
 public class LogsDialogFragment extends DialogFragment {
 
+    private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
+    private WifiDirectHandler wifiDirectHandler;
+    private TextView logTextView;
+
+    /**
+     * This is called when the Fragment is opened and is attached to MainActivity
+     */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        try {
+            wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
+            wifiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
+        }
+        wifiDirectHandler.logMessage("Viewing logs");
+        Log.i(WifiDirectHandler.LOG_TAG, "Viewing logs");
         AlertDialog.Builder dialogBuilder =  new  AlertDialog.Builder(getActivity())
             .setTitle(getString(R.string.title_logs))
             .setNegativeButton(getString(R.string.action_close),
@@ -36,25 +55,9 @@ public class LogsDialogFragment extends DialogFragment {
         LayoutInflater i = getActivity().getLayoutInflater();
         View rootView = i.inflate(R.layout.fragment_logs_dialog, null);
 
-        TextView logTextView = (TextView) rootView.findViewById(R.id.logTextView);
+        logTextView = (TextView) rootView.findViewById(R.id.logTextView);
         logTextView.setMovementMethod(new ScrollingMovementMethod());
-
-        try {
-            Process process = Runtime.getRuntime().exec("logcat -d");
-            BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()));
-
-            StringBuilder log = new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                if (line.contains(getString(R.string.log_tag))){
-                    // Removes log tag and PID from the log line
-                    log.append(line.substring(line.indexOf(": ") + 2)).append("\n");
-                }
-            }
-            logTextView.setText(log.toString());
-        } catch (IOException e) {
-        }
+        logTextView.setText(wifiDirectHandler.getLogs());
 
         dialogBuilder.setView(rootView);
         return dialogBuilder.create();
