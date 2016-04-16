@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
                 return true;
             case R.id.action_exit:
                 // Exit MenuItem tapped
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
