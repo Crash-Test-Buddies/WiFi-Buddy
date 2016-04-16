@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import edu.rit.se.crashavoidance.R;
+import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 /**
  * DialogFragment that shows a list of log messages
@@ -23,6 +25,7 @@ public class LogsDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Log.i(WifiDirectHandler.LOG_TAG, "Viewing Logs");
         AlertDialog.Builder dialogBuilder =  new  AlertDialog.Builder(getActivity())
             .setTitle(getString(R.string.title_logs))
             .setNegativeButton(getString(R.string.action_close),
@@ -47,7 +50,7 @@ public class LogsDialogFragment extends DialogFragment {
             StringBuilder log = new StringBuilder();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                if (line.contains(getString(R.string.log_tag))){
+                if (line.contains(WifiDirectHandler.LOG_TAG)){
                     // Removes log tag and PID from the log line
                     log.append(line.substring(line.indexOf(": ") + 2)).append("\n");
                 }
