@@ -1,7 +1,9 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,7 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 public class MainFragment extends Fragment {
 
     private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
+    private WifiDirectHandler wifiDirectHandler;
     private Button toggleWifiButton;
     AvailableServicesFragment availableServicesFragment;
     MainActivity mainActivity;
@@ -30,23 +33,29 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mainActivity = (MainActivity) getActivity();
-
         // Initialize Toggle WiFi Button
         toggleWifiButton = (Button) view.findViewById(R.id.toggleWifiButton);
         toggleWifiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                WifiDirectHandler handler = wifiDirectHandlerAccessor.getWifiHandler();
-                if(handler.isWifiEnabled()) {
-                    handler.setWifiEnabled(false);
+                if(wifiDirectHandler.isWifiEnabled()) {
+                    wifiDirectHandler.setWifiEnabled(false);
                     toggleWifiButton.setText(getString(R.string.action_enable_wifi));
+                    toggleWifiButton.setBackgroundColor(Color.RED);
                 } else {
-                    handler.setWifiEnabled(true);
+                    wifiDirectHandler.setWifiEnabled(true);
                     toggleWifiButton.setText(getString(R.string.action_disable_wifi));
+                    toggleWifiButton.setBackgroundColor(Color.GREEN);
                 }
             }
         });
+        if(wifiDirectHandler.isWifiEnabled()) {
+            toggleWifiButton.setText(getString(R.string.action_disable_wifi));
+            toggleWifiButton.setBackgroundColor(Color.GREEN);
+        } else {
+            toggleWifiButton.setText(getString(R.string.action_enable_wifi));
+            toggleWifiButton.setBackgroundColor(Color.RED);
+        }
 
         // Initialize Add Local Service Button
         Button serviceRegistrationButton = (Button) view.findViewById(R.id.serviceRegistrationButton);
@@ -59,7 +68,7 @@ public class MainFragment extends Fragment {
                     new HashMap<String, String>(),
                     ServiceType.PRESENCE_TCP
                 );
-                wifiDirectHandlerAccessor.getWifiHandler().startAddingLocalService(serviceData);
+                wifiDirectHandler.startAddingLocalService(serviceData);
             }
         });
 
@@ -79,10 +88,22 @@ public class MainFragment extends Fragment {
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mainActivity = (MainActivity) getActivity();
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
             wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
+            wifiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
