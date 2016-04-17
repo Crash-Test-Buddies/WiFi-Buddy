@@ -25,7 +25,7 @@
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:layout_marginLeft="20dip"
             style="@android:style/Widget.ProgressBar.Small" >
         </ProgressBar>

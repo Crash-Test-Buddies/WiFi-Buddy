@@ -19,22 +19,25 @@ import edu.rit.se.crashavoidance.wifi.ServiceType;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 /**
- * The main Fragment of the application, which contains the buttons to perform P2P actions
+ * The Main Fragment of the application, which contains the Switches and Buttons to perform P2P tasks
  */
 public class MainFragment extends Fragment {
 
-    private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
     private WifiDirectHandler wifiDirectHandler;
     private Switch toggleWifiSwitch;
     AvailableServicesFragment availableServicesFragment;
     MainActivity mainActivity;
 
+    /**
+     * Sets the layout for the UI, initializes the Buttons and Switches, and returns the View
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Sets the Layout for the UI
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        // Initialize Toggle Wi-Fi Switch
+        // Initialize Wi-Fi Switch
         toggleWifiSwitch = (Switch) view.findViewById(R.id.toggleWifiSwitch);
 
         // Set state of Wi-Fi Switch on load
@@ -46,8 +49,11 @@ public class MainFragment extends Fragment {
             toggleWifiSwitch.setChecked(false);
         }
 
-        // Switch Toggle Wi-Fi Listener
+        // Set Toggle Listener for Wi-Fi Switch
         toggleWifiSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            /**
+             * Enable or disable Wi-Fi when Switch is toggled
+             */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(wifiDirectHandler.isWifiEnabled()) {
@@ -62,10 +68,14 @@ public class MainFragment extends Fragment {
             }
         });
 
-        // Initialize Add Local Service Switch
+        // Initialize Service Registration Switch
         Switch serviceRegistrationSwitch = (Switch) view.findViewById(R.id.serviceRegistrationSwitch);
 
+        // Set Toggle Listener for Service Registration Switch
         serviceRegistrationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            /**
+             * Add or Remove a Local Service when Switch is toggled
+             */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -86,7 +96,12 @@ public class MainFragment extends Fragment {
 
         // Initialize Discover Services Button
         Button discoverServicesButton = (Button) view.findViewById(R.id.discoverServicesButton);
+
+        // Set Click Listener for Discover Services Button
         discoverServicesButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Show AvailableServicesFragment when Discover Services Button is clicked
+             */
             @Override
             public void onClick(View v) {
                 if (availableServicesFragment == null) {
@@ -104,17 +119,23 @@ public class MainFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
+    /**
+     * Sets the Main Activity instance
+     */
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mainActivity = (MainActivity) getActivity();
     }
 
+    /**
+     * Sets the WifiDirectHandler instance when MainFragment is attached to MainActivity
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
+            WiFiDirectHandlerAccessor wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
             wifiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
