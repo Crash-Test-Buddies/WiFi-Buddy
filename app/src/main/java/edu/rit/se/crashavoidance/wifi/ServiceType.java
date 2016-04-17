@@ -5,7 +5,7 @@ public enum ServiceType {
 
     private final String serviceType;
 
-    private ServiceType(String serviceType) {
+    ServiceType(String serviceType) {
         this.serviceType = serviceType;
     }
 

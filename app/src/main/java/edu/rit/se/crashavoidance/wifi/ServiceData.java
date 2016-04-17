@@ -2,7 +2,11 @@ package edu.rit.se.crashavoidance.wifi;
 
 import java.util.HashMap;
 
+/**
+ *
+ */
 public class ServiceData {
+
     private String serviceName;
     private int port;
     private HashMap<String, String> record;

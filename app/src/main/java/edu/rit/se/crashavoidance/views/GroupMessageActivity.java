@@ -9,9 +9,7 @@ import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
 
-/**
- * Created by Chris on 3/16/2016.
- */
+// TODO Convert this Activity to a Fragment
 public class GroupMessageActivity extends Activity {
 
     @Override
@@ -22,7 +20,7 @@ public class GroupMessageActivity extends Activity {
     }
 
     private void setPeerList(){
-        List<String> peers = new ArrayList<String>();
+        List<String> peers = new ArrayList<>();
         // TODO populate off of devices connected
         peers.add("peer 1");
         peers.add("peer 2");

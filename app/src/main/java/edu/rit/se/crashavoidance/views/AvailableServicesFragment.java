@@ -31,6 +31,8 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
 
     List<DnsSdService> services = new ArrayList<DnsSdService>();
     AvailableServicesListViewAdapter serviceListAdapter;
+    private WifiDirectHandler wiFiDirectHandler;
+    AvailableServicesListViewAdapter servicesListAdapter;
     MainActivity mainActivity;
     private final String LOG_TAG = "AvailableServicesFrag";
     WifiDirectReceiver receiver;
@@ -38,7 +40,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_available_services, container, false);
+        return inflater.inflate(R.layout.fragment_available_services, container, false);
     }
 
     @Override

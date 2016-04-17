@@ -11,15 +11,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
+/**
+ * The main Activity of the application, which is a container for Fragments and the ActionBar
+ * Also contains the WifiDirectHandler
+ */
 public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor {
 
-    // Services
     private WifiDirectHandler wifiDirectHandler;
     private boolean wifiDirectHandlerBound = false;
 
@@ -28,28 +30,9 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize Toolbar
+        // Initialize ActionBar
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
         setSupportActionBar(toolbar);
-
-        // Check whether the activity is using the layout version with
-        // the fragment_container FrameLayout. If so, we must add the first fragment
-        if (findViewById(R.id.fragment_container) != null) {
-
-            // However, if we're being restored from a previous state,
-            // then we don't need to do anything and should return or else
-            // we could end up with overlapping fragments.
-            if (savedInstanceState != null) {
-                return;
-            }
-
-            // Create an instance of ExampleFragment
-            MainFragment mainFragment = new MainFragment();
-
-            // Add the fragment to the 'fragment_container' FrameLayout
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, mainFragment).commit();
-        }
     }
 
     @Override
@@ -72,13 +55,19 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         }
     }
 
+    /**
+     * Adds the Main Menu to the ActionBar
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Adds Main Menu to the ActionBar
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
+    /**
+     * Called when a MenuItem in the Main Menu is selected
+     * @param item Item selected
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -89,16 +78,16 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
                 return true;
             case R.id.action_exit:
                 // Exit MenuItem tapped
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-    public void displayToast(String message) {
-        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
-        toast.show();
-    }
 
+    /**
+     * TODO add comment
+     */
     private ServiceConnection wifiServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -106,6 +95,12 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
 
             wifiDirectHandler = binder.getService();
             wifiDirectHandlerBound = true;
+            wifiDirectHandler.logMessage("WifiDirectHandler bound");
+
+            // Add MainFragment to the 'fragment_container' when wifiDirectHandler is bound
+            MainFragment mainFragment = new MainFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, mainFragment).commit();
         }
 
         @Override
@@ -114,6 +109,10 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         }
     };
 
+    /**
+     * Adds a Fragment to the 'fragment_container'
+     * @param fragment Fragment to add
+     */
     public void replaceFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
@@ -123,11 +122,16 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         transaction.commit();
     }
 
+    /**
+     * Returns the wifiDirectHandler
+     * @return The wifiDirectHandler
+     */
     @Override
     public WifiDirectHandler getWifiHandler() {
         return wifiDirectHandler;
     }
 
     public void onServiceClick(DnsSdService service) {
+        wifiDirectHandler.connectToService(service);
     }
 }

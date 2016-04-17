@@ -10,7 +10,7 @@ import android.os.Message;
 
 /*
  * This class comes from  Graeme on Stackoverflow: http://stackoverflow.com/users/726954/graeme
-  * Link to the answer: http://stackoverflow.com/a/9944203/2354849
+ * Link to the answer: http://stackoverflow.com/a/9944203/2354849
  */
 public abstract class NonStopIntentService extends Service {
 
@@ -81,5 +81,4 @@ public abstract class NonStopIntentService extends Service {
      *               android.content.Context#startService(Intent)}.
      */
     protected abstract void onHandleIntent(Intent intent);
-
 }
