@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * TODO add comment
  */
 public class WifiDirectHandler extends NonStopIntentService {
 
@@ -48,6 +48,7 @@ public class WifiDirectHandler extends NonStopIntentService {
     private WifiP2pManager wifiP2pManager;
     private WifiManager wifiManager;
 
+    // WifiDirectHandler logs
     private String logs = "";
 
     public WifiDirectHandler() {
@@ -62,19 +63,23 @@ public class WifiDirectHandler extends NonStopIntentService {
         super.onCreate();
         logMessage("WifiDirectHandler created");
 
+        // Register the app with Wi-Fi Direct
         wifiP2pManager = (WifiP2pManager) getSystemService(WIFI_P2P_SERVICE);
         wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
-
         channel = wifiP2pManager.initialize(this, getMainLooper(), null);
-        localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        receiver = new WifiDirectBroadcastReceiver();
+        logMessage("App registered with Wi-Fi Direct");
 
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+
+        // Registers a WifiDirectBroadcastReceiver with an IntentFilter
+        receiver = new WifiDirectBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         filter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         filter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         filter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
         registerReceiver(receiver, filter);
+        logMessage("BroadcastReceiver registered");
     }
 
     @Override
@@ -88,7 +93,12 @@ public class WifiDirectHandler extends NonStopIntentService {
         records.put("listenport", Integer.toString(serviceData.getPort()));
         records.put("available", "visible");
 
-        WifiP2pDnsSdServiceInfo serviceInfo = WifiP2pDnsSdServiceInfo.newInstance(
+        // Removes service if it is already added for some reason
+        if (serviceInfo != null) {
+            removeService();
+        }
+
+        serviceInfo = WifiP2pDnsSdServiceInfo.newInstance(
             serviceData.getServiceName(),
             serviceData.getServiceType().toString(),
             records
@@ -186,9 +196,10 @@ public class WifiDirectHandler extends NonStopIntentService {
      * Removes a registered local service.
      */
     public void removeService() {
-        wifiP2pManager.removeLocalService(channel, this.serviceInfo, new WifiP2pManager.ActionListener() {
+        wifiP2pManager.removeLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
+                serviceInfo = null;
                 Intent intent = new Intent(Event.SERVICE_REMOVED.toString());
                 localBroadcastManager.sendBroadcast(intent);
                 logMessage("Local service removed");
@@ -283,9 +294,9 @@ public class WifiDirectHandler extends NonStopIntentService {
     public void setWifiEnabled(boolean wifiEnabled) {
         wifiManager.setWifiEnabled(wifiEnabled);
         if (wifiEnabled) {
-            logMessage("WiFi enabled");
+            logMessage("Wi-Fi enabled");
         } else {
-            logMessage("WiFi disabled");
+            logMessage("Wi-Fi disabled");
         }
     }
 
@@ -326,16 +337,28 @@ public class WifiDirectHandler extends NonStopIntentService {
         }
     }
 
+    /**
+     * Logs a message to the WifiDirectHandler logs and logs an info message to logcat
+     * @param message Info message to log
+     */
     public void logMessage(String message) {
         logs += message + "\n";
         Log.i(LOG_TAG, message);
     }
 
+    /**
+     * Logs a message to the WifiDirectHandler logs and logs an error message to logcat
+     * @param message Error message to log
+     */
     public void logError(String message) {
         logs += message + "\n";
         Log.e(LOG_TAG, message);
     }
 
+    /**
+     * Getter for the WifiDirectHandler logs
+     * @return WifiDirectHandler logs
+     */
     public String getLogs() {
         return logs;
     }

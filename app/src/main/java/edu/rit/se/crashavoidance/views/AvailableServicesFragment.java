@@ -25,25 +25,24 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
  */
 public class AvailableServicesFragment extends ListFragment implements AdapterView.OnItemClickListener {
 
-    private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
     private WifiDirectHandler wiFiDirectHandler;
-
-    List<DnsSdService> services = new ArrayList<DnsSdService>();
+    List<DnsSdService> services = new ArrayList<>();
     AvailableServicesListViewAdapter servicesListAdapter;
     MainActivity mainActivity;
     WifiDirectReceiver receiver;
 
+    /**
+     * Sets the Layout for the UI
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_available_services, container, false);
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
+    /**
+     * Sets the WifiDirectHandler instance when AvailableServicesFragment is attached to MainActivity
+     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -51,7 +50,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
     }
 
     /**
-     * Set the service list adapter to display available services
+     * Sets the service list adapter to display available services
      */
     private void setServiceList() {
         servicesListAdapter = new AvailableServicesListViewAdapter((MainActivity) getActivity(), services);
@@ -59,8 +58,8 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
     }
 
     /**
-     * Register the receiver to listen for the intents broadcast by WifiDirectHandler
-     * and call service discovery
+     * Registers the receiver to listen for the intents broadcast by WifiDirectHandler
+     * and calls service discovery
      */
     private void startDiscoveringServices() {
         receiver = new WifiDirectReceiver();
@@ -77,7 +76,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
 
     /**
      * Receiver for receiving intents from the WifiDirectHandler to update UI
-     * when Wifi Direct commands are completed
+     * when Wi-Fi Direct commands are completed
      */
     public class WifiDirectReceiver extends BroadcastReceiver {
         @Override
@@ -103,7 +102,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
+            WiFiDirectHandlerAccessor wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
             wiFiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
             setServiceList();
             startDiscoveringServices();
