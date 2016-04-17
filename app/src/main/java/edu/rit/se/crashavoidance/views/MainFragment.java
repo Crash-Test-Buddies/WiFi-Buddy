@@ -1,7 +1,6 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import java.util.HashMap;
 
@@ -24,7 +25,7 @@ public class MainFragment extends Fragment {
 
     private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
     private WifiDirectHandler wifiDirectHandler;
-    private Button toggleWifiButton;
+    private Switch toggleWifiSwitch;
     AvailableServicesFragment availableServicesFragment;
     MainActivity mainActivity;
 
@@ -33,29 +34,33 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        // Initialize Toggle WiFi Button
-        toggleWifiButton = (Button) view.findViewById(R.id.toggleWifiButton);
-        toggleWifiButton.setOnClickListener(new View.OnClickListener() {
+        // Initialize Toggle Wi-Fi Switch
+        toggleWifiSwitch = (Switch) view.findViewById(R.id.toggleWifiSwitch);
+
+        // Set state of Wi-Fi Switch on load
+        if(wifiDirectHandler.isWifiEnabled()) {
+            wifiDirectHandler.logMessage(getString(R.string.status_wifi_enabled_load));
+            toggleWifiSwitch.setChecked(true);
+        } else {
+            wifiDirectHandler.logMessage(getString(R.string.status_wifi_disabled_load));
+            toggleWifiSwitch.setChecked(false);
+        }
+
+        // Switch toggle Listener
+        toggleWifiSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(wifiDirectHandler.isWifiEnabled()) {
+                    // Disable Wi-Fi
                     wifiDirectHandler.setWifiEnabled(false);
-                    toggleWifiButton.setText(getString(R.string.action_enable_wifi));
-                    toggleWifiButton.setBackgroundColor(Color.RED);
+                    toggleWifiSwitch.setChecked(false);
                 } else {
+                    // Enable Wi-Fi
                     wifiDirectHandler.setWifiEnabled(true);
-                    toggleWifiButton.setText(getString(R.string.action_disable_wifi));
-                    toggleWifiButton.setBackgroundColor(Color.GREEN);
+                    toggleWifiSwitch.setChecked(true);
                 }
             }
         });
-        if(wifiDirectHandler.isWifiEnabled()) {
-            toggleWifiButton.setText(getString(R.string.action_disable_wifi));
-            toggleWifiButton.setBackgroundColor(Color.GREEN);
-        } else {
-            toggleWifiButton.setText(getString(R.string.action_enable_wifi));
-            toggleWifiButton.setBackgroundColor(Color.RED);
-        }
 
         // Initialize Add Local Service Button
         Button serviceRegistrationButton = (Button) view.findViewById(R.id.serviceRegistrationButton);

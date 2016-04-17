@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
 
             wifiDirectHandler = binder.getService();
             wifiDirectHandlerBound = true;
+            wifiDirectHandler.logMessage("WifiDirectHandler bound");
             // Check whether the activity is using the layout version with
             // the fragment_container FrameLayout. If so, we must add the first fragment
             if (findViewById(R.id.fragment_container) != null) {

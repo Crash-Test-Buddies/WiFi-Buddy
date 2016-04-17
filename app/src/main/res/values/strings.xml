@@ -1,15 +1,13 @@
 <resources>
+    <!-- Tags -->
     <string name="log_tag">wifiDirectHandler</string>
 
     <!-- Titles -->
+    <string name="app_name">Wi-Fi Direct Handler</string>
     <string name="title_logs">Logs</string>
-    <string name="app_name">Wi-Fi Direct Tester</string>
     <string name="title_discover_services">Discover Services</string>
 
     <!-- Actions -->
-    <string name="action_disconnect">Disconnect</string>
-    <string name="action_register_wifi_direct">Register Wi-Fi Direct</string>
-    <string name="action_unregister_wifi_direct">Unregister Wi-Fi Direct</string>
     <string name="action_toggle_wifi">Toggle Wi-Fi</string>
     <string name="action_enable_wifi">Enable Wi-Fi</string>
     <string name="action_disable_wifi">Disable Wi-Fi</string>
@@ -23,43 +21,10 @@
     <string name="action_discover_services">Discover Local Services</string>
 
     <!-- Statuses -->
-    <string name="status_wifi_enabled">Wi-Fi Enabled</string>
-    <string name="status_wifi_disabled">Wi-Fi Disabled</string>
-    <string name="status_receiver_registered">BroadcastReceiver Registered</string>
-    <string name="status_receiver_unregistered">BroadcastReceiver Unregistered</string>
-    <string name="status_wifi_direct_initialized">App Registered with Wi-Fi Direct</string>
-    <string name="status_wifi_direct_unregistered">Wi-Fi Direct Unregistered</string>
-    <string name="status_service_registered">Local Service Registered</string>
-    <string name="status_service_unregistered">Local Service Unregistered</string>
-    <string name="status_viewing_logs">Viewing Logs</string>
+    <string name="status_wifi_enabled">Wi-Fi enabled</string>
+    <string name="status_wifi_disabled">Wi-Fi disabled</string>
+    <string name="status_wifi_enabled_load">Wi-Fi enabled on load</string>
+    <string name="status_wifi_disabled_load">Wi-Fi disabled on load</string>
+    <string name="status_viewing_logs">Viewing logs</string>
 
-    <!-- Warnings -->
-    <string name="warning_wifi_already_enabled">
-        Failed to Enable Wi-Fi: \nWi-Fi Already Enabled</string>
-    <string name="warning_wifi_already_disabled">
-        Failed to Disable Wi-Fi: \nWi-Fi Already Disabled</string>
-    <string name="warning_disable_wifi_failed">
-        Failed to Enable Wi-Fi</string>
-    <string name="warning_service_registration_failed">
-        Failed to Register Local Service</string>
-    <string name="warning_register_service_wifi_direct">
-        Failed to Register Local Service: \nFirst Register Wi-Fi Direct</string>
-    <string name="warning_receiver_wifi">
-        Failed to Register Broadcast Receiver: \nFirst Enable Wi-Fi</string>
-    <string name="warning_receiver_wifi_direct">
-        Failed to Register Broadcast Receiver: \nFirst Enable Wi-Fi Direct</string>
-    <string name="warning_unregister_receiver">
-        Failed to Unregister Broadcast Receiver</string>
-    <string name="warning_register_service_wifi">
-        Failed to Register Local Service: \nFirst Enable Wi-Fi</string>
-    <string name="warning_service_unregistration_failed">
-        Failed to Unregister Local Service</string>
-    <string name="warning_discover_service_wifi">
-        Failed to Discover Services: \nFirst Enable Wi-Fi</string>
-    <string name="warning_discover_service_wifi_direct">
-        Failed to Discover Services: \nFirst Register Wi-Fi Direct</string>
-    <string name="warning_wifi_direct_wifi_disabled">
-        Failed to Register Wi-Fi Direct: \nFirst Enable Wi-Fi</string>
-    <string name="warning_unregister_wifi_direct">
-        Failed to Unregister Wi-Fi Direct</string>
 </resources>

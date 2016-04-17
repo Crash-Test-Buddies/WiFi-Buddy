@@ -8,11 +8,10 @@
     android:orientation="vertical"
     android:layout_marginTop="?attr/actionBarSize">
 
-    <Button
-        style="@style/styleButtonDefault"
-        android:text="@string/action_toggle_wifi"
-        android:id="@+id/toggleWifiButton"
-        android:onClick="onClickButtonToggleWifi" />
+    <Switch
+        style="@style/styleSwitchDefault"
+        android:id="@+id/toggleWifiSwitch"
+        android:text="@string/action_toggle_wifi" />
   
     <Button
         style="@style/styleButtonDefault"
