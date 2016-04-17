@@ -109,24 +109,28 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
                 // Loop over each service to see if that device is in the peer list. We do this as there is no way of
                 // knowing whether the service is still available or not, but we can see if the peer is available. If the peer
                 // is not available then the service must not be available either
-                for (DnsSdService service : services){
-                    boolean remove = true;
-                    // Loop over the peer list
-                    for (WifiP2pDevice device : devices){
-                        // If we find the device address the peer is still available so set remove to false
-                        if (device.deviceAddress.equals(service.getSrcDevice().deviceAddress)){
-                            remove = false;
-                            break;
-                        }
-                    }
-                    // If the device address was not found, remove from the list
-                    if (remove){
-                        Log.d(LOG_TAG, "Removing device with address " + service.getSrcDevice().deviceAddress);
-                        services.remove(service);
-                        serviceListAdapter.notifyDataSetChanged();
-                    }
-                }
-                Log.d(LOG_TAG, "Finished checking peers list");
+//                for (DnsSdService service : services){
+//                    boolean remove = true;
+//                    // Loop over the peer list
+//                    for (WifiP2pDevice device : devices){
+//                        // If we find the device address the peer is still available so set remove to false
+//                        if (device.deviceAddress.equals(service.getSrcDevice().deviceAddress)){
+//                            remove = false;
+//                            break;
+//                        }
+//                    }
+//                    // If the device address was not found, remove from the list
+//                    if (remove){
+//                        Log.d(LOG_TAG, "Removing device with address " + service.getSrcDevice().deviceAddress);
+//                        services.remove(service);
+//                        serviceListAdapter.notifyDataSetChanged();
+//                    }
+//                }
+//                Log.d(LOG_TAG, "Finished checking peers list");
+            // Remove the service from the service list if we get a service removed intent form the wifiDirectHandler
+            } else if (intent.getAction().equals(WifiDirectHandler.Event.DEVICE_SERVICE_REMOVED.toString())){
+                String deviceAddress = intent.getStringExtra(wiFiDirectHandler.getSERVICE_MAP_KEY());
+                serviceListAdapter.removeService(wiFiDirectHandler.getDnsSdServiceMap().get(deviceAddress));
             }
         }
     }

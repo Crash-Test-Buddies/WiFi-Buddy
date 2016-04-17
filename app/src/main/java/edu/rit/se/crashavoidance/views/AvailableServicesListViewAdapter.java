@@ -80,5 +80,15 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
             return true;
         }
     }
+
+    /**
+     * Remove service from serviceList and update UI
+     * @param service service to be removed
+     */
+    public void removeService(DnsSdService service) {
+        serviceList.remove(service);
+        this.notifyDataSetChanged();
+    }
+
 }
 
