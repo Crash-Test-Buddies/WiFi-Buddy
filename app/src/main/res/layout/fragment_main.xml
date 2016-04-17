@@ -12,12 +12,11 @@
         style="@style/styleSwitchDefault"
         android:id="@+id/toggleWifiSwitch"
         android:text="@string/action_toggle_wifi" />
-  
-    <Button
-        style="@style/styleButtonDefault"
-        android:text="@string/action_register_service"
-        android:id="@+id/serviceRegistrationButton"
-        android:onClick="onClickButtonServiceRegistration" />
+
+    <Switch
+        style="@style/styleSwitchDefault"
+        android:id="@+id/serviceRegistrationSwitch"
+        android:text="@string/action_register_service" />
 
     <Button
         style="@style/styleButtonDefault"

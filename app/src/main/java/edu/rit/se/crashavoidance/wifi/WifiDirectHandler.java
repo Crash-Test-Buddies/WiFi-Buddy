@@ -88,7 +88,7 @@ public class WifiDirectHandler extends NonStopIntentService {
         records.put("listenport", Integer.toString(serviceData.getPort()));
         records.put("available", "visible");
 
-        WifiP2pDnsSdServiceInfo serviceInfo = WifiP2pDnsSdServiceInfo.newInstance(
+        serviceInfo = WifiP2pDnsSdServiceInfo.newInstance(
             serviceData.getServiceName(),
             serviceData.getServiceType().toString(),
             records

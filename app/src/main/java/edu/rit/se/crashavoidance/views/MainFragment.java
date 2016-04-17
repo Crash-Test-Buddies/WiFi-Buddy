@@ -46,7 +46,7 @@ public class MainFragment extends Fragment {
             toggleWifiSwitch.setChecked(false);
         }
 
-        // Switch toggle Listener
+        // Switch Toggle Wi-Fi Listener
         toggleWifiSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -62,18 +62,25 @@ public class MainFragment extends Fragment {
             }
         });
 
-        // Initialize Add Local Service Button
-        Button serviceRegistrationButton = (Button) view.findViewById(R.id.serviceRegistrationButton);
-        serviceRegistrationButton.setOnClickListener(new View.OnClickListener() {
+        // Initialize Add Local Service Switch
+        Switch serviceRegistrationSwitch = (Switch) view.findViewById(R.id.serviceRegistrationSwitch);
+
+        serviceRegistrationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                ServiceData serviceData = new ServiceData(
-                    "wifiTester",
-                    4545,
-                    new HashMap<String, String>(),
-                    ServiceType.PRESENCE_TCP
-                );
-                wifiDirectHandler.startAddingLocalService(serviceData);
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Add local service
+                    ServiceData serviceData = new ServiceData(
+                            "wifiTester",
+                            4545,
+                            new HashMap<String, String>(),
+                            ServiceType.PRESENCE_TCP
+                    );
+                    wifiDirectHandler.startAddingLocalService(serviceData);
+                } else {
+                    // Remove local service
+                    wifiDirectHandler.removeService();
+                }
             }
         });
 
