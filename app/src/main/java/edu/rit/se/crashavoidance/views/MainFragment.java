@@ -1,6 +1,7 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -40,12 +41,21 @@ public class MainFragment extends Fragment {
                 if(wifiDirectHandler.isWifiEnabled()) {
                     wifiDirectHandler.setWifiEnabled(false);
                     toggleWifiButton.setText(getString(R.string.action_enable_wifi));
+                    toggleWifiButton.setBackgroundColor(Color.RED);
                 } else {
                     wifiDirectHandler.setWifiEnabled(true);
                     toggleWifiButton.setText(getString(R.string.action_disable_wifi));
+                    toggleWifiButton.setBackgroundColor(Color.GREEN);
                 }
             }
         });
+        if(wifiDirectHandler.isWifiEnabled()) {
+            toggleWifiButton.setText(getString(R.string.action_disable_wifi));
+            toggleWifiButton.setBackgroundColor(Color.GREEN);
+        } else {
+            toggleWifiButton.setText(getString(R.string.action_enable_wifi));
+            toggleWifiButton.setBackgroundColor(Color.RED);
+        }
 
         // Initialize Add Local Service Button
         Button serviceRegistrationButton = (Button) view.findViewById(R.id.serviceRegistrationButton);
