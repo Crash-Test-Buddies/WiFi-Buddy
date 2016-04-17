@@ -75,6 +75,9 @@ public class WifiDirectHandler extends NonStopIntentService {
         filter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         filter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
         registerReceiver(receiver, filter);
+
+        Intent intent = new Intent(Event.SERVICE_CREATED.toString());
+        localBroadcastManager.sendBroadcast(intent);
     }
 
     @Override
@@ -305,7 +308,8 @@ public class WifiDirectHandler extends NonStopIntentService {
         DNS_SD_TXT_RECORD_ADDED("dnsSdTxtRecordAdded"),
         DNS_SD_SERVICE_AVAILABLE("dnsSdServiceAvailable"),
         SERVICE_REMOVED("serviceRemoved"),
-        PEERS_CHANGED("peersChanged");
+        PEERS_CHANGED("peersChanged"),
+        SERVICE_CREATED("serviceCreated");
 
         private String eventName;
 

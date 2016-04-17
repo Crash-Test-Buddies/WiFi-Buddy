@@ -1,6 +1,7 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -22,8 +23,10 @@ public class MainFragment extends Fragment {
 
     private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
     private Button toggleWifiButton;
+    private Button registerServiceButton;
     AvailableServicesFragment availableServicesFragment;
     MainActivity mainActivity;
+    Boolean serviceRegistered = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -34,6 +37,22 @@ public class MainFragment extends Fragment {
 
         // Initialize Toggle WiFi Button
         toggleWifiButton = (Button) view.findViewById(R.id.toggleWifiButton);
+
+
+
+//        if (wifiDirectHandlerAccessor.getWifiHandler().isWifiEnabled()) {
+//            toggleWifiButton.setText(getString(R.string.action_disable_wifi));
+//            toggleWifiButton.setBackgroundColor(Color.GREEN);
+//        } else {
+//            toggleWifiButton.setText(getString(R.string.action_enable_wifi));
+//            toggleWifiButton.setBackgroundColor(Color.RED);
+//        }
+
+
+
+        registerServiceButton = (Button) view.findViewById(R.id.serviceRegistrationButton);
+        registerServiceButton.setBackgroundColor(Color.RED);
+
         toggleWifiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -41,15 +60,17 @@ public class MainFragment extends Fragment {
                 if(handler.isWifiEnabled()) {
                     handler.setWifiEnabled(false);
                     toggleWifiButton.setText(getString(R.string.action_enable_wifi));
+                    toggleWifiButton.setBackgroundColor(Color.RED);
                 } else {
                     handler.setWifiEnabled(true);
                     toggleWifiButton.setText(getString(R.string.action_disable_wifi));
+                    toggleWifiButton.setBackgroundColor(Color.GREEN);
                 }
             }
         });
 
         // Initialize Add Local Service Button
-        Button serviceRegistrationButton = (Button) view.findViewById(R.id.serviceRegistrationButton);
+        final Button serviceRegistrationButton = (Button) view.findViewById(R.id.serviceRegistrationButton);
         serviceRegistrationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +80,10 @@ public class MainFragment extends Fragment {
                     new HashMap<String, String>(),
                     ServiceType.PRESENCE_TCP
                 );
+                if (serviceRegistered == false) {
+                    serviceRegistered = true;
+                    serviceRegistrationButton.setBackgroundColor(Color.GREEN);
+                }
                 wifiDirectHandlerAccessor.getWifiHandler().startAddingLocalService(serviceData);
             }
         });
