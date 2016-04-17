@@ -30,6 +30,7 @@ public class WifiDirectHandler extends NonStopIntentService {
     private final IBinder binder = new WifiTesterBinder();
 
     private final String SERVICE_MAP_KEY = "serviceMapKey";
+    private final String PEERS_KEY = "peersKey";
 
     private final String PEERS = "peers";
 
@@ -191,7 +192,7 @@ public class WifiDirectHandler extends NonStopIntentService {
         });
     }
 
-    private void requestPeers() {
+    public void requestPeers() {
         wifiP2pManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
