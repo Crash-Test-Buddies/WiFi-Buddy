@@ -71,6 +71,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString());
         filter.addAction(WifiDirectHandler.Event.PEERS_CHANGED.toString());
+        filter.addAction(WifiDirectHandler.Event.DEVICE_SERVICE_REMOVED.toString());
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
         // Start discovering services through the WifiDirectHandler service
         wifiDirectHandlerAccessor.getWifiHandler().startDiscoveringServices();
@@ -129,8 +130,9 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
 //                Log.d(LOG_TAG, "Finished checking peers list");
             // Remove the service from the service list if we get a service removed intent form the wifiDirectHandler
             } else if (intent.getAction().equals(WifiDirectHandler.Event.DEVICE_SERVICE_REMOVED.toString())){
-                String deviceAddress = intent.getStringExtra(wiFiDirectHandler.getSERVICE_MAP_KEY());
-                serviceListAdapter.removeService(wiFiDirectHandler.getDnsSdServiceMap().get(deviceAddress));
+                String deviceAddress = intent.getStringExtra(wifiDirectHandlerAccessor.getWifiHandler().getSERVICE_MAP_KEY());
+                Log.d(LOG_TAG, "Removing " + wifiDirectHandlerAccessor.getWifiHandler().getDnsSdServiceMap().get(deviceAddress).getSrcDevice().deviceName);
+                serviceListAdapter.removeService(wifiDirectHandlerAccessor.getWifiHandler().getDnsSdServiceMap().get(deviceAddress));
             }
         }
     }
