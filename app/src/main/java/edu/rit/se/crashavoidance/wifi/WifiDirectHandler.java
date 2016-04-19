@@ -23,6 +23,9 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.rit.se.crashavoidance.views.ChatFragment;
+import edu.rit.se.crashavoidance.views.MainActivity;
+
 /**
  * TODO add comment
  */
@@ -42,6 +45,9 @@ public class WifiDirectHandler extends NonStopIntentService {
     private BroadcastReceiver receiver;
     private WifiP2pServiceInfo serviceInfo;
     private WifiP2pServiceRequest serviceRequest;
+    private MainActivity mainActivity;
+    private ChatFragment chatFragment;
+    private Boolean isConnected;
 
     // Variables created in constructor
     private WifiP2pManager.Channel channel;
@@ -231,7 +237,7 @@ public class WifiDirectHandler extends NonStopIntentService {
    * Connects to a service
    * @param service The service to connect to
    */
-    public void connectToService(DnsSdService service) {
+    public Boolean connectToService(DnsSdService service) {
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = service.getSrcDevice().deviceAddress;
         config.wps.setup = WpsInfo.PBC;
@@ -249,17 +255,28 @@ public class WifiDirectHandler extends NonStopIntentService {
             });
         }
 
+        isConnected = null;
         wifiP2pManager.connect(channel, config, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
                 logMessage("Connected to service");
+                setIsConnected(true);
             }
 
             @Override
             public void onFailure(int reason) {
                 logError("Failure connecting to service: " + FailureReason.fromInteger(reason).toString());
+                setIsConnected(false);
             }
         });
+        return isConnected;
+    }
+
+    private void setIsConnected(boolean value) {
+        isConnected = value;
+    }
+    private Boolean getIsConnected() {
+        return isConnected;
     }
 
     @Nullable
