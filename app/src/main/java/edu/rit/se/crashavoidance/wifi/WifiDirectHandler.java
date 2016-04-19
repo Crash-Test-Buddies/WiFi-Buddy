@@ -22,6 +22,8 @@ import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * TODO add comment
@@ -33,10 +35,14 @@ public class WifiDirectHandler extends NonStopIntentService {
     private final IBinder binder = new WifiTesterBinder();
 
     private final String SERVICE_MAP_KEY = "serviceMapKey";
+    private final String PEERS_KEY = "peersKey";
+
+
     private final String PEERS = "peers";
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
     private Map<String, DnsSdService> dnsSdServiceMap;
+    private Map<String, Timer> serviceRemovalTask;
     private WifiP2pDeviceList peers;
     private LocalBroadcastManager localBroadcastManager;
     private BroadcastReceiver receiver;
@@ -55,6 +61,7 @@ public class WifiDirectHandler extends NonStopIntentService {
         super(androidServiceName);
         dnsSdTxtRecordMap = new HashMap<>();
         dnsSdServiceMap = new HashMap<>();
+        serviceRemovalTask = new HashMap<String, Timer>();
         peers = new WifiP2pDeviceList();
     }
 
@@ -141,10 +148,25 @@ public class WifiDirectHandler extends NonStopIntentService {
                 // Not sure if we want to track the map here or just send the service in the request to let the caller do
                 // what it wants with it
                 logMessage("Found service at address " + srcDevice.deviceAddress + " with name " + srcDevice.deviceName);
-                dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
+                DnsSdService service = new DnsSdService(instanceName, registrationType, srcDevice);
+                String deviceAddress = srcDevice.deviceAddress;
+                // TODO refactor this into a new method
+                // Find out if this is a new service or one we have already discovered to determine
+                // if we need to cancel a previously started timer task
+                boolean newService = !dnsSdServiceMap.containsKey(deviceAddress);
+                dnsSdServiceMap.put(deviceAddress, service);
                 Intent intent = new Intent(Event.DNS_SD_SERVICE_AVAILABLE.toString());
-                intent.putExtra(SERVICE_MAP_KEY, srcDevice.deviceAddress);
+                intent.putExtra(SERVICE_MAP_KEY, deviceAddress);
                 localBroadcastManager.sendBroadcast(intent);
+                // If this is a service we have previously discovered cancel the removal task
+                // and we will add a new one
+                if (!newService){
+                    Log.d(LOG_TAG, "Cancelling removal request for device " + srcDevice.deviceName);
+                    serviceRemovalTask.get(deviceAddress).cancel();
+                }
+                // Set a timer to remove the service if it is not discovered again before
+                // the specified number of seconds
+                serviceRemovalTask.put(deviceAddress, setServiceRemovalTimer(service, 10));
             }
         };
 
@@ -180,6 +202,14 @@ public class WifiDirectHandler extends NonStopIntentService {
 
     }
 
+    public Timer setServiceRemovalTimer(DnsSdService service, int seconds){
+        ServiceRemoveTask removeTask = new ServiceRemoveTask(service);
+        Timer timer = new Timer();
+        Log.d(LOG_TAG, "Setting removal task for device " + service.getSrcDevice().deviceName);
+        timer.schedule(removeTask, seconds * 1000);
+        return timer;
+    }
+
     public Map<String, DnsSdService> getDnsSdServiceMap(){
         return dnsSdServiceMap;
     }
@@ -212,7 +242,7 @@ public class WifiDirectHandler extends NonStopIntentService {
         });
     }
 
-    private void requestPeers() {
+    public void requestPeers() {
         wifiP2pManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
@@ -316,7 +346,8 @@ public class WifiDirectHandler extends NonStopIntentService {
         DNS_SD_TXT_RECORD_ADDED("dnsSdTxtRecordAdded"),
         DNS_SD_SERVICE_AVAILABLE("dnsSdServiceAvailable"),
         SERVICE_REMOVED("serviceRemoved"),
-        PEERS_CHANGED("peersChanged");
+        PEERS_CHANGED("peersChanged"),
+        DEVICE_SERVICE_REMOVED("deviceServiceRemoved");
 
         private String eventName;
 
@@ -355,11 +386,29 @@ public class WifiDirectHandler extends NonStopIntentService {
         Log.e(LOG_TAG, message);
     }
 
+    public String getPEERS() {
+        return PEERS;
+    }
+
     /**
      * Getter for the WifiDirectHandler logs
      * @return WifiDirectHandler logs
      */
     public String getLogs() {
         return logs;
+    }
+
+    class ServiceRemoveTask extends TimerTask {
+        DnsSdService service;
+        public ServiceRemoveTask(DnsSdService service){
+            this.service = service;
+        }
+        public void run() {
+            Log.d(LOG_TAG, "Removing " + service.getSrcDevice().deviceName + " from device map");
+            dnsSdServiceMap.remove(service);
+            Intent intent = new Intent(Event.DEVICE_SERVICE_REMOVED.toString());
+            intent.putExtra(SERVICE_MAP_KEY, service.getSrcDevice().deviceAddress);
+            localBroadcastManager.sendBroadcast(intent);
+        }
     }
 }

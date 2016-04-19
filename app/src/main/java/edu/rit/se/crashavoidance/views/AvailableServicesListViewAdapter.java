@@ -13,7 +13,7 @@ import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
 
 /**
- *
+ * Created by Brett on 3/16/2016.
  */
 public class AvailableServicesListViewAdapter extends BaseAdapter {
 
@@ -44,17 +44,15 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         final DnsSdService service = getItem(position);
 
-        // Inflates the template view inside each ListView item
+        // This will inflate the template view inside each ListView item
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.service_item, parent, false);
         }
 
-        TextView instanceName = (TextView) convertView.findViewById(R.id.instanceName);
         TextView deviceName = (TextView) convertView.findViewById(R.id.deviceName);
-        // TODO: This will need updates once real devices are in use
-        instanceName.setText(service.getInstanceName());
-
+        TextView deviceAddress = (TextView) convertView.findViewById(R.id.deviceAddress);
+        deviceAddress.setText(service.getSrcDevice().deviceAddress);
         deviceName.setText(service.getSrcDevice().deviceName);
 
         convertView.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +64,7 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
 
         return convertView;
     }
+
 
     /**
      * Add service to the Services list if it has not already been added
@@ -81,4 +80,15 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
             return true;
         }
     }
+
+    /**
+     * Remove service from serviceList and update UI
+     * @param service service to be removed
+     */
+    public void removeService(DnsSdService service) {
+        serviceList.remove(service);
+        this.notifyDataSetChanged();
+    }
+
 }
+

@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/instanceName"
+        android:id="@+id/deviceName"
         tools:text="Instance name"
         android:textSize="@dimen/abc_text_size_headline_material" />
 
@@ -22,7 +22,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/deviceName"
+            android:id="@+id/deviceAddress"
             tools:text="The name of the device"/>
     </LinearLayout>
 
