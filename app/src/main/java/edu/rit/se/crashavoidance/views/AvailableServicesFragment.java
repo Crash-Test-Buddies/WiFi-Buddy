@@ -64,7 +64,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
     private void startDiscoveringServices() {
         receiver = new WifiDirectReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString());
+        filter.addAction(WifiDirectHandler.Action.DNS_SD_SERVICE_AVAILABLE);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
         wiFiDirectHandler.startDiscoveringServices();
     }
@@ -82,7 +82,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found
-            if (intent.getAction().equals(WifiDirectHandler.Event.DNS_SD_SERVICE_AVAILABLE.toString())) {
+            if (intent.getAction().equals(WifiDirectHandler.Action.DNS_SD_SERVICE_AVAILABLE)) {
                 String serviceKey = intent.getStringExtra(wiFiDirectHandler.getSERVICE_MAP_KEY());
                 DnsSdService service = wiFiDirectHandler.getDnsSdServiceMap().get(serviceKey);
                 // Add the service to the UI and update
