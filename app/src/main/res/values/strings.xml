@@ -19,6 +19,7 @@
     <string name="action_register_service">Register Local Service</string>
     <string name="action_unregister_service">Unregister Local Service</string>
     <string name="action_discover_services">Discover Local Services</string>
+    <string name="action_no_prompt">Create No-Prompt Service</string>
 
     <!-- Statuses -->
     <string name="status_wifi_enabled">Wi-Fi enabled</string>

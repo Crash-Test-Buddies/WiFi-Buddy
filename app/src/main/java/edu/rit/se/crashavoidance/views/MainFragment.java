@@ -111,6 +111,21 @@ public class MainFragment extends Fragment {
             }
         });
 
+        // Initialize No-Prompt Button
+        Button noPromptButton = (Button) view.findViewById(R.id.noPromptService);
+        noPromptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ServiceData serviceData = new ServiceData(
+                        "wifiTester",
+                        4545,
+                        new HashMap<String, String>(),
+                        ServiceType.PRESENCE_TCP
+                );
+                wifiDirectHandler.startAddingNoPromptService(serviceData);
+            }
+        });
+
         return view;
     }
 

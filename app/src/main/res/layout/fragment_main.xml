@@ -21,4 +21,8 @@
         android:text="@string/action_discover_services"
         android:id="@+id/discoverServicesButton" />
 
+    <Button
+        style="@style/styleButtonDefault"
+        android:text="@string/action_no_prompt"
+        android:id="@+id/noPromptService" />
 </LinearLayout>

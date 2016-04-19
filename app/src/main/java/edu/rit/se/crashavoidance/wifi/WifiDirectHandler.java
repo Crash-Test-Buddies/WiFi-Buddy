@@ -9,6 +9,7 @@ import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
@@ -42,6 +43,10 @@ public class WifiDirectHandler extends NonStopIntentService {
     private BroadcastReceiver receiver;
     private WifiP2pServiceInfo serviceInfo;
     private WifiP2pServiceRequest serviceRequest;
+
+    //Flag for creating a no prompt service
+    private boolean isCreatingNoPrompt = false;
+    private ServiceData noPromptServiceData;
 
     // Variables created in constructor
     private WifiP2pManager.Channel channel;
@@ -92,6 +97,8 @@ public class WifiDirectHandler extends NonStopIntentService {
         Map<String, String> records = new HashMap<>(serviceData.getRecord());
         records.put("listenport", Integer.toString(serviceData.getPort()));
         records.put("available", "visible");
+
+        Log.i(LOG_TAG, "Adding local service " + serviceData);
 
         // Removes service if it is already added for some reason
         if (serviceInfo != null) {
@@ -262,6 +269,42 @@ public class WifiDirectHandler extends NonStopIntentService {
         });
     }
 
+    /**
+     * Creates a service that can be connected to without prompting. This is possible by creating an
+     * access point and broadcasting the password for peers to use. Peers connect via normal wifi, not
+     * wifi direct, but the effect is the same.
+     */
+    public void startAddingNoPromptService(ServiceData serviceData) {
+
+        if (serviceInfo != null) {
+            removeService();
+        }
+        isCreatingNoPrompt = true;
+        noPromptServiceData = serviceData;
+
+        wifiP2pManager.createGroup(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                Log.i(LOG_TAG, "Group created successfully");
+                //Note that you will have to wait for WIFI_P2P_CONNECTION_CHANGED_INTENT for group info
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Log.i(LOG_TAG, "Group creation failed: " + FailureReason.fromInteger(reason));
+
+            }
+        });
+    }
+
+    /**
+     * Connects to a no prompt service
+     * @param service The service to connect to
+     */
+    public void connectToNoPromptService(DnsSdService service) {
+
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -282,6 +325,34 @@ public class WifiDirectHandler extends NonStopIntentService {
                         intent.putExtra(PEERS, peers);
                         localBroadcastManager.sendBroadcast(intent);
                     }
+                });
+            }
+        } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
+            //Here is where you can requet group info
+            Log.i(LOG_TAG, "Wifi P2P Connection Changed");
+            if(wifiP2pManager != null) {
+                wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
+                    @Override
+                    public void onGroupInfoAvailable(WifiP2pGroup group) {
+                        if(group == null) {
+                            Log.i(LOG_TAG, "No WIFI P2P group found");
+                        } else {
+                            Log.i(LOG_TAG, "Group info available " + group.toString());
+                            Log.i(LOG_TAG, "Group name: " + group.getNetworkName() + " - Pass: " + group.getPassphrase());
+                        }
+                        if(isCreatingNoPrompt) {
+                            if(group == null) {
+                                Log.e(LOG_TAG, "Adding no prompt service failed, group does not exist");
+                                return;
+                            }
+                            isCreatingNoPrompt = false;
+
+                            noPromptServiceData.getRecord().put("networkName", group.getNetworkName());
+                            noPromptServiceData.getRecord().put("passphrase", group.getPassphrase());
+
+                            startAddingLocalService(noPromptServiceData);
+                        }
+                     }
                 });
             }
         }
