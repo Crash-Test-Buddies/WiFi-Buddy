@@ -135,22 +135,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     public void onServiceClick(DnsSdService service) {
         Boolean isConnected = wifiDirectHandler.connectToService(service);
         wifiDirectHandler.logMessage("Service connected: " + isConnected);
-        if (isConnected){
-            if (chatFragment == null) {
-                chatFragment = new ChatFragment();
-            }
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-            // Replace whatever is in the fragment_container view with this fragment,
-            // and add the transaction to the back stack so the user can navigate back
-            transaction.replace(R.id.fragment_container, chatFragment);
-            transaction.addToBackStack(null);
-
-            // Commit the transaction
-            transaction.commit();
-            //this.replaceFragment(chatFragment);
-        } else {
-
-        }
     }
 }

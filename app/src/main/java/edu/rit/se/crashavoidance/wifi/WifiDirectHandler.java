@@ -260,13 +260,15 @@ public class WifiDirectHandler extends NonStopIntentService {
             @Override
             public void onSuccess() {
                 logMessage("Connected to service");
-                setIsConnected(true);
+                Intent intent = new Intent(Event.SERVICE_CONNECTED.toString());
+                localBroadcastManager.sendBroadcast(intent);
+                //setIsConnected(true);
             }
 
             @Override
             public void onFailure(int reason) {
                 logError("Failure connecting to service: " + FailureReason.fromInteger(reason).toString());
-                setIsConnected(false);
+                //setIsConnected(false);
             }
         });
         return isConnected;
@@ -333,7 +335,8 @@ public class WifiDirectHandler extends NonStopIntentService {
         DNS_SD_TXT_RECORD_ADDED("dnsSdTxtRecordAdded"),
         DNS_SD_SERVICE_AVAILABLE("dnsSdServiceAvailable"),
         SERVICE_REMOVED("serviceRemoved"),
-        PEERS_CHANGED("peersChanged");
+        PEERS_CHANGED("peersChanged"),
+        SERVICE_CONNECTED("serviceConnected");
 
         private String eventName;
 

@@ -4,7 +4,9 @@ package edu.rit.se.crashavoidance.views;
  * Created by Dan on 4/18/2016.
  */
         import android.app.Fragment;
+        import android.content.BroadcastReceiver;
         import android.content.Context;
+        import android.content.Intent;
         import android.os.Bundle;
         import android.os.Handler;
         import android.support.v4.app.ListFragment;
@@ -18,6 +20,8 @@ package edu.rit.se.crashavoidance.views;
         import java.util.List;
 
         import edu.rit.se.crashavoidance.R;
+        import edu.rit.se.crashavoidance.wifi.DnsSdService;
+        import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 /**
  * This fragment handles chat related UI which includes a list view for messages
@@ -30,6 +34,16 @@ public class ChatFragment extends ListFragment {
     private ListView listView;
     ChatMessageAdapter adapter = null;
     private List<String> items = new ArrayList<String>();
+    WifiDirectHandler wiFiDirectHandler;
+    MainActivity mainActivity;
+
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mainActivity = (MainActivity) getActivity();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -100,6 +114,23 @@ public class ChatFragment extends ListFragment {
                 }
             }
             return v;
+        }
+    }
+
+
+    /**
+     * This is called when the Fragment is opened and is attached to MainActivity
+     * Sets the ListAdapter for the Service List and initiates the service discovery
+     */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            WiFiDirectHandlerAccessor wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
+            wiFiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
+
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
     }
 }

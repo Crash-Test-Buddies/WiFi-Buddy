@@ -1,9 +1,13 @@
 package edu.rit.se.crashavoidance.views;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +18,7 @@ import android.widget.Switch;
 import java.util.HashMap;
 
 import edu.rit.se.crashavoidance.R;
+import edu.rit.se.crashavoidance.wifi.DnsSdService;
 import edu.rit.se.crashavoidance.wifi.ServiceData;
 import edu.rit.se.crashavoidance.wifi.ServiceType;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
@@ -27,6 +32,7 @@ public class MainFragment extends Fragment {
     private Switch toggleWifiSwitch;
     AvailableServicesFragment availableServicesFragment;
     MainActivity mainActivity;
+    private ChatReceiver receiver;
 
     /**
      * Sets the layout for the UI, initializes the Buttons and Switches, and returns the View
@@ -140,5 +146,28 @@ public class MainFragment extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
+        //Set the receiver for moving to the chat fragment
+        receiver = new ChatReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(WifiDirectHandler.Event.SERVICE_CONNECTED.toString());
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
     }
+
+    /**
+     * Receiver for receiving intents from the WifiDirectHandler to update UI
+     * when Wi-Fi Direct commands are completed
+     */
+    public class ChatReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get the intent sent by WifiDirectHandler when a service is found
+            if (intent.getAction().equals(WifiDirectHandler.Event.SERVICE_CONNECTED.toString())) {
+                wifiDirectHandler.logMessage("Connected to service");
+
+                mainActivity.replaceFragment(new ChatFragment());
+            }
+        }
+    }
+
+
 }
