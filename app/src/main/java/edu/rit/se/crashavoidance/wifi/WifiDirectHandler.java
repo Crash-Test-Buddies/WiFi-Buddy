@@ -210,7 +210,7 @@ public class WifiDirectHandler extends NonStopIntentService {
                 @Override
                 public void onSuccess() {
                     serviceInfo = null;
-                    Intent intent = new Intent(Event.SERVICE_REMOVED.toString());
+                    Intent intent = new Intent(Action.SERVICE_REMOVED);
                     localBroadcastManager.sendBroadcast(intent);
                     logMessage("Local service removed");
                 }
