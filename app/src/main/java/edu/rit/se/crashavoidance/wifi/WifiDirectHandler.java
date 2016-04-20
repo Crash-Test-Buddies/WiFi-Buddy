@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
@@ -203,20 +204,25 @@ public class WifiDirectHandler extends NonStopIntentService {
      * Removes a registered local service.
      */
     public void removeService() {
-        wifiP2pManager.removeLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                serviceInfo = null;
-                Intent intent = new Intent(Event.SERVICE_REMOVED.toString());
-                localBroadcastManager.sendBroadcast(intent);
-                logMessage("Local service removed");
-            }
+        if(serviceInfo != null) {
+            logMessage("Removing local service");
+            wifiP2pManager.removeLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    serviceInfo = null;
+                    Intent intent = new Intent(Event.SERVICE_REMOVED.toString());
+                    localBroadcastManager.sendBroadcast(intent);
+                    logMessage("Local service removed");
+                }
 
-            @Override
-            public void onFailure(int reason) {
-                logError("Failure removing local service: " + FailureReason.fromInteger(reason).toString());
-            }
-        });
+                @Override
+                public void onFailure(int reason) {
+                    logError("Failure removing local service: " + FailureReason.fromInteger(reason).toString());
+                }
+            });
+        } else {
+            logMessage("No local service to remove");
+        }
     }
 
     private void requestPeers() {
@@ -302,7 +308,23 @@ public class WifiDirectHandler extends NonStopIntentService {
      * @param service The service to connect to
      */
     public void connectToNoPromptService(DnsSdService service) {
+        removeService();
+        WifiConfiguration configuration = new WifiConfiguration();
+        DnsSdTxtRecord txtRecord = dnsSdTxtRecordMap.get(service.getSrcDevice().deviceAddress);
+        if(txtRecord == null) {
+            logError("No dnsSdTxtRecord found for the no prommpt service");
+            return;
+        }
+        // Quotes around these are required
+        configuration.SSID = "\"" + txtRecord.getRecord().get(Keys.NO_PROMPT_NETWORK_NAME) + "\"";
+        configuration.preSharedKey = "\"" + txtRecord.getRecord().get(Keys.NO_PROMPT_NETWORK_PASS) + "\"";
+        int netId = wifiManager.addNetwork(configuration);
 
+        //disconnect form current network and connect to this one
+        wifiManager.disconnect();
+        wifiManager.enableNetwork(netId, true);
+        wifiManager.reconnect();
+        logMessage("Connected to no prompt network");
     }
 
     @Nullable
@@ -347,8 +369,8 @@ public class WifiDirectHandler extends NonStopIntentService {
                             }
                             isCreatingNoPrompt = false;
 
-                            noPromptServiceData.getRecord().put("networkName", group.getNetworkName());
-                            noPromptServiceData.getRecord().put("passphrase", group.getPassphrase());
+                            noPromptServiceData.getRecord().put(Keys.NO_PROMPT_NETWORK_NAME, group.getNetworkName());
+                            noPromptServiceData.getRecord().put(Keys.NO_PROMPT_NETWORK_PASS, group.getPassphrase());
 
                             startAddingLocalService(noPromptServiceData);
                         }
@@ -399,6 +421,11 @@ public class WifiDirectHandler extends NonStopIntentService {
         public String toString() {
             return eventName;
         }
+    }
+
+    private class Keys {
+        public static final String NO_PROMPT_NETWORK_NAME = "networkName",
+        NO_PROMPT_NETWORK_PASS = "passphrase";
     }
 
     private class WifiDirectBroadcastReceiver extends BroadcastReceiver {
