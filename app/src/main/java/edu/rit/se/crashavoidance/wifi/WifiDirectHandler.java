@@ -137,7 +137,7 @@ public class WifiDirectHandler extends NonStopIntentService {
             public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> txtRecordMap, WifiP2pDevice srcDevice) {
                 logMessage("DnsSDTxtRecord available");
 
-                Intent intent = new Intent(Event.DNS_SD_TXT_RECORD_ADDED.toString());
+                Intent intent = new Intent(Action.DNS_SD_TXT_RECORD_ADDED);
                 localBroadcastManager.sendBroadcast(intent);
                 dnsSdTxtRecordMap.put(srcDevice.deviceAddress, new DnsSdTxtRecord(fullDomainName, txtRecordMap, srcDevice));
             }
@@ -150,7 +150,7 @@ public class WifiDirectHandler extends NonStopIntentService {
                 // what it wants with it
                 logMessage("Found service at address " + srcDevice.deviceAddress + " with name " + srcDevice.deviceName);
                 dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
-                Intent intent = new Intent(Event.DNS_SD_SERVICE_AVAILABLE.toString());
+                Intent intent = new Intent(Action.DNS_SD_SERVICE_AVAILABLE);
                 intent.putExtra(SERVICE_MAP_KEY, srcDevice.deviceAddress);
                 localBroadcastManager.sendBroadcast(intent);
             }
@@ -343,7 +343,7 @@ public class WifiDirectHandler extends NonStopIntentService {
                     @Override
                     public void onPeersAvailable(WifiP2pDeviceList peers) {
                         WifiDirectHandler.this.peers = peers;
-                        Intent intent = new Intent(Event.PEERS_CHANGED.toString());
+                        Intent intent = new Intent(Action.PEERS_CHANGED);
                         intent.putExtra(PEERS, peers);
                         localBroadcastManager.sendBroadcast(intent);
                     }
@@ -405,22 +405,11 @@ public class WifiDirectHandler extends NonStopIntentService {
   /**
    * Actions that can be broadcasted by the handler
    */
-    public enum Event {
-        DNS_SD_TXT_RECORD_ADDED("dnsSdTxtRecordAdded"),
-        DNS_SD_SERVICE_AVAILABLE("dnsSdServiceAvailable"),
-        SERVICE_REMOVED("serviceRemoved"),
-        PEERS_CHANGED("peersChanged");
-
-        private String eventName;
-
-        Event(String eventName) {
-            this.eventName = eventName;
-        }
-
-        @Override
-        public String toString() {
-            return eventName;
-        }
+    public class Action {
+        public static final String DNS_SD_TXT_RECORD_ADDED = "dnsSdTxtRecordAdded",
+        DNS_SD_SERVICE_AVAILABLE = "dnsSdServiceAvailable",
+        SERVICE_REMOVED = "serviceRemoved",
+        PEERS_CHANGED = "peersChanged";
     }
 
     private class Keys {
