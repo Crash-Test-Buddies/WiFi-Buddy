@@ -32,4 +32,4 @@ Tester App
 
 ## Basic App Usage
 
-Build the project with gradle and you are good to go.)
+Build the project with gradle and you are good to go.
