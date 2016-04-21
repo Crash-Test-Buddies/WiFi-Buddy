@@ -4,11 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
@@ -32,7 +34,7 @@ public class WifiDirectHandler extends NonStopIntentService {
     public static final String LOG_TAG = "wifiDirectHandler";
     private final IBinder binder = new WifiTesterBinder();
 
-    private final String SERVICE_MAP_KEY = "serviceMapKey";
+    public static final String SERVICE_MAP_KEY = "serviceMapKey";
     private final String PEERS = "peers";
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
@@ -42,6 +44,10 @@ public class WifiDirectHandler extends NonStopIntentService {
     private BroadcastReceiver receiver;
     private WifiP2pServiceInfo serviceInfo;
     private WifiP2pServiceRequest serviceRequest;
+
+    //Flag for creating a no prompt service
+    private boolean isCreatingNoPrompt = false;
+    private ServiceData noPromptServiceData;
 
     // Variables created in constructor
     private WifiP2pManager.Channel channel;
@@ -92,6 +98,8 @@ public class WifiDirectHandler extends NonStopIntentService {
         Map<String, String> records = new HashMap<>(serviceData.getRecord());
         records.put("listenport", Integer.toString(serviceData.getPort()));
         records.put("available", "visible");
+
+        Log.i(LOG_TAG, "Adding local service " + serviceData);
 
         // Removes service if it is already added for some reason
         if (serviceInfo != null) {
@@ -184,8 +192,8 @@ public class WifiDirectHandler extends NonStopIntentService {
         return dnsSdServiceMap;
     }
 
-    public String getSERVICE_MAP_KEY() {
-        return SERVICE_MAP_KEY;
+    public Map<String, DnsSdTxtRecord> getDnsSdTxtRecordMap() {
+        return dnsSdTxtRecordMap;
     }
 
     public boolean isWifiEnabled() {
@@ -196,20 +204,25 @@ public class WifiDirectHandler extends NonStopIntentService {
      * Removes a registered local service.
      */
     public void removeService() {
-        wifiP2pManager.removeLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                serviceInfo = null;
-                Intent intent = new Intent(Action.SERVICE_REMOVED);
-                localBroadcastManager.sendBroadcast(intent);
-                logMessage("Local service removed");
-            }
+        if(serviceInfo != null) {
+            logMessage("Removing local service");
+            wifiP2pManager.removeLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    serviceInfo = null;
+                    Intent intent = new Intent(Action.SERVICE_REMOVED);
+                    localBroadcastManager.sendBroadcast(intent);
+                    logMessage("Local service removed");
+                }
 
-            @Override
-            public void onFailure(int reason) {
-                logError("Failure removing local service: " + FailureReason.fromInteger(reason).toString());
-            }
-        });
+                @Override
+                public void onFailure(int reason) {
+                    logError("Failure removing local service: " + FailureReason.fromInteger(reason).toString());
+                }
+            });
+        } else {
+            logMessage("No local service to remove");
+        }
     }
 
     private void requestPeers() {
@@ -262,6 +275,58 @@ public class WifiDirectHandler extends NonStopIntentService {
         });
     }
 
+    /**
+     * Creates a service that can be connected to without prompting. This is possible by creating an
+     * access point and broadcasting the password for peers to use. Peers connect via normal wifi, not
+     * wifi direct, but the effect is the same.
+     */
+    public void startAddingNoPromptService(ServiceData serviceData) {
+
+        if (serviceInfo != null) {
+            removeService();
+        }
+        isCreatingNoPrompt = true;
+        noPromptServiceData = serviceData;
+
+        wifiP2pManager.createGroup(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                Log.i(LOG_TAG, "Group created successfully");
+                //Note that you will have to wait for WIFI_P2P_CONNECTION_CHANGED_INTENT for group info
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Log.i(LOG_TAG, "Group creation failed: " + FailureReason.fromInteger(reason));
+
+            }
+        });
+    }
+
+    /**
+     * Connects to a no prompt service
+     * @param service The service to connect to
+     */
+    public void connectToNoPromptService(DnsSdService service) {
+        removeService();
+        WifiConfiguration configuration = new WifiConfiguration();
+        DnsSdTxtRecord txtRecord = dnsSdTxtRecordMap.get(service.getSrcDevice().deviceAddress);
+        if(txtRecord == null) {
+            logError("No dnsSdTxtRecord found for the no prommpt service");
+            return;
+        }
+        // Quotes around these are required
+        configuration.SSID = "\"" + txtRecord.getRecord().get(Keys.NO_PROMPT_NETWORK_NAME) + "\"";
+        configuration.preSharedKey = "\"" + txtRecord.getRecord().get(Keys.NO_PROMPT_NETWORK_PASS) + "\"";
+        int netId = wifiManager.addNetwork(configuration);
+
+        //disconnect form current network and connect to this one
+        wifiManager.disconnect();
+        wifiManager.enableNetwork(netId, true);
+        wifiManager.reconnect();
+        logMessage("Connected to no prompt network");
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -282,6 +347,34 @@ public class WifiDirectHandler extends NonStopIntentService {
                         intent.putExtra(PEERS, peers);
                         localBroadcastManager.sendBroadcast(intent);
                     }
+                });
+            }
+        } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
+            //Here is where you can requet group info
+            Log.i(LOG_TAG, "Wifi P2P Connection Changed");
+            if(wifiP2pManager != null) {
+                wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
+                    @Override
+                    public void onGroupInfoAvailable(WifiP2pGroup group) {
+                        if(group == null) {
+                            Log.i(LOG_TAG, "No WIFI P2P group found");
+                        } else {
+                            Log.i(LOG_TAG, "Group info available " + group.toString());
+                            Log.i(LOG_TAG, "Group name: " + group.getNetworkName() + " - Pass: " + group.getPassphrase());
+                        }
+                        if(isCreatingNoPrompt) {
+                            if(group == null) {
+                                Log.e(LOG_TAG, "Adding no prompt service failed, group does not exist");
+                                return;
+                            }
+                            isCreatingNoPrompt = false;
+
+                            noPromptServiceData.getRecord().put(Keys.NO_PROMPT_NETWORK_NAME, group.getNetworkName());
+                            noPromptServiceData.getRecord().put(Keys.NO_PROMPT_NETWORK_PASS, group.getPassphrase());
+
+                            startAddingLocalService(noPromptServiceData);
+                        }
+                     }
                 });
             }
         }
@@ -317,6 +410,11 @@ public class WifiDirectHandler extends NonStopIntentService {
         DNS_SD_SERVICE_AVAILABLE = "dnsSdServiceAvailable",
         SERVICE_REMOVED = "serviceRemoved",
         PEERS_CHANGED = "peersChanged";
+    }
+
+    private class Keys {
+        public static final String NO_PROMPT_NETWORK_NAME = "networkName",
+        NO_PROMPT_NETWORK_PASS = "passphrase";
     }
 
     private class WifiDirectBroadcastReceiver extends BroadcastReceiver {

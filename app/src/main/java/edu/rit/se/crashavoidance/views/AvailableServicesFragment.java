@@ -83,7 +83,7 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found
             if (intent.getAction().equals(WifiDirectHandler.Action.DNS_SD_SERVICE_AVAILABLE)) {
-                String serviceKey = intent.getStringExtra(wiFiDirectHandler.getSERVICE_MAP_KEY());
+                String serviceKey = intent.getStringExtra(wiFiDirectHandler.SERVICE_MAP_KEY);
                 DnsSdService service = wiFiDirectHandler.getDnsSdServiceMap().get(serviceKey);
                 // Add the service to the UI and update
                 servicesListAdapter.addUnique(service);
