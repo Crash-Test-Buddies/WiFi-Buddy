@@ -32,7 +32,7 @@ public class WifiDirectHandler extends NonStopIntentService {
     public static final String LOG_TAG = "wifiDirectHandler";
     private final IBinder binder = new WifiTesterBinder();
 
-    private final String SERVICE_MAP_KEY = "serviceMapKey";
+    public static final String SERVICE_MAP_KEY = "serviceMapKey";
     private final String PEERS = "peers";
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
@@ -184,8 +184,8 @@ public class WifiDirectHandler extends NonStopIntentService {
         return dnsSdServiceMap;
     }
 
-    public String getSERVICE_MAP_KEY() {
-        return SERVICE_MAP_KEY;
+    public Map<String, DnsSdTxtRecord> getDnsSdTxtRecordMap() {
+        return dnsSdTxtRecordMap;
     }
 
     public boolean isWifiEnabled() {

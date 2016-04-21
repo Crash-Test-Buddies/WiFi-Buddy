@@ -25,5 +25,12 @@
             android:id="@+id/deviceName"
             tools:text="The name of the device"/>
     </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/records"
+        android:paddingLeft="10dip">
+    </TextView>
 
 </LinearLayout>
