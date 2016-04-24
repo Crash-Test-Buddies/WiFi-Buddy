@@ -379,6 +379,7 @@ public class WifiDirectHandler extends NonStopIntentService {
 
         if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
             // The list of discovered peers has changed
+            // Available extras: EXTRA_P2P_DEVICE_LIST
             logMessage("List of discovered peers changed");
             if(wifiP2pManager != null) {
                 // Request the updated list of discovered peers from wifiP2PManager
@@ -395,6 +396,7 @@ public class WifiDirectHandler extends NonStopIntentService {
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
             // The state of Wi-Fi P2P connectivity has changed
             // Here is where you can request group info
+            // Available extras: EXTRA_WIFI_P2P_INFO, EXTRA_NETWORK_INFO, EXTRA_WIFI_P2P_GROUP
             Log.i(LOG_TAG, "Wi-Fi P2P Connection Changed");
             logMessage("Wi-Fi P2P connection changed");
             if(wifiP2pManager != null) {
@@ -427,6 +429,7 @@ public class WifiDirectHandler extends NonStopIntentService {
         } else if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
             // Indicates whether Wi-Fi P2P is enabled
             // Determine if Wi-Fi P2P mode is enabled or not, alert the Activity
+            // Available extras: EXTRA_WIFI_STATE
             // Sticky Intent
             logMessage("Wi-Fi P2P State Changed:");
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
@@ -441,6 +444,11 @@ public class WifiDirectHandler extends NonStopIntentService {
             // Indicates this device's configuration details have changed
             // Sticky Intent
             logMessage("This device changed");
+        } else if (WifiP2pManager.WIFI_P2P_DISCOVERY_CHANGED_ACTION.equals(action)) {
+            // Broadcast intent action indicating that peer discovery has either started or stopped
+            // Available extras: EXTRA_DISCOVERY_STATE
+            // Note that discovery will be stopped during a connection setup
+            // If the application tries to re-initiate discovery during this time, it can fail
         }
     }
 
