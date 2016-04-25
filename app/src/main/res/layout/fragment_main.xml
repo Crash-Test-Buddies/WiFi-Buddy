@@ -17,14 +17,16 @@
         android:text="@string/action_register_service"
         android:checked="false"
         android:enabled="false" />
+    <Switch
+        style="@style/styleSwitchDefault"
+        android:id="@+id/noPromptServiceRegistrationSwitch"
+        android:text="@string/action_register_no_prompt"
+        android:checked="false"
+        android:enabled="false" />
 
     <Button
         style="@style/styleButtonDefault"
         android:text="@string/action_discover_services"
         android:id="@+id/discoverServicesButton" />
 
-    <Button
-        style="@style/styleButtonDefault"
-        android:text="@string/action_no_prompt"
-        android:id="@+id/noPromptService" />
 </LinearLayout>
