@@ -25,6 +25,7 @@ public class MainFragment extends Fragment {
 
     private WifiDirectHandler wifiDirectHandler;
     private Switch toggleWifiSwitch;
+    private Switch serviceRegistrationSwitch;
     AvailableServicesFragment availableServicesFragment;
     MainActivity mainActivity;
 
@@ -37,16 +38,19 @@ public class MainFragment extends Fragment {
         // Sets the Layout for the UI
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        // Initialize Wi-Fi Switch
+        // Initialize Switches
         toggleWifiSwitch = (Switch) view.findViewById(R.id.toggleWifiSwitch);
+        serviceRegistrationSwitch = (Switch) view.findViewById(R.id.serviceRegistrationSwitch);
 
-        // Set state of Wi-Fi Switch on load
+        // Set state of Switches on load
         if(wifiDirectHandler.isWifiEnabled()) {
             wifiDirectHandler.logMessage(getString(R.string.status_wifi_enabled_load));
             toggleWifiSwitch.setChecked(true);
+            serviceRegistrationSwitch.setEnabled(true);
         } else {
             wifiDirectHandler.logMessage(getString(R.string.status_wifi_disabled_load));
             toggleWifiSwitch.setChecked(false);
+            serviceRegistrationSwitch.setEnabled(false);
         }
 
         // Set Toggle Listener for Wi-Fi Switch
@@ -57,19 +61,23 @@ public class MainFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(wifiDirectHandler.isWifiEnabled()) {
-                    // Disable Wi-Fi
+                    // Disable Wi-Fi, remove Local Service if there is one
                     wifiDirectHandler.setWifiEnabled(false);
                     toggleWifiSwitch.setChecked(false);
+                    serviceRegistrationSwitch.setEnabled(false);
+                    serviceRegistrationSwitch.setChecked(false);
+                    wifiDirectHandler.removeService();
                 } else {
                     // Enable Wi-Fi
                     wifiDirectHandler.setWifiEnabled(true);
                     toggleWifiSwitch.setChecked(true);
+                    serviceRegistrationSwitch.setEnabled(true);
                 }
             }
         });
 
         // Initialize Service Registration Switch
-        Switch serviceRegistrationSwitch = (Switch) view.findViewById(R.id.serviceRegistrationSwitch);
+        serviceRegistrationSwitch = (Switch) view.findViewById(R.id.serviceRegistrationSwitch);
 
         // Set Toggle Listener for Service Registration Switch
         serviceRegistrationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
