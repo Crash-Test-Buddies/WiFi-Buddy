@@ -475,7 +475,7 @@ public class WifiDirectHandler extends NonStopIntentService {
     }
 
   /**
-   * Actions that can be broadcasted by the handler
+   * Actions that can be broadcast by the handler
    */
     public class Action {
         public static final String DNS_SD_TXT_RECORD_ADDED = "dnsSdTxtRecordAdded",

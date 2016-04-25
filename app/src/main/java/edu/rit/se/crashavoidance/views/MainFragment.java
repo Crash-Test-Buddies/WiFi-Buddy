@@ -26,6 +26,7 @@ public class MainFragment extends Fragment {
     private WifiDirectHandler wifiDirectHandler;
     private Switch toggleWifiSwitch;
     private Switch serviceRegistrationSwitch;
+    private Switch noPromptServiceRegistrationSwitch;
     AvailableServicesFragment availableServicesFragment;
     MainActivity mainActivity;
 
@@ -41,16 +42,21 @@ public class MainFragment extends Fragment {
         // Initialize Switches
         toggleWifiSwitch = (Switch) view.findViewById(R.id.toggleWifiSwitch);
         serviceRegistrationSwitch = (Switch) view.findViewById(R.id.serviceRegistrationSwitch);
+        noPromptServiceRegistrationSwitch = (Switch) view.findViewById(R.id.noPromptServiceRegistrationSwitch);
 
         // Set state of Switches on load
         if(wifiDirectHandler.isWifiEnabled()) {
             wifiDirectHandler.logMessage(getString(R.string.status_wifi_enabled_load));
             toggleWifiSwitch.setChecked(true);
             serviceRegistrationSwitch.setEnabled(true);
+            noPromptServiceRegistrationSwitch.setEnabled(true);
         } else {
             wifiDirectHandler.logMessage(getString(R.string.status_wifi_disabled_load));
             toggleWifiSwitch.setChecked(false);
+            serviceRegistrationSwitch.setChecked(false);
+            noPromptServiceRegistrationSwitch.setChecked(false);
             serviceRegistrationSwitch.setEnabled(false);
+            noPromptServiceRegistrationSwitch.setEnabled(false);
         }
 
         // Set Toggle Listener for Wi-Fi Switch
@@ -62,22 +68,22 @@ public class MainFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(wifiDirectHandler.isWifiEnabled()) {
                     // Disable Wi-Fi, remove Local Service if there is one
-                    wifiDirectHandler.setWifiEnabled(false);
                     toggleWifiSwitch.setChecked(false);
-                    serviceRegistrationSwitch.setEnabled(false);
                     serviceRegistrationSwitch.setChecked(false);
+                    noPromptServiceRegistrationSwitch.setChecked(false);
+                    wifiDirectHandler.setWifiEnabled(false);
+                    serviceRegistrationSwitch.setEnabled(false);
+                    noPromptServiceRegistrationSwitch.setEnabled(false);
                     wifiDirectHandler.removeService();
                 } else {
                     // Enable Wi-Fi
-                    wifiDirectHandler.setWifiEnabled(true);
                     toggleWifiSwitch.setChecked(true);
+                    wifiDirectHandler.setWifiEnabled(true);
                     serviceRegistrationSwitch.setEnabled(true);
+                    noPromptServiceRegistrationSwitch.setEnabled(true);
                 }
             }
         });
-
-        // Initialize Service Registration Switch
-        serviceRegistrationSwitch = (Switch) view.findViewById(R.id.serviceRegistrationSwitch);
 
         // Set Toggle Listener for Service Registration Switch
         serviceRegistrationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -95,9 +101,36 @@ public class MainFragment extends Fragment {
                             ServiceType.PRESENCE_TCP
                     );
                     wifiDirectHandler.startAddingLocalService(serviceData);
+                    noPromptServiceRegistrationSwitch.setEnabled(false);
                 } else {
                     // Remove local service
                     wifiDirectHandler.removeService();
+                    noPromptServiceRegistrationSwitch.setEnabled(true);
+                }
+            }
+        });
+
+        // Set Toggle Listener for No-Prompt Service Registration Switch
+        noPromptServiceRegistrationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            /**
+             * Add or Remove a No-Prompt Local Service when Switch is toggled
+             */
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Add no-prompt local service
+                    ServiceData serviceData = new ServiceData(
+                            "wifiTester",
+                            4545,
+                            new HashMap<String, String>(),
+                            ServiceType.PRESENCE_TCP
+                    );
+                    wifiDirectHandler.startAddingNoPromptService(serviceData);
+                    serviceRegistrationSwitch.setEnabled(false);
+                } else {
+                    // Remove no-prompt local service
+                    wifiDirectHandler.removeService();
+                    serviceRegistrationSwitch.setEnabled(true);
                 }
             }
         });
@@ -116,21 +149,6 @@ public class MainFragment extends Fragment {
                     availableServicesFragment = new AvailableServicesFragment();
                 }
                 mainActivity.replaceFragment(availableServicesFragment);
-            }
-        });
-
-        // Initialize No-Prompt Button
-        Button noPromptButton = (Button) view.findViewById(R.id.noPromptService);
-        noPromptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ServiceData serviceData = new ServiceData(
-                        "wifiTester",
-                        4545,
-                        new HashMap<String, String>(),
-                        ServiceType.PRESENCE_TCP
-                );
-                wifiDirectHandler.startAddingNoPromptService(serviceData);
             }
         });
 
