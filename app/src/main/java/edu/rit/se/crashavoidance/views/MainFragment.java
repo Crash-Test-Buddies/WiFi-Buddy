@@ -27,6 +27,7 @@ public class MainFragment extends Fragment {
     private Switch toggleWifiSwitch;
     private Switch serviceRegistrationSwitch;
     private Switch noPromptServiceRegistrationSwitch;
+    private Button discoverServicesButton;
     AvailableServicesFragment availableServicesFragment;
     MainActivity mainActivity;
 
@@ -44,12 +45,16 @@ public class MainFragment extends Fragment {
         serviceRegistrationSwitch = (Switch) view.findViewById(R.id.serviceRegistrationSwitch);
         noPromptServiceRegistrationSwitch = (Switch) view.findViewById(R.id.noPromptServiceRegistrationSwitch);
 
-        // Set state of Switches on load
+        // Initialize Discover Services Button
+        discoverServicesButton = (Button) view.findViewById(R.id.discoverServicesButton);
+
+        // Set state of Switches and Buttons on load
         if(wifiDirectHandler.isWifiEnabled()) {
             wifiDirectHandler.logMessage(getString(R.string.status_wifi_enabled_load));
             toggleWifiSwitch.setChecked(true);
             serviceRegistrationSwitch.setEnabled(true);
             noPromptServiceRegistrationSwitch.setEnabled(true);
+            discoverServicesButton.setEnabled(true);
         } else {
             wifiDirectHandler.logMessage(getString(R.string.status_wifi_disabled_load));
             toggleWifiSwitch.setChecked(false);
@@ -57,6 +62,7 @@ public class MainFragment extends Fragment {
             noPromptServiceRegistrationSwitch.setChecked(false);
             serviceRegistrationSwitch.setEnabled(false);
             noPromptServiceRegistrationSwitch.setEnabled(false);
+            discoverServicesButton.setEnabled(false);
         }
 
         // Set Toggle Listener for Wi-Fi Switch
@@ -74,12 +80,14 @@ public class MainFragment extends Fragment {
                     wifiDirectHandler.setWifiEnabled(false);
                     serviceRegistrationSwitch.setEnabled(false);
                     noPromptServiceRegistrationSwitch.setEnabled(false);
+                    discoverServicesButton.setEnabled(false);
                     wifiDirectHandler.removeService();
                 } else {
                     // Enable Wi-Fi
                     toggleWifiSwitch.setChecked(true);
                     wifiDirectHandler.setWifiEnabled(true);
                     serviceRegistrationSwitch.setEnabled(true);
+                    discoverServicesButton.setEnabled(true);
                     noPromptServiceRegistrationSwitch.setEnabled(true);
                 }
             }
@@ -134,9 +142,6 @@ public class MainFragment extends Fragment {
                 }
             }
         });
-
-        // Initialize Discover Services Button
-        Button discoverServicesButton = (Button) view.findViewById(R.id.discoverServicesButton);
 
         // Set Click Listener for Discover Services Button
         discoverServicesButton.setOnClickListener(new View.OnClickListener() {
