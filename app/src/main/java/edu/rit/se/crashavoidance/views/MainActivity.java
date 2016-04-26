@@ -3,8 +3,12 @@ package edu.rit.se.crashavoidance.views;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.wifi.p2p.WifiP2pInfo;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -12,19 +16,32 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.io.IOException;
+
 import edu.rit.se.crashavoidance.R;
+import edu.rit.se.crashavoidance.wifi.ChatManager;
+import edu.rit.se.crashavoidance.wifi.ClientSocketHandler;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
+import edu.rit.se.crashavoidance.wifi.OwnerSocketHandler;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 /**
  * The main Activity of the application, which is a container for Fragments and the ActionBar
  * Also contains the WifiDirectHandler
  */
-public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor {
+public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor,
+        Handler.Callback, ChatFragment.MessageTarget,
+        WifiP2pManager.ConnectionInfoListener {
 
     private WifiDirectHandler wifiDirectHandler;
     private boolean wifiDirectHandlerBound = false;
     private ChatFragment chatFragment;
+
+    public static final int MESSAGE_READ = 0x400 + 1;
+    public static final int MY_HANDLE = 0x400 + 2;
+    public static final int SERVER_PORT = 4545;
+
+    private Handler handler = new Handler(this);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -136,5 +153,62 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         Boolean isConnected = wifiDirectHandler.connectToService(service);
         wifiDirectHandler.logMessage("Service connected: " + isConnected);
 
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case MESSAGE_READ:
+                byte[] readBuf = (byte[]) msg.obj;
+                // construct a string from the valid bytes in the buffer
+                String readMessage = new String(readBuf, 0, msg.arg1);
+                wifiDirectHandler.logMessage(readMessage);
+                (chatFragment).pushMessage("Buddy: " + readMessage);
+                break;
+            case MY_HANDLE:
+                Object obj = msg.obj;
+                (chatFragment).setChatManager((ChatManager) obj);
+        }
+        return true;
+    }
+
+    @Override
+    public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
+        Thread handler = null;
+        /*
+         * The group owner accepts connections using a server socket and then spawns a
+         * client socket for every client. This is handled by {@code
+         * GroupOwnerSocketHandler}
+         */
+        if (p2pInfo.isGroupOwner) {
+            wifiDirectHandler.logMessage("Connected as group owner");
+            try {
+                handler = new OwnerSocketHandler(
+                        ((ChatFragment.MessageTarget) this).getHandler());
+                handler.start();
+            } catch (IOException e) {
+                wifiDirectHandler.logMessage(
+                        "Failed to create a server thread - " + e.getMessage());
+                return;
+            }
+        } else {
+            wifiDirectHandler.logMessage("Connected as peer");
+            handler = new ClientSocketHandler(
+                    ((ChatFragment.MessageTarget) this).getHandler(),
+                    p2pInfo.groupOwnerAddress);
+            handler.start();
+        }
+        chatFragment = new ChatFragment();
+        replaceFragment(chatFragment);
+
+    }
+
+    @Override
+    public Handler getHandler() {
+        return handler;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 }

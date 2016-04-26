@@ -94,6 +94,10 @@ public class WifiDirectHandler extends NonStopIntentService {
         super.onDestroy();
     }
 
+    public WifiP2pManager getWifiP2pManager(){
+        return wifiP2pManager;
+    }
+
     public void startAddingLocalService(ServiceData serviceData) {
         Map<String, String> records = new HashMap<>(serviceData.getRecord());
         records.put("listenport", Integer.toString(serviceData.getPort()));

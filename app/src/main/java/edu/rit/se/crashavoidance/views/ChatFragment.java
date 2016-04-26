@@ -20,6 +20,7 @@ package edu.rit.se.crashavoidance.views;
         import java.util.List;
 
         import edu.rit.se.crashavoidance.R;
+        import edu.rit.se.crashavoidance.wifi.ChatManager;
         import edu.rit.se.crashavoidance.wifi.DnsSdService;
         import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
@@ -29,7 +30,7 @@ package edu.rit.se.crashavoidance.views;
  */
 public class ChatFragment extends ListFragment {
     private View view;
-    //private ChatManager chatManager;
+    private ChatManager chatManager;
     private TextView chatLine;
     private ListView listView;
     ChatMessageAdapter adapter = null;
@@ -54,29 +55,29 @@ public class ChatFragment extends ListFragment {
                 items);
         listView.setAdapter(adapter);
         view.findViewById(R.id.button1).setOnClickListener(
-                new View.OnClickListener() {
+                      new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
-/*                      if (chatManager != null) {
+                      if (chatManager != null) {
                             chatManager.write(chatLine.getText().toString()
                                     .getBytes());
                             pushMessage("Me: " + chatLine.getText().toString());
                             chatLine.setText("");
                             chatLine.clearFocus();
                         }
-*/
                     }
                 });
         return view;
     }
+
     public interface MessageTarget {
         public Handler getHandler();
     }
-/*
+
     public void setChatManager(ChatManager obj) {
         chatManager = obj;
     }
-*/
+
     public void pushMessage(String readMessage) {
         adapter.add(readMessage);
         adapter.notifyDataSetChanged();

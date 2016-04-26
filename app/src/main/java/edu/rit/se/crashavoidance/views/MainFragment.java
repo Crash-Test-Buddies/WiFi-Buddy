@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -150,6 +151,7 @@ public class MainFragment extends Fragment {
         receiver = new ChatReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Event.SERVICE_CONNECTED.toString());
+        filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
     }
 
@@ -161,11 +163,15 @@ public class MainFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found
-            if (intent.getAction().equals(WifiDirectHandler.Event.SERVICE_CONNECTED.toString())) {
-                wifiDirectHandler.logMessage("Connected to service");
+
+            if (intent.getAction().equals(WifiDirectHandler.Event.SERVICE_CONNECTED.toString())
+               || intent.getAction().equals(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
+                    ) {
+                wifiDirectHandler.logMessage("FRAGMENT SWITCH: Connected to service");
 
                 mainActivity.replaceFragment(new ChatFragment());
             }
+
         }
     }
 
