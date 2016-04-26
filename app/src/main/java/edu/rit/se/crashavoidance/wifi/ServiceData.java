@@ -50,4 +50,14 @@ public class ServiceData {
     public void setServiceType(ServiceType serviceType) {
         this.serviceType = serviceType;
     }
+
+    @Override
+    public String toString() {
+        return "ServiceData{" +
+                "serviceName='" + serviceName + '\'' +
+                ", port=" + port +
+                ", record=" + record +
+                ", serviceType=" + serviceType +
+                '}';
+    }
 }

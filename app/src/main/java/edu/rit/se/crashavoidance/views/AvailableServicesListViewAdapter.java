@@ -52,7 +52,13 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
 
         TextView instanceName = (TextView) convertView.findViewById(R.id.instanceName);
         TextView deviceName = (TextView) convertView.findViewById(R.id.deviceName);
-        // TODO: This will need updates once real devices are in use
+        TextView records = (TextView) convertView.findViewById(R.id.records);
+
+        if(context.getWifiHandler() != null &&
+                context.getWifiHandler().getDnsSdTxtRecordMap().get(service.getSrcDevice().deviceAddress) != null) {
+            records.setText(context.getWifiHandler().getDnsSdTxtRecordMap().get(service.getSrcDevice().deviceAddress).getRecord().toString());
+        }
+
         instanceName.setText(service.getInstanceName());
 
         deviceName.setText(service.getSrcDevice().deviceName);
