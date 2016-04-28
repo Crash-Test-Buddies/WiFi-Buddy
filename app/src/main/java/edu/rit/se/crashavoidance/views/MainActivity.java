@@ -138,4 +138,32 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     public void onServiceClick(DnsSdService service) {
         wifiDirectHandler.connectToService(service);
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (wifiDirectHandlerBound) {
+            Log.i("MainActivity","onPause -- unbindService");
+            unbindService(wifiServiceConnection);
+            wifiDirectHandlerBound = false;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent intent = new Intent(this, WifiDirectHandler.class);
+        bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (wifiDirectHandlerBound) {
+            Log.i("MainActivity","onDestroy -- unbindService");
+            unbindService(wifiServiceConnection);
+            wifiDirectHandlerBound = false;
+        }
+    }
 }
