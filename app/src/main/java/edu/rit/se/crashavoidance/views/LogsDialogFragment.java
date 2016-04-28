@@ -10,6 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
@@ -17,6 +21,8 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
  * DialogFragment that shows the WifiDirectHandler log messages
  */
 public class LogsDialogFragment extends DialogFragment {
+
+    private StringBuilder log = new StringBuilder();
 
     /**
      * Creates the AlertDialog, sets the WifiDirectHandler instance, and sets the logs TextView
@@ -40,7 +46,23 @@ public class LogsDialogFragment extends DialogFragment {
         // Sets the logs TextView and shows the WifiDirectHandler logs
         TextView logTextView = (TextView) rootView.findViewById(R.id.logTextView);
         logTextView.setMovementMethod(new ScrollingMovementMethod());
-        logTextView.setText(wifiDirectHandler.getLogs());
+
+        try {
+            Process process = Runtime.getRuntime().exec("logcat -d");
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.contains(WifiDirectHandler.LOG_TAG)){
+                    // Removes log tag and PID from the log line
+                    log.append(line.substring(line.indexOf(": ") + 2)).append("\n");
+                }
+            }
+            Runtime.getRuntime().exec("logcat -c");
+            logTextView.setText(log.toString());
+        } catch (IOException e) {
+        }
 
         // Creates and returns the AlertDialog for the logs
         AlertDialog.Builder dialogBuilder =  new  AlertDialog.Builder(getActivity())
