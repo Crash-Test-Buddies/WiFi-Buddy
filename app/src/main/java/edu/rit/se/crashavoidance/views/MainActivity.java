@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
 
     private WifiDirectHandler wifiDirectHandler;
     private boolean wifiDirectHandlerBound = false;
+    private LogsDialogFragment logsDialogFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,7 +74,9 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         switch (item.getItemId()) {
             case R.id.action_view_logs:
                 // View Logs MenuItem tapped
-                LogsDialogFragment logsDialogFragment = new LogsDialogFragment();
+                if (logsDialogFragment == null) {
+                    logsDialogFragment = new LogsDialogFragment();
+                }
                 logsDialogFragment.show(getFragmentManager(), "dialog");
                 return true;
             case R.id.action_exit:
