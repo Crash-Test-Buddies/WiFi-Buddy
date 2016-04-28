@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
 
             wifiDirectHandler = binder.getService();
             wifiDirectHandlerBound = true;
-            wifiDirectHandler.logMessage("WifiDirectHandler bound");
+            Log.i(wifiDirectHandler.LOG_TAG, "WifiDirectHandler bound");
 
             // Add MainFragment to the 'fragment_container' when wifiDirectHandler is bound
             MainFragment mainFragment = new MainFragment();

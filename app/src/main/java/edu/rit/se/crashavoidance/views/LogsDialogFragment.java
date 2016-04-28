@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -38,7 +39,7 @@ public class LogsDialogFragment extends DialogFragment {
         try {
             WiFiDirectHandlerAccessor wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
             wifiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
-            wifiDirectHandler.logMessage("Viewing logs");
+            Log.i(wifiDirectHandler.LOG_TAG, "Viewing logs");
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
