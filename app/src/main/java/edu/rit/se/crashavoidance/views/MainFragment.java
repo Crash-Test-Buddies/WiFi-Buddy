@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,13 +58,13 @@ public class MainFragment extends Fragment {
 
         // Set state of Switches and Buttons on load
         if(wifiDirectHandler.isWifiEnabled()) {
-            wifiDirectHandler.logMessage(getString(R.string.status_wifi_enabled_load));
+            Log.i(wifiDirectHandler.LOG_TAG, getString(R.string.status_wifi_enabled_load));
             toggleWifiSwitch.setChecked(true);
             serviceRegistrationSwitch.setEnabled(true);
             noPromptServiceRegistrationSwitch.setEnabled(true);
             discoverServicesButton.setEnabled(true);
         } else {
-            wifiDirectHandler.logMessage(getString(R.string.status_wifi_disabled_load));
+            Log.i(wifiDirectHandler.LOG_TAG, getString(R.string.status_wifi_disabled_load));
             toggleWifiSwitch.setChecked(false);
             serviceRegistrationSwitch.setChecked(false);
             noPromptServiceRegistrationSwitch.setChecked(false);

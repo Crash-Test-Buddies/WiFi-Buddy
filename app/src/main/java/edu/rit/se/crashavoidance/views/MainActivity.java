@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     public static final int SERVER_PORT = 4545;
 
     private Handler handler = new Handler(this);
+    private LogsDialogFragment logsDialogFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,7 +93,9 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         switch (item.getItemId()) {
             case R.id.action_view_logs:
                 // View Logs MenuItem tapped
-                LogsDialogFragment logsDialogFragment = new LogsDialogFragment();
+                if (logsDialogFragment == null) {
+                    logsDialogFragment = new LogsDialogFragment();
+                }
                 logsDialogFragment.show(getFragmentManager(), "dialog");
                 return true;
             case R.id.action_exit:
@@ -113,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
 
             wifiDirectHandler = binder.getService();
             wifiDirectHandlerBound = true;
-            wifiDirectHandler.logMessage("WifiDirectHandler bound");
+            Log.i(wifiDirectHandler.LOG_TAG, "WifiDirectHandler bound");
 
             // Add MainFragment to the 'fragment_container' when wifiDirectHandler is bound
             MainFragment mainFragment = new MainFragment();
@@ -150,8 +154,8 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     }
 
     public void onServiceClick(DnsSdService service) {
-        Boolean isConnected = wifiDirectHandler.connectToService(service);
-        wifiDirectHandler.logMessage("Service connected: " + isConnected);
+        wifiDirectHandler.connectToService(service);
+        wifiDirectHandler.logMessage("Service connected");
 
     }
 
