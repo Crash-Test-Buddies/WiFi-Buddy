@@ -20,7 +20,6 @@ import android.widget.Switch;
 import java.util.HashMap;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.DnsSdService;
 import edu.rit.se.crashavoidance.wifi.ServiceData;
 import edu.rit.se.crashavoidance.wifi.ServiceType;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
@@ -197,7 +196,7 @@ public class MainFragment extends Fragment {
         //Set the receiver for moving to the chat fragment
         receiver = new ChatReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(WifiDirectHandler.Event.SERVICE_CONNECTED.toString());
+        filter.addAction(WifiDirectHandler.Action.SERVICE_CONNECTED);
         filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
     }
@@ -211,10 +210,10 @@ public class MainFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found
 
-            if (intent.getAction().equals(WifiDirectHandler.Event.SERVICE_CONNECTED.toString())
+            if (intent.getAction().equals(WifiDirectHandler.Action.SERVICE_CONNECTED)
                || intent.getAction().equals(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
                     ) {
-                wifiDirectHandler.logMessage("FRAGMENT SWITCH: Connected to service");
+                Log.i(WifiDirectHandler.LOG_TAG, "FRAGMENT SWITCH: Connected to service");
 
                 mainActivity.replaceFragment(new ChatFragment());
             }

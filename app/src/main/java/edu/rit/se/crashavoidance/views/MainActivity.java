@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
 
     public void onServiceClick(DnsSdService service) {
         wifiDirectHandler.connectToService(service);
-        wifiDirectHandler.logMessage("Service connected");
+        Log.i(WifiDirectHandler.LOG_TAG, "Service connected");
 
     }
 
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
                 String readMessage = new String(readBuf, 0, msg.arg1);
-                wifiDirectHandler.logMessage(readMessage);
+                Log.i(WifiDirectHandler.LOG_TAG, readMessage);
                 (chatFragment).pushMessage("Buddy: " + readMessage);
                 break;
             case MY_HANDLE:
@@ -185,18 +185,17 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
          * GroupOwnerSocketHandler}
          */
         if (p2pInfo.isGroupOwner) {
-            wifiDirectHandler.logMessage("Connected as group owner");
+            Log.i(WifiDirectHandler.LOG_TAG, "Connected as group owner");
             try {
                 handler = new OwnerSocketHandler(
                         ((ChatFragment.MessageTarget) this).getHandler());
                 handler.start();
             } catch (IOException e) {
-                wifiDirectHandler.logMessage(
-                        "Failed to create a server thread - " + e.getMessage());
+                Log.i(WifiDirectHandler.LOG_TAG, "Failed to create a server thread - " + e.getMessage());
                 return;
             }
         } else {
-            wifiDirectHandler.logMessage("Connected as peer");
+            Log.i(WifiDirectHandler.LOG_TAG, "Connected as peer");
             handler = new ClientSocketHandler(
                     ((ChatFragment.MessageTarget) this).getHandler(),
                     p2pInfo.groupOwnerAddress);
