@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -39,7 +38,7 @@ public class LogsDialogFragment extends DialogFragment {
         try {
             WiFiDirectHandlerAccessor wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
             wifiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
-            Log.i(wifiDirectHandler.LOG_TAG, "Viewing logs");
+            //Log.i(wifiDirectHandler.LOG_TAG, "Viewing logs");
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
@@ -53,6 +52,7 @@ public class LogsDialogFragment extends DialogFragment {
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
 
+            StringBuilder log = new StringBuilder();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.contains(WifiDirectHandler.LOG_TAG)){
@@ -60,8 +60,11 @@ public class LogsDialogFragment extends DialogFragment {
                     log.append(line.substring(line.indexOf(": ") + 2)).append("\n");
                 }
             }
-            Runtime.getRuntime().exec("logcat -c");
-            logTextView.setText(log.toString());
+
+
+            this.log.append(log.toString().replace(this.log.toString(), ""));
+            //Runtime.getRuntime().exec("logcat -c");
+            logTextView.setText(this.log.toString());
         } catch (IOException e) {
         }
 
