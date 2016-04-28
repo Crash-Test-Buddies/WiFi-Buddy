@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,6 @@ import android.widget.Switch;
 import java.util.HashMap;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.DnsSdService;
 import edu.rit.se.crashavoidance.wifi.ServiceData;
 import edu.rit.se.crashavoidance.wifi.ServiceType;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
@@ -57,13 +57,13 @@ public class MainFragment extends Fragment {
 
         // Set state of Switches and Buttons on load
         if(wifiDirectHandler.isWifiEnabled()) {
-            wifiDirectHandler.logMessage(getString(R.string.status_wifi_enabled_load));
+            Log.i(wifiDirectHandler.LOG_TAG, getString(R.string.status_wifi_enabled_load));
             toggleWifiSwitch.setChecked(true);
             serviceRegistrationSwitch.setEnabled(true);
             noPromptServiceRegistrationSwitch.setEnabled(true);
             discoverServicesButton.setEnabled(true);
         } else {
-            wifiDirectHandler.logMessage(getString(R.string.status_wifi_disabled_load));
+            Log.i(wifiDirectHandler.LOG_TAG, getString(R.string.status_wifi_disabled_load));
             toggleWifiSwitch.setChecked(false);
             serviceRegistrationSwitch.setChecked(false);
             noPromptServiceRegistrationSwitch.setChecked(false);
@@ -215,7 +215,7 @@ public class MainFragment extends Fragment {
             if (intent.getAction().equals(WifiDirectHandler.Action.SERVICE_CONNECTED)
                || intent.getAction().equals(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
                     ) {
-                wifiDirectHandler.logMessage("FRAGMENT SWITCH: Connected to service");
+                Log.i(WifiDirectHandler.LOG_TAG, "FRAGMENT SWITCH: Connected to service");
 
                 mainActivity.replaceFragment(new ChatFragment());
             }

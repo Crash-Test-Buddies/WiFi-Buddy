@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     public static final int SERVER_PORT = 4545;
 
     private Handler handler = new Handler(this);
+    private LogsDialogFragment logsDialogFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,7 +93,9 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         switch (item.getItemId()) {
             case R.id.action_view_logs:
                 // View Logs MenuItem tapped
-                LogsDialogFragment logsDialogFragment = new LogsDialogFragment();
+                if (logsDialogFragment == null) {
+                    logsDialogFragment = new LogsDialogFragment();
+                }
                 logsDialogFragment.show(getFragmentManager(), "dialog");
                 return true;
             case R.id.action_exit:
@@ -113,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
 
             wifiDirectHandler = binder.getService();
             wifiDirectHandlerBound = true;
-            wifiDirectHandler.logMessage("WifiDirectHandler bound");
+            Log.i(wifiDirectHandler.LOG_TAG, "WifiDirectHandler bound");
 
             // Add MainFragment to the 'fragment_container' when wifiDirectHandler is bound
             MainFragment mainFragment = new MainFragment();
@@ -151,7 +155,8 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
 
     public void onServiceClick(DnsSdService service) {
         wifiDirectHandler.connectToService(service);
-        wifiDirectHandler.logMessage("Service connected: ");
+
+        Log.i(WifiDirectHandler.LOG_TAG, "Service connected");
 
     }
 
@@ -162,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
                 String readMessage = new String(readBuf, 0, msg.arg1);
-                wifiDirectHandler.logMessage(readMessage);
+                Log.i(WifiDirectHandler.LOG_TAG, readMessage);
                 (chatFragment).pushMessage("Buddy: " + readMessage);
                 break;
             case MY_HANDLE:
@@ -175,6 +180,31 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
 
+        Thread handler = null;
+        /*
+         * The group owner accepts connections using a server socket and then spawns a
+         * client socket for every client. This is handled by {@code
+         * GroupOwnerSocketHandler}
+         */
+        if (p2pInfo.isGroupOwner) {
+            Log.i(WifiDirectHandler.LOG_TAG, "Connected as group owner");
+            try {
+                handler = new OwnerSocketHandler(
+                        ((ChatFragment.MessageTarget) this).getHandler());
+                handler.start();
+            } catch (IOException e) {
+                Log.i(WifiDirectHandler.LOG_TAG, "Failed to create a server thread - " + e.getMessage());
+                return;
+            }
+        } else {
+            Log.i(WifiDirectHandler.LOG_TAG, "Connected as peer");
+            handler = new ClientSocketHandler(
+                    ((ChatFragment.MessageTarget) this).getHandler(),
+                    p2pInfo.groupOwnerAddress);
+            handler.start();
+        }
+        chatFragment = new ChatFragment();
+        replaceFragment(chatFragment);
 
     }
 
