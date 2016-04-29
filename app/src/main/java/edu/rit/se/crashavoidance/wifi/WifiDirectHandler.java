@@ -133,6 +133,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
          * client socket for every client. This is handled by {@code
          * GroupOwnerSocketHandler}
          */
+        Log.i(LOG_TAG, "In onConnectionInfoAvailable.");
         if (p2pInfo.groupFormed) {
             if (p2pInfo.isGroupOwner) {
                 Log.i(LOG_TAG, "Connected as group owner");
@@ -582,6 +583,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
         public void onReceive(Context context, Intent intent) {
             onHandleIntent(intent);
         }
+    }
+
+    public void setChatFragment(ChatFragment theFragment){
+        chatFragment = theFragment;
     }
 
 }

@@ -216,8 +216,9 @@ public class MainFragment extends Fragment {
                || intent.getAction().equals(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
                     ) {
                 Log.i(WifiDirectHandler.LOG_TAG, "FRAGMENT SWITCH: Connected to service");
-
-                mainActivity.replaceFragment(new ChatFragment());
+                ChatFragment newFrag = new ChatFragment();
+                wifiDirectHandler.setChatFragment(newFrag);
+                mainActivity.replaceFragment(newFrag);
             }
 
         }
