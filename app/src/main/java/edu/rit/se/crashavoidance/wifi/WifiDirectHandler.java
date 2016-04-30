@@ -297,6 +297,8 @@ public class WifiDirectHandler extends NonStopIntentService {
                     Log.e(LOG_TAG, "Failure removing local service: " + FailureReason.fromInteger(reason).toString());
                 }
             });
+        } else {
+            Log.i(LOG_TAG, "No local service to remove");
         }
     }
 
