@@ -54,6 +54,7 @@ public class WifiDirectHandler extends NonStopIntentService {
     private WifiP2pManager wifiP2pManager;
     private WifiManager wifiManager;
 
+    private IntentFilter filter;
 
     /** Constructor **/
     public WifiDirectHandler() {
@@ -88,7 +89,7 @@ public class WifiDirectHandler extends NonStopIntentService {
 
         // Registers a WifiDirectBroadcastReceiver with an IntentFilter listening for P2P Actions
         receiver = new WifiDirectBroadcastReceiver();
-        IntentFilter filter = new IntentFilter();
+        filter = new IntentFilter();
 
         // Indicates a change in the list of available peers
         filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -106,6 +107,7 @@ public class WifiDirectHandler extends NonStopIntentService {
     @Override
     public void onDestroy() {
         unregisterReceiver(receiver);
+        Log.i(LOG_TAG, "BroadcastReceiver unregistered");
         super.onDestroy();
     }
 
@@ -396,7 +398,6 @@ public class WifiDirectHandler extends NonStopIntentService {
             // Here is where you can request group info
             // Available extras: EXTRA_WIFI_P2P_INFO, EXTRA_NETWORK_INFO, EXTRA_WIFI_P2P_GROUP
             Log.i(LOG_TAG, "Wi-Fi P2P Connection Changed");
-            Log.i(LOG_TAG, "Wi-Fi P2P connection changed");
             if(wifiP2pManager != null) {
                 // Requests peer-to-peer group information
                 wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
@@ -433,10 +434,10 @@ public class WifiDirectHandler extends NonStopIntentService {
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                 // Wi-Fi Direct is enabled
-                Log.i(LOG_TAG, "  Wi-Fi Direct is enabled");
+                Log.i(LOG_TAG, "- Wi-Fi Direct is enabled");
             } else {
                 // Wi-Fi Direct is not enabled
-                Log.i(LOG_TAG, "  Wi-Fi Direct is not enabled");
+                Log.i(LOG_TAG, "- Wi-Fi Direct is not enabled");
             }
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             // Indicates this device's configuration details have changed
