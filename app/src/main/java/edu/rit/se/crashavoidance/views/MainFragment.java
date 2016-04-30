@@ -103,7 +103,7 @@ public class MainFragment extends Fragment {
                 if (isChecked) {
                     // Add local service
                     ServiceData serviceData = new ServiceData(
-                            "wifiTester",                   // Name
+                            "Wi-Fi Direct Handler",                   // Name
                             4545,                           // Port
                             new HashMap<String, String>(),  // Record
                             ServiceType.PRESENCE_TCP        // Type
@@ -129,7 +129,7 @@ public class MainFragment extends Fragment {
                 if (isChecked) {
                     // Add no-prompt local service
                     ServiceData serviceData = new ServiceData(
-                            "wifiTester",                   // Name
+                            "Wi-Fi Direct Handler",                   // Name
                             4545,                           // Port
                             new HashMap<String, String>(),  // Record
                             ServiceType.PRESENCE_TCP        // Type
