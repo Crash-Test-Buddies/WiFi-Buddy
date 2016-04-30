@@ -55,7 +55,14 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
         TextView deviceInfo = (TextView) convertView.findViewById(R.id.deviceInfo);
 
         instanceName.setText(service.getInstanceName());
-        deviceInfo.setText(deviceToString(service.getSrcDevice()) );
+
+        String records = "";
+        if(context.getWifiHandler() != null &&
+                context.getWifiHandler().getDnsSdTxtRecordMap().get(service.getSrcDevice().deviceAddress) != null) {
+                    records = context.getWifiHandler().getDnsSdTxtRecordMap().get(service.getSrcDevice().deviceAddress).getRecord().toString();
+        }
+
+        deviceInfo.setText(deviceToString(service.getSrcDevice()) + records);
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,7 +110,7 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
         } else {
             strStatus = "Unknown";
         }
-        
+
         strDevice += "\n  - Status: " + strStatus + "\n";
         return strDevice;
     }
