@@ -418,7 +418,7 @@ public class WifiDirectHandler extends NonStopIntentService {
             Log.i(LOG_TAG, extraWifiP2PGroup.toString());
             Log.i(LOG_TAG, " ");
 
-            if (wifiP2pManager != null) {
+            if (wifiP2pManager != null && groupFormed) {
                 // Requests peer-to-peer group information
                 wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
                     @Override
