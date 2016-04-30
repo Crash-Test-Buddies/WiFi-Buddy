@@ -155,11 +155,7 @@ public class WifiDirectHandler extends NonStopIntentService {
 
         // Logs information about local service
         Log.i(LOG_TAG, "Adding local service:");
-        Log.i(LOG_TAG, "- Service name: " + serviceData.getServiceName());
-        Log.i(LOG_TAG, "- Service port: " + serviceData.getPort());
-        Log.i(LOG_TAG, "- Service record: " + serviceData.getRecord());
-
-        Log.i(LOG_TAG, "- Service type: " + serviceData.getServiceType());
+        Log.i(LOG_TAG, serviceData.toString());
 
         // Removes service if it is already added for some reason
         removeService();

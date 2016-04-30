@@ -99,7 +99,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.i(WifiDirectHandler.LOG_TAG, "Service Registration Switch Toggled");
+                Log.i(WifiDirectHandler.LOG_TAG, "\nService Registration Switch Toggled");
                 if (isChecked) {
                     // Add local service
                     ServiceData serviceData = new ServiceData(
