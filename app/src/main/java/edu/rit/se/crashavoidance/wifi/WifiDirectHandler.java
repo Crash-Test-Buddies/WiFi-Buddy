@@ -97,13 +97,13 @@ public class WifiDirectHandler extends NonStopIntentService {
         // Channel is used to communicate with the Wi-Fi P2P framework
         // Main Looper is the Looper for the main thread of the current process
         channel = wifiP2pManager.initialize(this, getMainLooper(), null);
-        Log.i(LOG_TAG, "App registered with Wi-Fi P2P framework");
+        Log.i(LOG_TAG, "Registered with Wi-Fi P2P framework");
     }
 
     public void unregisterP2p() {
-        wifiManager = null;
+        wifiP2pManager = null;
         channel = null;
-        Log.i(LOG_TAG, "App unregistered with Wi-Fi P2P framework");
+        Log.i(LOG_TAG, "Unregistered with Wi-Fi P2P framework");
     }
 
     public void registerP2pReceiver() {
@@ -134,8 +134,6 @@ public class WifiDirectHandler extends NonStopIntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterP2pReceiver();
-        unregisterP2p();
     }
 
     /**

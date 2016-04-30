@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +71,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.i(WifiDirectHandler.LOG_TAG, " ");
                 if(wifiDirectHandler.isWifiEnabled()) {
                     // Disable Wi-Fi, remove Local Service if there is one
                     toggleWifiSwitch.setChecked(false);
@@ -97,6 +99,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.i(WifiDirectHandler.LOG_TAG, " ");
                 if (isChecked) {
                     // Add local service
                     ServiceData serviceData = new ServiceData(
@@ -122,6 +125,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.i(WifiDirectHandler.LOG_TAG, " ");
                 if (isChecked) {
                     // Add no-prompt local service
                     ServiceData serviceData = new ServiceData(
@@ -147,6 +151,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onClick(View v) {
+                Log.i(WifiDirectHandler.LOG_TAG, " ");
                 if (availableServicesFragment == null) {
                     availableServicesFragment = new AvailableServicesFragment();
                 }
