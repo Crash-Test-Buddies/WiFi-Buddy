@@ -73,7 +73,7 @@ public class MainFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Log.i(WifiDirectHandler.LOG_TAG, " ");
                 if(wifiDirectHandler.isWifiEnabled()) {
-                    // Disable Wi-Fi, remove Local Service if there is one
+                    // Disable Wi-Fi, disable all switches and buttons
                     toggleWifiSwitch.setChecked(false);
                     serviceRegistrationSwitch.setChecked(false);
                     noPromptServiceRegistrationSwitch.setChecked(false);
@@ -82,7 +82,7 @@ public class MainFragment extends Fragment {
                     noPromptServiceRegistrationSwitch.setEnabled(false);
                     discoverServicesButton.setEnabled(false);
                 } else {
-                    // Enable Wi-Fi
+                    // Enable Wi-Fi, enable all switches and buttons
                     toggleWifiSwitch.setChecked(true);
                     wifiDirectHandler.setWifiEnabled(true);
                     serviceRegistrationSwitch.setEnabled(true);
@@ -103,10 +103,10 @@ public class MainFragment extends Fragment {
                 if (isChecked) {
                     // Add local service
                     ServiceData serviceData = new ServiceData(
-                            "wifiTester",
-                            4545,
-                            new HashMap<String, String>(),
-                            ServiceType.PRESENCE_TCP
+                            "wifiTester",                   // Name
+                            4545,                           // Port
+                            new HashMap<String, String>(),  // Record
+                            ServiceType.PRESENCE_TCP        // Type
                     );
                     wifiDirectHandler.startAddingLocalService(serviceData);
                     noPromptServiceRegistrationSwitch.setEnabled(false);
@@ -129,10 +129,10 @@ public class MainFragment extends Fragment {
                 if (isChecked) {
                     // Add no-prompt local service
                     ServiceData serviceData = new ServiceData(
-                            "wifiTester",
-                            4545,
-                            new HashMap<String, String>(),
-                            ServiceType.PRESENCE_TCP
+                            "wifiTester",                   // Name
+                            4545,                           // Port
+                            new HashMap<String, String>(),  // Record
+                            ServiceType.PRESENCE_TCP        // Type
                     );
                     wifiDirectHandler.startAddingNoPromptService(serviceData);
                     serviceRegistrationSwitch.setEnabled(false);
