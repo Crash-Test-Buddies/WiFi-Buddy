@@ -537,15 +537,6 @@ public class WifiDirectHandler extends NonStopIntentService {
             // Logs extra information from EXTRA_WIFI_P2P_DEVICE
             Log.i(LOG_TAG, "\nThis device changed");
             Log.i(LOG_TAG, deviceToString(device));
-        } else if (WifiP2pManager.WIFI_P2P_DISCOVERY_CHANGED_ACTION.equals(action)) {
-            // Broadcast intent action indicating that peer discovery has either started or stopped
-            // Available extras: EXTRA_DISCOVERY_STATE
-            // Note that discovery will be stopped during a connection setup
-            // If the application tries to re-initiate discovery during this time, it can fail
-
-            Log.i(LOG_TAG, "** DISCOVERY STATE CHANGED **");
-            String discoveryState = intent.getParcelableExtra(WifiP2pManager.EXTRA_DISCOVERY_STATE).toString();
-            Log.i(LOG_TAG, "- " + discoveryState);
         }
     }
 
