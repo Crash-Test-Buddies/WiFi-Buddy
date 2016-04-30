@@ -347,14 +347,12 @@ public class WifiDirectHandler extends NonStopIntentService {
 
             @Override
             public void onSuccess() {
-                // TODO fix log message
-                Log.i(LOG_TAG, "Connected to service");
+                Log.i(LOG_TAG, "Initiating connection to service");
             }
 
             @Override
             public void onFailure(int reason) {
-                // TODO fix log message
-                Log.e(LOG_TAG, "Failure connecting to service: " + FailureReason.fromInteger(reason).toString());
+                Log.e(LOG_TAG, "Failure initiating connection to service: " + FailureReason.fromInteger(reason).toString());
             }
         });
     }
@@ -365,7 +363,6 @@ public class WifiDirectHandler extends NonStopIntentService {
      * wifi direct, but the effect is the same.
      */
     public void startAddingNoPromptService(ServiceData serviceData) {
-
         if (serviceInfo != null) {
             removeService();
         }
@@ -442,7 +439,7 @@ public class WifiDirectHandler extends NonStopIntentService {
             // The state of Wi-Fi P2P connectivity has changed
             // Here is where you can request group info
             // Available extras: EXTRA_WIFI_P2P_INFO, EXTRA_NETWORK_INFO, EXTRA_WIFI_P2P_GROUP
-            // I don't think we need anything from EXTRA_WIFI_P2P_INFO
+            // I don't think we need anything from EXTRA_NETWORK_INFO
 
             Log.i(LOG_TAG, "Wi-Fi P2P Connection Changed");
 
