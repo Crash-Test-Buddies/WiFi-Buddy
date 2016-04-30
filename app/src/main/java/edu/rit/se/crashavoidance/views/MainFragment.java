@@ -71,7 +71,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.i(WifiDirectHandler.LOG_TAG, " ");
+                Log.i(WifiDirectHandler.LOG_TAG, "\nWi-Fi Switch Toggled");
                 if(wifiDirectHandler.isWifiEnabled()) {
                     // Disable Wi-Fi, disable all switches and buttons
                     toggleWifiSwitch.setChecked(false);
@@ -99,7 +99,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.i(WifiDirectHandler.LOG_TAG, " ");
+                Log.i(WifiDirectHandler.LOG_TAG, "Service Registration Switch Toggled");
                 if (isChecked) {
                     // Add local service
                     ServiceData serviceData = new ServiceData(
@@ -125,7 +125,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.i(WifiDirectHandler.LOG_TAG, " ");
+                Log.i(WifiDirectHandler.LOG_TAG, "\nNo-Prompt Service Registration Switch Toggled");
                 if (isChecked) {
                     // Add no-prompt local service
                     ServiceData serviceData = new ServiceData(
@@ -151,7 +151,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onClick(View v) {
-                Log.i(WifiDirectHandler.LOG_TAG, " ");
+                Log.i(WifiDirectHandler.LOG_TAG, "\nDiscover Services Button Pressed");
                 if (availableServicesFragment == null) {
                     availableServicesFragment = new AvailableServicesFragment();
                 }
