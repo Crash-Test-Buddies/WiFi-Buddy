@@ -430,8 +430,7 @@ public class WifiDirectHandler extends NonStopIntentService {
             WifiP2pGroup extraWifiP2PGroup = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_GROUP);
 
             if (wifiP2pManager != null && groupFormed) {
-                Log.i(LOG_TAG, " ");
-                Log.i(LOG_TAG, "EXTRA_WIFI_P2P_INFO:");
+                Log.i(LOG_TAG, "\nEXTRA_WIFI_P2P_INFO:");
                 Log.i(LOG_TAG, "- Group formed: " + groupFormed);
                 Log.i(LOG_TAG, "- Is group owner: " + isGroupOwner);
                 Log.i(LOG_TAG, "- Group owner address: " + groupOwnerAddress);
@@ -483,7 +482,31 @@ public class WifiDirectHandler extends NonStopIntentService {
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             // Indicates this device's configuration details have changed
             // Sticky Intent
-            Log.i(LOG_TAG, "This device changed");
+            WifiP2pDevice device = (WifiP2pDevice) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
+            String deviceAddress = device.deviceAddress;
+            String deviceName = device.deviceName;
+            Boolean isGroupOwner = device.isGroupOwner();
+            Boolean isServiceDiscoveryCapable = device.isServiceDiscoveryCapable();
+            int status = device.status;
+            Log.i(LOG_TAG, "\nThis device changed:");
+            Log.i(LOG_TAG, "- Device address: " + deviceAddress);
+            Log.i(LOG_TAG, "- Device name: " + deviceName);
+            Log.i(LOG_TAG, "- Is group owner: " + isGroupOwner);
+            Log.i(LOG_TAG, "- Is Service Discovery capable: " + isServiceDiscoveryCapable);
+            if (status == WifiP2pDevice.AVAILABLE) {
+                Log.i(LOG_TAG, "- Status: Available");
+            } else if (status == WifiP2pDevice.INVITED) {
+                Log.i(LOG_TAG, "- Status: Invited");
+            } else if (status == WifiP2pDevice.CONNECTED) {
+                Log.i(LOG_TAG, "- Status: Connected");
+            } else if (status == WifiP2pDevice.FAILED) {
+                Log.i(LOG_TAG, "- Status: Failed");
+            } else if (status == WifiP2pDevice.UNAVAILABLE) {
+                Log.i(LOG_TAG, "- Status: Unavailable");
+            } else {
+                Log.i(LOG_TAG, "- Status: Unknown status code");
+            }
+            Log.i(LOG_TAG, " ");
         } else if (WifiP2pManager.WIFI_P2P_DISCOVERY_CHANGED_ACTION.equals(action)) {
             // Broadcast intent action indicating that peer discovery has either started or stopped
             // Available extras: EXTRA_DISCOVERY_STATE
