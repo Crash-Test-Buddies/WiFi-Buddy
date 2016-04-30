@@ -11,6 +11,7 @@ import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pGroup;
+import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
@@ -22,6 +23,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -381,7 +383,7 @@ public class WifiDirectHandler extends NonStopIntentService {
             // The list of discovered peers has changed
             // Available extras: EXTRA_P2P_DEVICE_LIST
             Log.i(LOG_TAG, "List of discovered peers changed");
-            if(wifiP2pManager != null) {
+            if (wifiP2pManager != null) {
                 // Request the updated list of discovered peers from wifiP2PManager
                 wifiP2pManager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
                     @Override
@@ -397,8 +399,26 @@ public class WifiDirectHandler extends NonStopIntentService {
             // The state of Wi-Fi P2P connectivity has changed
             // Here is where you can request group info
             // Available extras: EXTRA_WIFI_P2P_INFO, EXTRA_NETWORK_INFO, EXTRA_WIFI_P2P_GROUP
+            // I don't think we need anything from EXTRA_WIFI_P2P_INFO
             Log.i(LOG_TAG, "Wi-Fi P2P Connection Changed");
-            if(wifiP2pManager != null) {
+
+            WifiP2pInfo extraWifiP2pInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO);
+            boolean groupFormed = extraWifiP2pInfo.groupFormed;
+            boolean isGroupOwner = extraWifiP2pInfo.isGroupOwner;
+            InetAddress groupOwnerAddress = extraWifiP2pInfo.groupOwnerAddress;
+            Log.i(LOG_TAG, " ");
+            Log.i(LOG_TAG, "EXTRA_WIFI_P2P_INFO:");
+            Log.i(LOG_TAG, "- Group formed: " + groupFormed);
+            Log.i(LOG_TAG, "- Is group owner: " + isGroupOwner);
+            Log.i(LOG_TAG, "- Group owner address: " + groupOwnerAddress);
+
+            WifiP2pGroup extraWifiP2PGroup = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_GROUP);
+            Log.i(LOG_TAG, " ");
+            Log.i(LOG_TAG, "EXTRA_WIFI_P2P_GROUP");
+            Log.i(LOG_TAG, extraWifiP2PGroup.toString());
+            Log.i(LOG_TAG, " ");
+
+            if (wifiP2pManager != null) {
                 // Requests peer-to-peer group information
                 wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
                     @Override
@@ -411,7 +431,7 @@ public class WifiDirectHandler extends NonStopIntentService {
                         }
 
                         if (isCreatingNoPrompt) {
-                            if(group == null) {
+                            if (group == null) {
                                 Log.e(LOG_TAG, "Adding no prompt service failed, group does not exist");
                                 return;
                             }
@@ -422,7 +442,7 @@ public class WifiDirectHandler extends NonStopIntentService {
 
                             startAddingLocalService(noPromptServiceData);
                         }
-                     }
+                    }
                 });
             }
         } else if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
@@ -448,6 +468,9 @@ public class WifiDirectHandler extends NonStopIntentService {
             // Available extras: EXTRA_DISCOVERY_STATE
             // Note that discovery will be stopped during a connection setup
             // If the application tries to re-initiate discovery during this time, it can fail
+            Log.i(LOG_TAG, "** DISCOVERY STATE CHANGED **");
+//            String discoveryState = intent.getParcelableExtra(WifiP2pManager.EXTRA_DISCOVERY_STATE).toString();
+//            Log.i(LOG_TAG, "- " + discoveryState);
         }
     }
 
