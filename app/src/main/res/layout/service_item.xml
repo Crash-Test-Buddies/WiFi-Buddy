@@ -15,22 +15,12 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Device Name: "/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/deviceName"
-            tools:text="The name of the device"/>
+            android:id="@+id/deviceInfo"
+            tools:text="Device information"/>
     </LinearLayout>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/records"
-        android:paddingLeft="10dip">
-    </TextView>
 
 </LinearLayout>

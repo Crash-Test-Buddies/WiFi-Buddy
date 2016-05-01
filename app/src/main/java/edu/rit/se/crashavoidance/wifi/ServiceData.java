@@ -53,11 +53,9 @@ public class ServiceData {
 
     @Override
     public String toString() {
-        return "ServiceData{" +
-                "serviceName='" + serviceName + '\'' +
-                ", port=" + port +
-                ", record=" + record +
-                ", serviceType=" + serviceType +
-                '}';
+        return "- Service name: " + serviceName
+            + "\n- Service port: " + port
+            + "\n- Service record: " + record
+            + "\n- Service type: " + serviceType;
     }
 }
