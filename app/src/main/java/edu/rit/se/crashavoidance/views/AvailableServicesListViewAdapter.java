@@ -12,6 +12,7 @@ import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
+import edu.rit.se.crashavoidance.wifi.DnsSdTxtRecord;
 
 /**
  *
@@ -22,23 +23,8 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
     private MainActivity context;
 
     public AvailableServicesListViewAdapter(MainActivity context, List<DnsSdService> serviceList) {
-        this.serviceList = serviceList;
         this.context = context;
-    }
-
-    @Override
-    public int getCount() {
-        return serviceList.size();
-    }
-
-    @Override
-    public DnsSdService getItem(int position) {
-        return serviceList.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
+        this.serviceList = serviceList;
     }
 
     @Override
@@ -57,9 +43,11 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
         instanceName.setText(service.getInstanceName());
 
         String records = "";
-        if(context.getWifiHandler() != null &&
-                context.getWifiHandler().getDnsSdTxtRecordMap().get(service.getSrcDevice().deviceAddress) != null) {
-                    records = context.getWifiHandler().getDnsSdTxtRecordMap().get(service.getSrcDevice().deviceAddress).getRecord().toString();
+        if (context.getWifiHandler() != null) {
+            DnsSdTxtRecord txtRecord = context.getWifiHandler().getDnsSdTxtRecordMap().get(service.getSrcDevice().deviceAddress);
+            if (txtRecord != null) {
+                records = txtRecord.getRecord().toString();
+            }
         }
 
         deviceInfo.setText(deviceToString(service.getSrcDevice()) + records);
@@ -113,5 +101,20 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
 
         strDevice += "\n  - Status: " + strStatus + "\n";
         return strDevice;
+    }
+
+    @Override
+    public int getCount() {
+        return serviceList.size();
+    }
+
+    @Override
+    public DnsSdService getItem(int position) {
+        return serviceList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return 0;
     }
 }

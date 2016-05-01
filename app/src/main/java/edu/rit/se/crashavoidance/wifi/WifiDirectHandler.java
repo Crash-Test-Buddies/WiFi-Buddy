@@ -158,7 +158,9 @@ public class WifiDirectHandler extends NonStopIntentService {
         Log.i(LOG_TAG, serviceData.toString());
 
         // Removes service if it is already added for some reason
-        removeService();
+        if (serviceInfo != null) {
+            removeService();
+        }
 
         // Service information
         // Instance name, service type, records map
@@ -203,7 +205,7 @@ public class WifiDirectHandler extends NonStopIntentService {
             @Override
             public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> txtRecordMap, WifiP2pDevice srcDevice) {
                 // Records of peer are available
-                Log.i(LOG_TAG, "DnsSDTxtRecord available");
+                Log.i(LOG_TAG, "Peer DnsSDTxtRecord available");
 
                 Intent intent = new Intent(Action.DNS_SD_TXT_RECORD_ADDED);
                 localBroadcastManager.sendBroadcast(intent);
@@ -219,7 +221,8 @@ public class WifiDirectHandler extends NonStopIntentService {
             public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice srcDevice) {
                 // Not sure if we want to track the map here or just send the service in the request to let the caller do
                 // what it wants with it
-                Log.i(LOG_TAG, "Found service at address " + srcDevice.deviceAddress + " with name " + srcDevice.deviceName);
+                Log.i(LOG_TAG, "Local service found:");
+                Log.i(LOG_TAG, deviceToString(srcDevice));
                 dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
                 Intent intent = new Intent(Action.DNS_SD_SERVICE_AVAILABLE);
                 intent.putExtra(SERVICE_MAP_KEY, srcDevice.deviceAddress);
@@ -390,7 +393,7 @@ public class WifiDirectHandler extends NonStopIntentService {
         WifiConfiguration configuration = new WifiConfiguration();
         DnsSdTxtRecord txtRecord = dnsSdTxtRecordMap.get(service.getSrcDevice().deviceAddress);
         if(txtRecord == null) {
-            Log.e(LOG_TAG, "No dnsSdTxtRecord found for the no prommpt service");
+            Log.e(LOG_TAG, "No dnsSdTxtRecord found for the no prompt service");
             return;
         }
         // Quotes around these are required
@@ -535,7 +538,7 @@ public class WifiDirectHandler extends NonStopIntentService {
             WifiP2pDevice device = (WifiP2pDevice) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
 
             // Logs extra information from EXTRA_WIFI_P2P_DEVICE
-            Log.i(LOG_TAG, "\nThis device changed");
+            Log.i(LOG_TAG, "This device changed");
             Log.i(LOG_TAG, deviceToString(device));
         }
     }
