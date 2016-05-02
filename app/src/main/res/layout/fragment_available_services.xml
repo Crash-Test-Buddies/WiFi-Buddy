@@ -41,6 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:text="Reset"
+            android:onClick="resetServiceDiscovery"
             android:id="@+id/reset_button" >
         </Button>
     </RelativeLayout>

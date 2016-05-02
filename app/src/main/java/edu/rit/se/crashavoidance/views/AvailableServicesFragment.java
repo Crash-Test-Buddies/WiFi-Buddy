@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +58,19 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
         servicesListAdapter = new AvailableServicesListViewAdapter((MainActivity) getActivity(), services);
         setListAdapter(servicesListAdapter);
     }
+
+    /**
+     * Onclick Method for the the reset button to clear the services list
+     * and start discovering services again
+     */
+    public void resetServiceDiscovery(){
+        // Clear the list, notify the list adapter, and start discovering
+        // services again
+        services.clear();
+        servicesListAdapter.notifyDataSetChanged();
+        wifiDirectHandler.startDiscoveringServices();
+    }
+
 
     /**
      * Registers the receiver to listen for the intents broadcast by WifiDirectHandler
