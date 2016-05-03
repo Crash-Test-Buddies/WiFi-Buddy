@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin">
 
     <ListView
         android:id="@android:id/list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingTop="?attr/actionBarSize"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin">
     </ListView>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@android:id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dip">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dip"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal" >
 
         <TextView
             android:layout_width="wrap_content"
@@ -27,9 +34,19 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginLeft="20dip"
+            android:layout_centerHorizontal="true"
             style="@android:style/Widget.ProgressBar.Small" >
         </ProgressBar>
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Reset"
+            android:id="@+id/reset_button" />
+    </RelativeLayout>
 
-    </LinearLayout>
+
+
 
 </LinearLayout>

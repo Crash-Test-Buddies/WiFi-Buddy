@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -33,17 +34,6 @@ public class LogsDialogFragment extends DialogFragment {
         LayoutInflater i = getActivity().getLayoutInflater();
         View rootView = i.inflate(R.layout.fragment_logs_dialog, null);
 
-        // Sets the WifiDirectHandler instance
-        WifiDirectHandler wifiDirectHandler;
-        try {
-            WiFiDirectHandlerAccessor wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
-            wifiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
-            //Log.i(wifiDirectHandler.LOG_TAG, "Viewing logs");
-        } catch (ClassCastException e) {
-            throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
-        }
-
-        // Sets the logs TextView and shows the WifiDirectHandler logs
         TextView logTextView = (TextView) rootView.findViewById(R.id.logTextView);
         logTextView.setMovementMethod(new ScrollingMovementMethod());
 
@@ -66,6 +56,7 @@ public class LogsDialogFragment extends DialogFragment {
             //Runtime.getRuntime().exec("logcat -c");
             logTextView.setText(this.log.toString());
         } catch (IOException e) {
+            Log.e("wifiDirectHandler", "Failure reading logcat");
         }
 
         // Creates and returns the AlertDialog for the logs
