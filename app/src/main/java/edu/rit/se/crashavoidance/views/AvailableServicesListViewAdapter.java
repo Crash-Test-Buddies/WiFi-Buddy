@@ -1,6 +1,7 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
+import edu.rit.se.crashavoidance.wifi.DnsSdTxtRecord;
 
 /**
  *
@@ -21,23 +23,8 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
     private MainActivity context;
 
     public AvailableServicesListViewAdapter(MainActivity context, List<DnsSdService> serviceList) {
-        this.serviceList = serviceList;
         this.context = context;
-    }
-
-    @Override
-    public int getCount() {
-        return serviceList.size();
-    }
-
-    @Override
-    public DnsSdService getItem(int position) {
-        return serviceList.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
+        this.serviceList = serviceList;
     }
 
     @Override
@@ -51,17 +38,19 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
         }
 
         TextView instanceName = (TextView) convertView.findViewById(R.id.instanceName);
-        TextView deviceName = (TextView) convertView.findViewById(R.id.deviceName);
-        TextView records = (TextView) convertView.findViewById(R.id.records);
-
-        if(context.getWifiHandler() != null &&
-                context.getWifiHandler().getDnsSdTxtRecordMap().get(service.getSrcDevice().deviceAddress) != null) {
-            records.setText(context.getWifiHandler().getDnsSdTxtRecordMap().get(service.getSrcDevice().deviceAddress).getRecord().toString());
-        }
+        TextView deviceInfo = (TextView) convertView.findViewById(R.id.deviceInfo);
 
         instanceName.setText(service.getInstanceName());
 
-        deviceName.setText(service.getSrcDevice().deviceName);
+        String records = "";
+        if (context.getWifiHandler() != null) {
+            DnsSdTxtRecord txtRecord = context.getWifiHandler().getDnsSdTxtRecordMap().get(service.getSrcDevice().deviceAddress);
+            if (txtRecord != null) {
+                records = txtRecord.getRecord().toString();
+            }
+        }
+
+        deviceInfo.setText(deviceToString(service.getSrcDevice()) + records);
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,5 +75,46 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
             this.notifyDataSetChanged();
             return true;
         }
+    }
+
+    private String deviceToString(WifiP2pDevice device) {
+        String strDevice = "  - Device address: " + device.deviceAddress
+                + "\n  - Device name: " + device.deviceName
+                + "\n  - Is group owner: " + device.isGroupOwner()
+                + "\n  - Is Service Discoverable: " + device.isServiceDiscoveryCapable();
+
+        int status = device.status;
+        String strStatus;
+        if (status == WifiP2pDevice.AVAILABLE) {
+            strStatus = "Available";
+        } else if (status == WifiP2pDevice.INVITED) {
+            strStatus = "Invited";
+        } else if (status == WifiP2pDevice.CONNECTED) {
+            strStatus = "Connected";
+        } else if (status == WifiP2pDevice.FAILED) {
+            strStatus = "Failed";
+        } else if (status == WifiP2pDevice.UNAVAILABLE) {
+            strStatus = "Unavailable";
+        } else {
+            strStatus = "Unknown";
+        }
+
+        strDevice += "\n  - Status: " + strStatus + "\n";
+        return strDevice;
+    }
+
+    @Override
+    public int getCount() {
+        return serviceList.size();
+    }
+
+    @Override
+    public DnsSdService getItem(int position) {
+        return serviceList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return 0;
     }
 }

@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,13 +114,11 @@ public class AvailableServicesFragment extends Fragment{
                 DnsSdService service = wifiDirectHandler.getDnsSdServiceMap().get(serviceKey);
                 // Add the service to the UI and update
                 servicesListAdapter.addUnique(service);
-                Log.i(wifiDirectHandler.LOG_TAG, "Found service for device " + service.getSrcDevice().deviceName);
                 // TODO Capture an intent that indicates the peer list has changed
                 // and see if we need to remove anything from our list
             }
         }
     }
-
     /**
      * This is called when the Fragment is opened and is attached to MainActivity
      * Sets the ListAdapter for the Service List and initiates the service discovery

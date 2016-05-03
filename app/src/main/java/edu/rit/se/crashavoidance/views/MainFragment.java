@@ -51,13 +51,11 @@ public class MainFragment extends Fragment {
 
         // Set state of Switches and Buttons on load
         if(wifiDirectHandler.isWifiEnabled()) {
-            Log.i(wifiDirectHandler.LOG_TAG, getString(R.string.status_wifi_enabled_load));
             toggleWifiSwitch.setChecked(true);
             serviceRegistrationSwitch.setEnabled(true);
             noPromptServiceRegistrationSwitch.setEnabled(true);
             discoverServicesButton.setEnabled(true);
         } else {
-            Log.i(wifiDirectHandler.LOG_TAG, getString(R.string.status_wifi_disabled_load));
             toggleWifiSwitch.setChecked(false);
             serviceRegistrationSwitch.setChecked(false);
             noPromptServiceRegistrationSwitch.setChecked(false);
@@ -73,8 +71,9 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.i(WifiDirectHandler.LOG_TAG, "\nWi-Fi Switch Toggled");
                 if(wifiDirectHandler.isWifiEnabled()) {
-                    // Disable Wi-Fi, remove Local Service if there is one
+                    // Disable Wi-Fi, disable all switches and buttons
                     toggleWifiSwitch.setChecked(false);
                     serviceRegistrationSwitch.setChecked(false);
                     noPromptServiceRegistrationSwitch.setChecked(false);
@@ -82,9 +81,8 @@ public class MainFragment extends Fragment {
                     serviceRegistrationSwitch.setEnabled(false);
                     noPromptServiceRegistrationSwitch.setEnabled(false);
                     discoverServicesButton.setEnabled(false);
-                    wifiDirectHandler.removeService();
                 } else {
-                    // Enable Wi-Fi
+                    // Enable Wi-Fi, enable all switches and buttons
                     toggleWifiSwitch.setChecked(true);
                     wifiDirectHandler.setWifiEnabled(true);
                     serviceRegistrationSwitch.setEnabled(true);
@@ -101,13 +99,14 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.i(WifiDirectHandler.LOG_TAG, "\nService Registration Switch Toggled");
                 if (isChecked) {
                     // Add local service
                     ServiceData serviceData = new ServiceData(
-                            "wifiTester",
-                            4545,
-                            new HashMap<String, String>(),
-                            ServiceType.PRESENCE_TCP
+                            "Wi-Fi Direct Handler",                   // Name
+                            4545,                           // Port
+                            new HashMap<String, String>(),  // Record
+                            ServiceType.PRESENCE_TCP        // Type
                     );
                     wifiDirectHandler.startAddingLocalService(serviceData);
                     noPromptServiceRegistrationSwitch.setEnabled(false);
@@ -126,13 +125,14 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.i(WifiDirectHandler.LOG_TAG, "\nNo-Prompt Service Registration Switch Toggled");
                 if (isChecked) {
                     // Add no-prompt local service
                     ServiceData serviceData = new ServiceData(
-                            "wifiTester",
-                            4545,
-                            new HashMap<String, String>(),
-                            ServiceType.PRESENCE_TCP
+                            "Wi-Fi Direct Handler",                   // Name
+                            4545,                           // Port
+                            new HashMap<String, String>(),  // Record
+                            ServiceType.PRESENCE_TCP        // Type
                     );
                     wifiDirectHandler.startAddingNoPromptService(serviceData);
                     serviceRegistrationSwitch.setEnabled(false);
@@ -151,6 +151,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onClick(View v) {
+                Log.i(WifiDirectHandler.LOG_TAG, "\nDiscover Services Button Pressed");
                 if (availableServicesFragment == null) {
                     availableServicesFragment = new AvailableServicesFragment();
                 }
