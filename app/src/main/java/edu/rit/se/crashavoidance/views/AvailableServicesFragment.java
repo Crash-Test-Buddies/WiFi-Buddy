@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,20 +25,27 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 /**
  * ListFragment that shows a list of available discovered services
  */
-public class AvailableServicesFragment extends ListFragment implements AdapterView.OnItemClickListener {
+public class AvailableServicesFragment extends Fragment{
 
     private WifiDirectHandler wifiDirectHandler;
     List<DnsSdService> services = new ArrayList<>();
     AvailableServicesListViewAdapter servicesListAdapter;
     MainActivity mainActivity;
     WifiDirectReceiver receiver;
+    ListView deviceList;
 
     /**
      * Sets the Layout for the UI
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_available_services, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_available_services, container, false);
+        deviceList = (ListView)rootView.findViewById(R.id.device_list);
+        setServiceList();
+        startDiscoveringServices();
+        prepareResetButton(rootView);
+        return rootView;
     }
 
     /**
@@ -48,21 +57,15 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
         mainActivity = (MainActivity) getActivity();
     }
 
-    /**
-     * This is called when the Fragment is opened and is attached to MainActivity
-     * Sets the ListAdapter for the Service List and initiates the service discovery
-     */
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            WiFiDirectHandlerAccessor wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
-            wifiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
-            setServiceList();
-            startDiscoveringServices();
-        } catch (ClassCastException e) {
-            throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
-        }
+    private void prepareResetButton(View view){
+        Button resetButton = (Button)view.findViewById(R.id.reset_button);
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetServiceDiscovery();
+
+            }
+        });
     }
 
     /**
@@ -70,8 +73,21 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
      */
     private void setServiceList() {
         servicesListAdapter = new AvailableServicesListViewAdapter((MainActivity) getActivity(), services);
-        setListAdapter(servicesListAdapter);
+        deviceList.setAdapter(servicesListAdapter);
     }
+
+    /**
+     * Onclick Method for the the reset button to clear the services list
+     * and start discovering services again
+     */
+    private void resetServiceDiscovery(){
+        // Clear the list, notify the list adapter, and start discovering
+        // services again
+        services.clear();
+        servicesListAdapter.notifyDataSetChanged();
+        wifiDirectHandler.startDiscoveringServices();
+    }
+
 
     /**
      * Registers the receiver to listen for the intents broadcast by WifiDirectHandler
@@ -83,11 +99,6 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
         filter.addAction(WifiDirectHandler.Action.DNS_SD_SERVICE_AVAILABLE);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
         wifiDirectHandler.startDiscoveringServices();
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
     }
 
     /**
@@ -106,6 +117,20 @@ public class AvailableServicesFragment extends ListFragment implements AdapterVi
                 // TODO Capture an intent that indicates the peer list has changed
                 // and see if we need to remove anything from our list
             }
+        }
+    }
+    /**
+     * This is called when the Fragment is opened and is attached to MainActivity
+     * Sets the ListAdapter for the Service List and initiates the service discovery
+     */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            WiFiDirectHandlerAccessor wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
+            wifiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
     }
 }
