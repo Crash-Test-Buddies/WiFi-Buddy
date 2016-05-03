@@ -18,20 +18,30 @@ import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.net.wifi.p2p.nsd.WifiP2pServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pServiceRequest;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.rit.se.crashavoidance.views.ChatFragment;
+import edu.rit.se.crashavoidance.views.MainActivity;
+import edu.rit.se.crashavoidance.views.ChatFragment.MessageTarget;
+
 /**
  * TODO add comment
  */
-public class WifiDirectHandler extends NonStopIntentService {
+public class WifiDirectHandler extends NonStopIntentService implements
+        WifiP2pManager.ConnectionInfoListener,
+        MessageTarget,
+        Handler.Callback{
 
     public static final String androidServiceName = "Wi-Fi Direct Handler";
     public static final String LOG_TAG = "wifiDirectHandler";
@@ -47,6 +57,12 @@ public class WifiDirectHandler extends NonStopIntentService {
     private BroadcastReceiver receiver;
     private WifiP2pServiceInfo serviceInfo;
     private WifiP2pServiceRequest serviceRequest;
+    private MainActivity mainActivity;
+    private ChatFragment chatFragment;
+    private Boolean isConnected;
+    private Handler handler = new Handler((Handler.Callback) this);
+    public static final int MESSAGE_READ = 0x400 + 1;
+    public static final int MY_HANDLE = 0x400 + 2;
 
     // Flag for creating a no prompt service
     private boolean isCreatingNoPrompt = false;
@@ -142,6 +158,41 @@ public class WifiDirectHandler extends NonStopIntentService {
         receiver = null;
         filter = null;
         Log.i(LOG_TAG, "P2P BroadcastReceiver unregistered");
+    }
+    @Override
+    public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
+        Thread handler = null;
+        /*
+         * The group owner accepts connections using a server socket and then spawns a
+         * client socket for every client. This is handled by {@code
+         * GroupOwnerSocketHandler}
+         */
+        Log.i(LOG_TAG, "In onConnectionInfoAvailable.");
+        if (p2pInfo.groupFormed) {
+            if (p2pInfo.isGroupOwner) {
+                Log.i(LOG_TAG, "Connected as group owner");
+                try {
+                    handler = new OwnerSocketHandler(
+                            ((ChatFragment.MessageTarget) this).getHandler());
+                    handler.start();
+                } catch (IOException e) {
+                    Log.i(LOG_TAG, 
+                            "Failed to create a server thread - " + e.getMessage());
+                    return;
+                }
+            } else {
+                Log.i(LOG_TAG, "Connected as peer");
+                handler = new ClientSocketHandler(
+                        ((ChatFragment.MessageTarget) this).getHandler(),
+                        p2pInfo.groupOwnerAddress);
+                handler.start();
+            }
+            Intent intent = new Intent(Action.SERVICE_CONNECTED);
+            localBroadcastManager.sendBroadcast(intent);
+        } else {
+            Log.i(LOG_TAG, "Tried to connect, not in a group.");
+        }
+
     }
 
     /**
@@ -321,6 +372,7 @@ public class WifiDirectHandler extends NonStopIntentService {
    * Connects to a service
    * @param service The service to connect to
    */
+
     public void connectToService(DnsSdService service) {
         // Device info of peer to connect to
         WifiP2pConfig config = new WifiP2pConfig();
@@ -347,6 +399,7 @@ public class WifiDirectHandler extends NonStopIntentService {
 
             @Override
             public void onSuccess() {
+                wifiP2pManager.requestConnectionInfo(channel, WifiDirectHandler.this);
                 Log.i(LOG_TAG, "Initiating connection to service");
             }
 
@@ -355,6 +408,13 @@ public class WifiDirectHandler extends NonStopIntentService {
                 Log.e(LOG_TAG, "Failure initiating connection to service: " + FailureReason.fromInteger(reason).toString());
             }
         });
+    }
+
+    private void setIsConnected(boolean value) {
+        isConnected = value;
+    }
+    private Boolean getIsConnected() {
+        return isConnected;
     }
 
     /**
@@ -564,7 +624,31 @@ public class WifiDirectHandler extends NonStopIntentService {
         }
     }
 
-  /**
+    public Handler getHandler() {
+        return handler;
+    }
+    public void setHandler(Handler handler) {
+        this.handler = handler;
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case MESSAGE_READ:
+                byte[] readBuf = (byte[]) msg.obj;
+                // construct a string from the valid bytes in the buffer
+                String readMessage = new String(readBuf, 0, msg.arg1);
+                Log.d("wifiDirectTester", readMessage);
+                (chatFragment).pushMessage("Buddy: " + readMessage);
+                break;
+            case MY_HANDLE:
+                Object obj = msg.obj;
+                (chatFragment).setChatManager((ChatManager) obj);
+        }
+        return true;
+    }
+
+    /**
    * Allows for binding to the service.
    */
     public class WifiTesterBinder extends Binder {
@@ -576,11 +660,13 @@ public class WifiDirectHandler extends NonStopIntentService {
   /**
    * Actions that can be broadcast by the handler
    */
+
     public class Action {
         public static final String DNS_SD_TXT_RECORD_ADDED = "dnsSdTxtRecordAdded",
         DNS_SD_SERVICE_AVAILABLE = "dnsSdServiceAvailable",
         SERVICE_REMOVED = "serviceRemoved",
-        PEERS_CHANGED = "peersChanged";
+        PEERS_CHANGED = "peersChanged",
+        SERVICE_CONNECTED = "serviceConnected";
     }
 
     private class Keys {
@@ -593,6 +679,10 @@ public class WifiDirectHandler extends NonStopIntentService {
         public void onReceive(Context context, Intent intent) {
             onHandleIntent(intent);
         }
+    }
+
+    public void setChatFragment(ChatFragment theFragment){
+        chatFragment = theFragment;
     }
 
     private String deviceToString(WifiP2pDevice device) {

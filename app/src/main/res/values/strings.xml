@@ -27,5 +27,7 @@
     <string name="status_wifi_enabled_load">Wi-Fi enabled on load</string>
     <string name="status_wifi_disabled_load">Wi-Fi disabled on load</string>
     <string name="status_viewing_logs">Viewing logs</string>
+    <string name="type_message">Type Message</string>
+    <string name="send">Send</string>
 
 </resources>
