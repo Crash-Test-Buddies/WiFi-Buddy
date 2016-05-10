@@ -119,14 +119,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
         // Channel is used to communicate with the Wi-Fi P2P framework
         // Main Looper is the Looper for the main thread of the current process
         channel = wifiP2pManager.initialize(this, getMainLooper(), null);
-        if (wifiP2pManager == null) {
-            Log.e(LOG_TAG, "*** WIFIMANAGER IS NULL");
-            Toast.makeText(mainActivity, "NULL", Toast.LENGTH_SHORT).show();
-        }
-        if (channel == null) {
-            Log.e(LOG_TAG, "*** CHANNEL IS NULL");
-            Toast.makeText(mainActivity, "NULL", Toast.LENGTH_SHORT).show();
-        }
         Log.i(LOG_TAG, "Registered with Wi-Fi P2P framework");
     }
 
