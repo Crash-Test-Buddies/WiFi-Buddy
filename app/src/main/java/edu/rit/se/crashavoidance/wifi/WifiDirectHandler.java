@@ -316,7 +316,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * discover services use continouslyDiscoverServices
      */
     public void discoverServices(){
-        Log.d(LOG_TAG, "Discover services called");
+        Log.i(LOG_TAG, "Discover services called");
         // Initiates service discovery. Starts to scan for services we want to connect to
         wifiP2pManager.discoverServices(channel, new WifiP2pManager.ActionListener() {
             @Override
@@ -337,11 +337,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
      */
     public void continuouslyDiscoverServices(){
         // TODO Change this to give some sort of status
-        Log.d(LOG_TAG, "Continuously Discover services called");
+        Log.i(LOG_TAG, "Continuously Discover services called");
         if (continueDiscovering){
             Log.w(LOG_TAG, "Services are still discovering, do not need to make this call");
         } else {
-            Log.d(LOG_TAG, "Calling discover and submitting first discover task");
+            Log.i(LOG_TAG, "Calling discover and submitting first discover task");
             continueDiscovering = true;
             // List to track discovery tasks in progress
             discoverTasks = new ArrayList<DiscoverTask>();
@@ -356,9 +356,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * timeout period has expired
      */
     private void submitDiscoverTask(){
-        Log.d(LOG_TAG, "Submitting discover task");
+        Log.i(LOG_TAG, "Submitting discover task");
         // Discover times out after 2 minutes so we set the timer to that
-        int timeToWait = 12000;
+        int timeToWait = 120000;
         DiscoverTask task = new DiscoverTask();
         Timer timer = new Timer();
         // Submit the task and add it to the List
@@ -386,9 +386,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Stop discovering services if continuous discovery was called
      */
     public void stopDiscoveringServices(){
-        Log.d(LOG_TAG, "Service discovery called");
+        Log.i(LOG_TAG, "Service discovery called");
         if (continueDiscovering) {
-            Log.d(LOG_TAG, "Service discovery being stopped");
+            Log.i(LOG_TAG, "Service discovery being stopped");
             continueDiscovering = false;
             // Cancel all discover tasks that may be in progress
             for (DiscoverTask task : discoverTasks) {

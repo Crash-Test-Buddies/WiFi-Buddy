@@ -84,6 +84,7 @@ public class AvailableServicesFragment extends Fragment{
         // services again
         services.clear();
         servicesListAdapter.notifyDataSetChanged();
+        wifiDirectHandler.stopDiscoveringServices();
         wifiDirectHandler.continuouslyDiscoverServices();
     }
 
