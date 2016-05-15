@@ -27,9 +27,13 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import edu.rit.se.crashavoidance.views.ChatFragment;
 import edu.rit.se.crashavoidance.views.MainActivity;
@@ -52,6 +56,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
     private Map<String, DnsSdService> dnsSdServiceMap;
+    private List<DiscoverTask> discoverTasks;
     private WifiP2pDeviceList peers;
     private LocalBroadcastManager localBroadcastManager;
     private BroadcastReceiver receiver;
@@ -63,6 +68,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private Handler handler = new Handler((Handler.Callback) this);
     public static final int MESSAGE_READ = 0x400 + 1;
     public static final int MY_HANDLE = 0x400 + 2;
+
+
+    private boolean continueDiscovering = false;
 
     // Flag for creating a no prompt service
     private boolean isCreatingNoPrompt = false;
@@ -248,7 +256,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
    * DnsSdServiceResponseListener. Then adds a service request and begins to discover services. The
    * callbacks within the registered listeners are called when services are found.
    */
-    public void startDiscoveringServices() {
+    public void setupServiceDiscovery() {
         // DnsSdTxtRecordListener
         // Interface for callback invocation when Bonjour TXT record is available for a service
         // Used to listen for incoming records and get peer device information
@@ -299,6 +307,16 @@ public class WifiDirectHandler extends NonStopIntentService implements
             }
         });
 
+
+
+    }
+
+    /**
+     * Initiates a service discovery. This has a 2 minute timeout. To continously
+     * discover services use continouslyDiscoverServices
+     */
+    public void discoverServices(){
+        Log.d(LOG_TAG, "Discover services called");
         // Initiates service discovery. Starts to scan for services we want to connect to
         wifiP2pManager.discoverServices(channel, new WifiP2pManager.ActionListener() {
             @Override
@@ -311,8 +329,77 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 Log.e(LOG_TAG, "Failure initiating service discovery: " + FailureReason.fromInteger(reason).toString());
             }
         });
-
     }
+
+    /**
+     * Calls initial services discovery call and submits the first
+     * Discover task. This will continue until stopDiscoveringServices is called
+     */
+    public void continuouslyDiscoverServices(){
+        // TODO Change this to give some sort of status
+        Log.d(LOG_TAG, "Continuously Discover services called");
+        if (continueDiscovering){
+            Log.w(LOG_TAG, "Services are still discovering, do not need to make this call");
+        } else {
+            Log.d(LOG_TAG, "Calling discover and submitting first discover task");
+            continueDiscovering = true;
+            // List to track discovery tasks in progress
+            discoverTasks = new ArrayList<DiscoverTask>();
+            // Make discover call and first discover task submission
+            discoverServices();
+            submitDiscoverTask();
+        }
+    }
+
+    /**
+     * Submits a new task to initiate service discovery after the discovery
+     * timeout period has expired
+     */
+    private void submitDiscoverTask(){
+        Log.d(LOG_TAG, "Submitting discover task");
+        // Discover times out after 2 minutes so we set the timer to that
+        int timeToWait = 12000;
+        DiscoverTask task = new DiscoverTask();
+        Timer timer = new Timer();
+        // Submit the task and add it to the List
+        timer.schedule(task, timeToWait);
+        discoverTasks.add(task);
+    }
+
+    /**
+     * Timed task to initiate a new services discovery. Will recursively submit
+     * a new task as long as continueDiscoverying is true
+     */
+    class DiscoverTask extends TimerTask {
+        public void run() {
+            discoverServices();
+            // Submit the next task if a stop call hasn't been made
+            if (continueDiscovering){
+                submitDiscoverTask();
+            }
+            // remove this task from the list since it's complete
+            discoverTasks.remove(this);
+        }
+    }
+
+    /**
+     * Stop discovering services if continuous discovery was called
+     */
+    public void stopDiscoveringServices(){
+        Log.d(LOG_TAG, "Service discovery called");
+        if (continueDiscovering) {
+            Log.d(LOG_TAG, "Service discovery being stopped");
+            continueDiscovering = false;
+            // Cancel all discover tasks that may be in progress
+            for (DiscoverTask task : discoverTasks) {
+                task.cancel();
+            }
+        // We don't want to do anything if we're not discovering services
+        } else {
+            Log.w(LOG_TAG, "Service discovery was not running, no action will be taken");
+        }
+    }
+
 
     public Map<String, DnsSdService> getDnsSdServiceMap(){
         return dnsSdServiceMap;
@@ -658,7 +745,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
   /**
-   * Actions that can be broadcast by the handler
+   * Actions that can be broadcast or received by the handler
    */
 
     public class Action {
