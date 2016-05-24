@@ -48,12 +48,13 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity created");
+        Log.i(WifiDirectHandler.LOG_TAG, "Creating MainActivity");
         setContentView(R.layout.activity_main);
 
         // Initialize ActionBar
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
         setSupportActionBar(toolbar);
+        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity created");
     }
 
     /**
@@ -222,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         Log.i(WifiDirectHandler.LOG_TAG, "Pausing MainActivity");
         if (wifiDirectHandlerBound) {
             unbindService(wifiServiceConnection);
+            wifiDirectHandlerBound = false;
         }
         Log.i(WifiDirectHandler.LOG_TAG, "MainActivity paused");
     }
@@ -231,9 +233,9 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         super.onStop();
         Log.i(WifiDirectHandler.LOG_TAG, "Stopping MainActivity");
         if(wifiDirectHandlerBound) {
+            unbindService(wifiServiceConnection);
             Intent intent = new Intent(this, WifiDirectHandler.class);
             stopService(intent);
-            unbindService(wifiServiceConnection);
         }
         Log.i(WifiDirectHandler.LOG_TAG, "MainActivity stopped");
     }
