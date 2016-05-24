@@ -11,7 +11,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -85,7 +84,8 @@ public class AvailableServicesFragment extends Fragment{
         // services again
         services.clear();
         servicesListAdapter.notifyDataSetChanged();
-        wifiDirectHandler.startDiscoveringServices();
+        wifiDirectHandler.stopDiscoveringServices();
+        wifiDirectHandler.continuouslyDiscoverServices();
     }
 
 
@@ -98,7 +98,10 @@ public class AvailableServicesFragment extends Fragment{
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Action.DNS_SD_SERVICE_AVAILABLE);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
-        wifiDirectHandler.startDiscoveringServices();
+        // Make a call to setup services discovery
+        wifiDirectHandler.setupServiceDiscovery();
+        // Make continous service discovery calls
+        wifiDirectHandler.continuouslyDiscoverServices();
     }
 
     /**
