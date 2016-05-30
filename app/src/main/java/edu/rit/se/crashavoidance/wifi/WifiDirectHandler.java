@@ -249,6 +249,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         removeService();
         unregisterP2pReceiver();
         unregisterP2p();
+        Log.i(LOG_TAG, "Wifi Handler service destroyed");
     }
 
     /**

@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
 
     private WifiDirectHandler wifiDirectHandler;
     private boolean wifiDirectHandlerBound = false;
-    private ChatFragment chatFragment;
+    private MainFragment mainFragment = null;
+    private ChatFragment chatFragment = null;
 
     public static final int MESSAGE_READ = 0x400 + 1;
     public static final int MY_HANDLE = 0x400 + 2;
@@ -101,9 +102,10 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             Log.i(WifiDirectHandler.LOG_TAG, "WifiDirectHandler service bound");
 
             // Add MainFragment to the 'fragment_container' when wifiDirectHandler is bound
-            MainFragment mainFragment = new MainFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, mainFragment).commit();
+            if(mainFragment == null) {
+                mainFragment = new MainFragment();
+                replaceFragment(mainFragment);
+            }
         }
 
         @Override
