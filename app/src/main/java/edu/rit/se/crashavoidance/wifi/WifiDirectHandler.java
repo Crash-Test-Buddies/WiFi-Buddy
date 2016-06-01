@@ -91,6 +91,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
         peers = new WifiP2pDeviceList();
     }
 
+    private WifiP2pDevice thisDevice;
+
     /**
      * Registers the app with the Wi-Fi P2P framework and registers a WifiDirectBroadcastReceiver
      * with an IntentFilter that listens for Wi-Fi P2P Actions
@@ -685,11 +687,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
             // Sticky Intent
 
             // Extra information from EXTRA_WIFI_P2P_DEVICE
-            WifiP2pDevice device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
+            thisDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
 
             // Logs extra information from EXTRA_WIFI_P2P_DEVICE
             Log.i(LOG_TAG, "This device changed");
-            Log.i(LOG_TAG, deviceToString(device));
+            Log.i(LOG_TAG, deviceToString(thisDevice));
         }
     }
 

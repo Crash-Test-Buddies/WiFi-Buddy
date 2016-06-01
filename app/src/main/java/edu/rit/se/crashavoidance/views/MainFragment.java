@@ -108,7 +108,7 @@ public class MainFragment extends Fragment {
                 if (isChecked) {
                     // Add local service
                     ServiceData serviceData = new ServiceData(
-                            "Wi-Fi Direct Handler",                   // Name
+                            "Wi-Fi Direct Handler",         // Name
                             4545,                           // Port
                             new HashMap<String, String>(),  // Record
                             ServiceType.PRESENCE_TCP        // Type
@@ -134,7 +134,7 @@ public class MainFragment extends Fragment {
                 if (isChecked) {
                     // Add no-prompt local service
                     ServiceData serviceData = new ServiceData(
-                            "Wi-Fi Direct Handler",                   // Name
+                            "Wi-Fi Direct Handler",         // Name
                             4545,                           // Port
                             new HashMap<String, String>(),  // Record
                             ServiceType.PRESENCE_TCP        // Type
@@ -188,37 +188,31 @@ public class MainFragment extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
-        //Set the receiver for moving to the chat fragment
+
+        // Set the receiver for moving to the chat fragment
         ChatReceiver receiver = new ChatReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Action.SERVICE_CONNECTED);
         filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
-
     }
 
     /**
      * Receiver for receiving intents from the WifiDirectHandler to update UI
      * when Wi-Fi Direct commands are completed
      */
-
     public class ChatReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found
 
             if (intent.getAction().equals(WifiDirectHandler.Action.SERVICE_CONNECTED)
-               || intent.getAction().equals(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
-                    ) {
+               || intent.getAction().equals(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION) ) {
                 Log.i(WifiDirectHandler.LOG_TAG, "FRAGMENT SWITCH: Connected to service");
                 ChatFragment newFrag = new ChatFragment();
                 wifiDirectHandler.setChatFragment(newFrag);
                 mainActivity.replaceFragment(newFrag);
             }
-
         }
     }
-
-
-
 }

@@ -162,7 +162,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     // TODO: Add JavaDoc
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
-
         Thread handler;
         /*
          * The group owner accepts connections using a server socket and then spawns a
@@ -186,9 +185,9 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
                     p2pInfo.groupOwnerAddress);
             handler.start();
         }
+
         chatFragment = new ChatFragment();
         replaceFragment(chatFragment);
-
     }
 
     @Override
