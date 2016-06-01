@@ -98,7 +98,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i(LOG_TAG, "WifiDirectHandler created");
+        Log.i(LOG_TAG, "Creating WifiDirectHandler");
 
         // Manages Wi-Fi connectivity
         wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
@@ -112,6 +112,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
 
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        Log.i(LOG_TAG, "WifiDirectHandler created");
     }
 
     /**
@@ -162,8 +163,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Unregisters the WifiDirectBroadcastReceiver and IntentFilter
      */
     public void unregisterP2pReceiver() {
-        unregisterReceiver(receiver);
-        receiver = null;
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+            receiver = null;
+        }
         filter = null;
         Log.i(LOG_TAG, "P2P BroadcastReceiver unregistered");
     }
@@ -456,11 +459,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
   /**
-   * Connects to a service
+   * Initiates a connection to a service
    * @param service The service to connect to
    */
 
-    public void connectToService(DnsSdService service) {
+    public void initiateConnectToService(DnsSdService service) {
         // Device info of peer to connect to
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = service.getSrcDevice().deviceAddress;
