@@ -47,7 +47,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         MessageTarget,
         Handler.Callback{
 
-    public static final String androidServiceName = "Wi-Fi Direct Handler";
+    private static final String androidServiceName = "Wi-Fi Direct Handler";
     public static final String LOG_TAG = "wifiDirectHandler";
     private final IBinder binder = new WifiTesterBinder();
 
@@ -66,8 +66,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private ChatFragment chatFragment;
     private Boolean isConnected;
     private Handler handler = new Handler((Handler.Callback) this);
-    public static final int MESSAGE_READ = 0x400 + 1;
-    public static final int MY_HANDLE = 0x400 + 2;
+    private static final int MESSAGE_READ = 0x400 + 1;
+    private static final int MY_HANDLE = 0x400 + 2;
 
 
     private boolean continueDiscovering = false;
@@ -172,7 +172,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
-        Thread handler = null;
+        Thread handler;
         /*
          * The group owner accepts connections using a server socket and then spawns a
          * client socket for every client. This is handled by {@code
@@ -184,7 +184,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 Log.i(LOG_TAG, "Connected as group owner");
                 try {
                     handler = new OwnerSocketHandler(
-                            ((ChatFragment.MessageTarget) this).getHandler());
+                            this.getHandler());
                     handler.start();
                 } catch (IOException e) {
                     Log.i(LOG_TAG, 
@@ -194,7 +194,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             } else {
                 Log.i(LOG_TAG, "Connected as peer");
                 handler = new ClientSocketHandler(
-                        ((ChatFragment.MessageTarget) this).getHandler(),
+                        this.getHandler(),
                         p2pInfo.groupOwnerAddress);
                 handler.start();
             }
@@ -315,8 +315,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     /**
-     * Initiates a service discovery. This has a 2 minute timeout. To continously
-     * discover services use continouslyDiscoverServices
+     * Initiates a service discovery. This has a 2 minute timeout. To continuously
+     * discover services use continuouslyDiscoverServices
      */
     public void discoverServices(){
         Log.i(LOG_TAG, "Discover services called");
@@ -347,7 +347,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             Log.i(LOG_TAG, "Calling discover and submitting first discover task");
             continueDiscovering = true;
             // List to track discovery tasks in progress
-            discoverTasks = new ArrayList<DiscoverTask>();
+            discoverTasks = new ArrayList<>();
             // Make discover call and first discover task submission
             discoverServices();
             submitDiscoverTask();
@@ -371,9 +371,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     /**
      * Timed task to initiate a new services discovery. Will recursively submit
-     * a new task as long as continueDiscoverying is true
+     * a new task as long as continueDiscovering is true
      */
-    class DiscoverTask extends TimerTask {
+    private class DiscoverTask extends TimerTask {
         public void run() {
             discoverServices();
             // Submit the next task if a stop call hasn't been made
@@ -624,7 +624,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 Log.i(LOG_TAG, "- Network name: ");
                 Log.i(LOG_TAG, "    " + networkName);
                 Log.i(LOG_TAG, "- Passphrase: " + passphrase);
-                if (strClients == "") {
+                if (strClients.equals("")) {
                     Log.i(LOG_TAG, "- Clients: None");
                 } else {
                     Log.i(LOG_TAG, "- Clients:");
@@ -685,7 +685,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             // Sticky Intent
 
             // Extra information from EXTRA_WIFI_P2P_DEVICE
-            WifiP2pDevice device = (WifiP2pDevice) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
+            WifiP2pDevice device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
 
             // Logs extra information from EXTRA_WIFI_P2P_DEVICE
             Log.i(LOG_TAG, "This device changed");
@@ -782,7 +782,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         strDevice += "\n  - Is group owner: " + device.isGroupOwner();
         strDevice += "\n  - Is Service Discoverable: " + device.isServiceDiscoveryCapable();
         int status = device.status;
-        String strStatus = "";
+        String strStatus;
         if (status == WifiP2pDevice.AVAILABLE) {
             strStatus = "Available";
         } else if (status == WifiP2pDevice.INVITED) {

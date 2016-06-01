@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
 
-        Thread handler = null;
+        Thread handler;
         /*
          * The group owner accepts connections using a server socket and then spawns a
          * client socket for every client. This is handled by {@code
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             Log.i(WifiDirectHandler.LOG_TAG, "Connected as group owner");
             try {
                 handler = new OwnerSocketHandler(
-                        ((ChatFragment.MessageTarget) this).getHandler());
+                        this.getHandler());
                 handler.start();
             } catch (IOException e) {
                 Log.i(WifiDirectHandler.LOG_TAG, "Failed to create a server thread - " + e.getMessage());
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         } else {
             Log.i(WifiDirectHandler.LOG_TAG, "Connected as peer");
             handler = new ClientSocketHandler(
-                    ((ChatFragment.MessageTarget) this).getHandler(),
+                    this.getHandler(),
                     p2pInfo.groupOwnerAddress);
             handler.start();
         }
@@ -214,10 +214,10 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(wifiDirectHandler.LOG_TAG, "Resuming MainActivity");
+        Log.i(WifiDirectHandler.LOG_TAG, "Resuming MainActivity");
         Intent intent = new Intent(this, WifiDirectHandler.class);
         bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
-        Log.i(wifiDirectHandler.LOG_TAG, "MainActivity resumed");
+        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity resumed");
     }
 
     @Override
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         Log.i(WifiDirectHandler.LOG_TAG, "Starting MainActivity");
         Intent intent = new Intent(this, WifiDirectHandler.class);
         bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
-        Log.i(wifiDirectHandler.LOG_TAG, "MainActivity started");
+        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity started");
     }
 
     @Override
@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             unbindService(wifiServiceConnection);
             wifiDirectHandlerBound = false;
         }
-        Log.i(wifiDirectHandler.LOG_TAG, "MainActivity stopped");
+        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity stopped");
     }
 
     @Override

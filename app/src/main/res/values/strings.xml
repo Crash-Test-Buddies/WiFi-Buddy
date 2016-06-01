@@ -1,7 +1,4 @@
 <resources>
-    <!-- Tags -->
-    <string name="log_tag">wifiDirectHandler</string>
-
     <!-- Titles -->
     <string name="app_name">Wi-Fi Direct Handler</string>
     <string name="title_logs">Logs</string>
@@ -9,24 +6,14 @@
 
     <!-- Actions -->
     <string name="action_toggle_wifi">Toggle Wi-Fi</string>
-    <string name="action_enable_wifi">Enable Wi-Fi</string>
-    <string name="action_disable_wifi">Disable Wi-Fi</string>
     <string name="action_view_logs">View Logs</string>
     <string name="action_exit">Exit</string>
     <string name="action_close">Close</string>
-    <string name="action_register_receiver">Register Broadcast Receiver</string>
-    <string name="action_unregister_receiver">Unregister Broadcast Receiver</string>
     <string name="action_register_service">Register Local Service</string>
-    <string name="action_unregister_service">Unregister Local Service</string>
     <string name="action_discover_services">Discover Local Services</string>
     <string name="action_register_no_prompt">Register No-Prompt Service</string>
 
     <!-- Statuses -->
-    <string name="status_wifi_enabled">Wi-Fi enabled</string>
-    <string name="status_wifi_disabled">Wi-Fi disabled</string>
-    <string name="status_wifi_enabled_load">Wi-Fi enabled on load</string>
-    <string name="status_wifi_disabled_load">Wi-Fi disabled on load</string>
-    <string name="status_viewing_logs">Viewing logs</string>
     <string name="type_message">Type Message</string>
     <string name="send">Send</string>
 

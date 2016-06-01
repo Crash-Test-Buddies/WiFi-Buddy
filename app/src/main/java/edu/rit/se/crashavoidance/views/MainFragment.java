@@ -34,9 +34,8 @@ public class MainFragment extends Fragment {
     private Switch serviceRegistrationSwitch;
     private Switch noPromptServiceRegistrationSwitch;
     private Button discoverServicesButton;
-    AvailableServicesFragment availableServicesFragment;
-    MainActivity mainActivity;
-    private ChatReceiver receiver;
+    private AvailableServicesFragment availableServicesFragment;
+    private MainActivity mainActivity;
 
     /**
      * Sets the layout for the UI, initializes the Buttons and Switches, and returns the View
@@ -168,11 +167,6 @@ public class MainFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
     /**
      * Sets the Main Activity instance
      */
@@ -195,7 +189,7 @@ public class MainFragment extends Fragment {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
         //Set the receiver for moving to the chat fragment
-        receiver = new ChatReceiver();
+        ChatReceiver receiver = new ChatReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Action.SERVICE_CONNECTED);
         filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);

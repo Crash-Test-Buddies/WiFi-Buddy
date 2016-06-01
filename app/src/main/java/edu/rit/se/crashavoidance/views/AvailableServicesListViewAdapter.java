@@ -17,7 +17,7 @@ import edu.rit.se.crashavoidance.wifi.DnsSdTxtRecord;
 /**
  *
  */
-public class AvailableServicesListViewAdapter extends BaseAdapter {
+class AvailableServicesListViewAdapter extends BaseAdapter {
 
     private List<DnsSdService> serviceList;
     private MainActivity context;
@@ -67,6 +67,7 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
      * @param service Service to be added to list
      * @return false if item was already in the list
      */
+    // TODO: the returned boolean of this method is never checked
     public Boolean addUnique(DnsSdService service) {
         if (serviceList.contains(service)) {
             return false;
