@@ -102,10 +102,8 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             Log.i(WifiDirectHandler.LOG_TAG, "WifiDirectHandler service bound");
 
             // Add MainFragment to the 'fragment_container' when wifiDirectHandler is bound
-            if(mainFragment == null) {
-                mainFragment = new MainFragment();
-                replaceFragment(mainFragment);
-            }
+            mainFragment = new MainFragment();
+            replaceFragment(mainFragment);
         }
 
         @Override
@@ -203,11 +201,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     protected void onPause() {
         super.onPause();
         Log.i(WifiDirectHandler.LOG_TAG, "MainActivity paused");
-        if (wifiDirectHandlerBound) {
-            Log.i(WifiDirectHandler.LOG_TAG, "- WifiDirectHandler service unbound");
-            unbindService(wifiServiceConnection);
-            wifiDirectHandlerBound = false;
-        }
     }
 
     @Override
@@ -215,7 +208,9 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         super.onResume();
         Log.i(wifiDirectHandler.LOG_TAG, "MainActivity resumed");
         Intent intent = new Intent(this, WifiDirectHandler.class);
-        bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
+        if(!wifiDirectHandlerBound) {
+            bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
+        }
     }
 
     @Override
