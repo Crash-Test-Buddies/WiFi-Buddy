@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
 
     private WifiDirectHandler wifiDirectHandler;
     private boolean wifiDirectHandlerBound = false;
-    private ChatFragment chatFragment;
+    private MainFragment mainFragment = null;
+    private ChatFragment chatFragment = null;
 
     public static final int MESSAGE_READ = 0x400 + 1;
     public static final int MY_HANDLE = 0x400 + 2;
@@ -102,12 +103,10 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             Log.i(WifiDirectHandler.LOG_TAG, "WifiDirectHandler service bound");
 
             // Add MainFragment to the 'fragment_container' when wifiDirectHandler is bound
-            MainFragment mainFragment = new MainFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, mainFragment).commit();
+            mainFragment = new MainFragment();
+            replaceFragment(mainFragment);
             DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, deviceInfoFragment).commit();
+            addFragment(deviceInfoFragment);
         }
 
         @Override
@@ -226,7 +225,9 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         super.onResume();
         Log.i(WifiDirectHandler.LOG_TAG, "Resuming MainActivity");
         Intent intent = new Intent(this, WifiDirectHandler.class);
-        bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
+        if(!wifiDirectHandlerBound) {
+            bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
+        }
         Log.i(WifiDirectHandler.LOG_TAG, "MainActivity resumed");
     }
 
