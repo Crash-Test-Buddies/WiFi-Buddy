@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import java.util.HashMap;
 
@@ -34,6 +35,7 @@ public class MainFragment extends Fragment {
     private Switch serviceRegistrationSwitch;
     private Switch noPromptServiceRegistrationSwitch;
     private Button discoverServicesButton;
+    private TextView thisDeviceTextView;
     private AvailableServicesFragment availableServicesFragment;
     private MainActivity mainActivity;
 
@@ -164,6 +166,9 @@ public class MainFragment extends Fragment {
             }
         });
 
+        thisDeviceTextView = (TextView) view.findViewById(R.id.thisDeviceTextView);
+        thisDeviceTextView.setText(wifiDirectHandler.getThisDeviceInfo());
+
         return view;
     }
 
@@ -194,6 +199,7 @@ public class MainFragment extends Fragment {
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Action.SERVICE_CONNECTED);
         filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        filter.addAction(WifiDirectHandler.Action.DEVICE_CHANGED);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
     }
 
@@ -212,6 +218,8 @@ public class MainFragment extends Fragment {
                 ChatFragment newFrag = new ChatFragment();
                 wifiDirectHandler.setChatFragment(newFrag);
                 mainActivity.replaceFragment(newFrag);
+            } else if (intent.getAction().equals(WifiDirectHandler.Action.DEVICE_CHANGED)) {
+                thisDeviceTextView.setText(wifiDirectHandler.getThisDeviceInfo());
             }
         }
     }

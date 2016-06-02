@@ -30,4 +30,11 @@
         android:id="@+id/discoverServicesButton"
         android:enabled="false" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Device"
+        android:id="@+id/thisDeviceTextView"
+        android:layout_gravity="center_horizontal" />
+
 </LinearLayout>

@@ -200,6 +200,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                         p2pInfo.groupOwnerAddress);
                 handler.start();
             }
+
             Intent intent = new Intent(Action.SERVICE_CONNECTED);
             localBroadcastManager.sendBroadcast(intent);
         } else {
@@ -689,6 +690,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
             // Extra information from EXTRA_WIFI_P2P_DEVICE
             thisDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
 
+            Intent deviceChangedIntent = new Intent(Action.DEVICE_CHANGED);
+            localBroadcastManager.sendBroadcast(deviceChangedIntent);
+
             // Logs extra information from EXTRA_WIFI_P2P_DEVICE
             Log.i(LOG_TAG, "This device changed");
             Log.i(LOG_TAG, deviceToString(thisDevice));
@@ -758,7 +762,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
         DNS_SD_SERVICE_AVAILABLE = "dnsSdServiceAvailable",
         SERVICE_REMOVED = "serviceRemoved",
         PEERS_CHANGED = "peersChanged",
-        SERVICE_CONNECTED = "serviceConnected";
+        SERVICE_CONNECTED = "serviceConnected",
+        DEVICE_CHANGED = "deviceChanged";
     }
 
     private class Keys {
@@ -800,5 +805,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
         strDevice += "\n  - Status: " + strStatus + "\n";
         return strDevice;
+    }
+
+    public String getThisDeviceInfo() {
+        return deviceToString(thisDevice);
     }
 }
