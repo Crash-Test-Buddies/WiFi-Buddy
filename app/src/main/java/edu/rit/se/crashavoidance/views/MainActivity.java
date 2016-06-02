@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     public void addFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(R.id.fragment_container, fragment);
-        transaction.addToBackStack(null);
 
         // Commit the transaction
         transaction.commit();
