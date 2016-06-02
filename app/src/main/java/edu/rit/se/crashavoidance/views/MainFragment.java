@@ -29,7 +29,7 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
  */
 public class MainFragment extends Fragment {
 
-    private WifiDirectHandler wifiDirectHandler;
+    private WiFiDirectHandlerAccessor wifiDirectHandlerAcessor;
     private Switch toggleWifiSwitch;
     private Switch serviceRegistrationSwitch;
     private Switch noPromptServiceRegistrationSwitch;
@@ -55,20 +55,7 @@ public class MainFragment extends Fragment {
         // Initialize Discover Services Button
         discoverServicesButton = (Button) view.findViewById(R.id.discoverServicesButton);
 
-        // Set state of Switches and Buttons on load
-        if(wifiDirectHandler.isWifiEnabled()) {
-            toggleWifiSwitch.setChecked(true);
-            serviceRegistrationSwitch.setEnabled(true);
-            noPromptServiceRegistrationSwitch.setEnabled(true);
-            discoverServicesButton.setEnabled(true);
-        } else {
-            toggleWifiSwitch.setChecked(false);
-            serviceRegistrationSwitch.setChecked(false);
-            noPromptServiceRegistrationSwitch.setChecked(false);
-            serviceRegistrationSwitch.setEnabled(false);
-            noPromptServiceRegistrationSwitch.setEnabled(false);
-            discoverServicesButton.setEnabled(false);
-        }
+        updateToggles();
 
         // Set Toggle Listener for Wi-Fi Switch
         toggleWifiSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -78,19 +65,19 @@ public class MainFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Log.i(WifiDirectHandler.LOG_TAG, "\nWi-Fi Switch Toggled");
-                if(wifiDirectHandler.isWifiEnabled()) {
+                if(getHandler().isWifiEnabled()) {
                     // Disable Wi-Fi, disable all switches and buttons
                     toggleWifiSwitch.setChecked(false);
                     serviceRegistrationSwitch.setChecked(false);
                     noPromptServiceRegistrationSwitch.setChecked(false);
-                    wifiDirectHandler.setWifiEnabled(false);
+                    getHandler().setWifiEnabled(false);
                     serviceRegistrationSwitch.setEnabled(false);
                     noPromptServiceRegistrationSwitch.setEnabled(false);
                     discoverServicesButton.setEnabled(false);
                 } else {
                     // Enable Wi-Fi, enable all switches and buttons
                     toggleWifiSwitch.setChecked(true);
-                    wifiDirectHandler.setWifiEnabled(true);
+                    getHandler().setWifiEnabled(true);
                     serviceRegistrationSwitch.setEnabled(true);
                     discoverServicesButton.setEnabled(true);
                     noPromptServiceRegistrationSwitch.setEnabled(true);
@@ -114,11 +101,11 @@ public class MainFragment extends Fragment {
                             new HashMap<String, String>(),  // Record
                             ServiceType.PRESENCE_TCP        // Type
                     );
-                    wifiDirectHandler.startAddingLocalService(serviceData);
+                    getHandler().startAddingLocalService(serviceData);
                     noPromptServiceRegistrationSwitch.setEnabled(false);
                 } else {
                     // Remove local service
-                    wifiDirectHandler.removeService();
+                    getHandler().removeService();
                     noPromptServiceRegistrationSwitch.setEnabled(true);
                 }
             }
@@ -140,11 +127,11 @@ public class MainFragment extends Fragment {
                             new HashMap<String, String>(),  // Record
                             ServiceType.PRESENCE_TCP        // Type
                     );
-                    wifiDirectHandler.startAddingNoPromptService(serviceData);
+                    getHandler().startAddingNoPromptService(serviceData);
                     serviceRegistrationSwitch.setEnabled(false);
                 } else {
                     // Remove no-prompt local service
-                    wifiDirectHandler.removeService();
+                    getHandler().removeService();
                     serviceRegistrationSwitch.setEnabled(true);
                 }
             }
@@ -189,8 +176,7 @@ public class MainFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            WiFiDirectHandlerAccessor wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
-            wifiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
+            wifiDirectHandlerAcessor = ((WiFiDirectHandlerAccessor) getActivity());
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
@@ -200,14 +186,37 @@ public class MainFragment extends Fragment {
         filter.addAction(WifiDirectHandler.Action.SERVICE_CONNECTED);
         filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
+    }
 
+    /**
+     * Shortcut for accessing the wifi handler
+     */
+    private WifiDirectHandler getHandler() {
+        return wifiDirectHandlerAcessor.getWifiHandler();
+    }
+
+    private void updateToggles() {
+        // Set state of Switches and Buttons on load
+        if(getHandler().isWifiEnabled()) {
+            toggleWifiSwitch.setChecked(true);
+            serviceRegistrationSwitch.setEnabled(true);
+            noPromptServiceRegistrationSwitch.setEnabled(true);
+            discoverServicesButton.setEnabled(true);
+        } else {
+            toggleWifiSwitch.setChecked(false);
+            serviceRegistrationSwitch.setChecked(false);
+            noPromptServiceRegistrationSwitch.setChecked(false);
+            serviceRegistrationSwitch.setEnabled(false);
+            noPromptServiceRegistrationSwitch.setEnabled(false);
+            discoverServicesButton.setEnabled(false);
+        }
+        Log.i(WifiDirectHandler.LOG_TAG, "Updating toggle switches");
     }
 
     /**
      * Receiver for receiving intents from the WifiDirectHandler to update UI
      * when Wi-Fi Direct commands are completed
      */
-
     public class ChatReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -218,13 +227,9 @@ public class MainFragment extends Fragment {
                     ) {
                 Log.i(WifiDirectHandler.LOG_TAG, "FRAGMENT SWITCH: Connected to service");
                 ChatFragment newFrag = new ChatFragment();
-                wifiDirectHandler.setChatFragment(newFrag);
+                getHandler().setChatFragment(newFrag);
                 mainActivity.replaceFragment(newFrag);
             }
-
         }
     }
-
-
-
 }
