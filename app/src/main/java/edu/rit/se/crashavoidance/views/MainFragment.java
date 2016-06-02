@@ -205,5 +205,4 @@ public class MainFragment extends Fragment {
         Log.i(WifiDirectHandler.LOG_TAG, "Updating toggle switches");
     }
 
-
 }
