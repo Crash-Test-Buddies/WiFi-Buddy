@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginTop="?attr/actionBarSize">
+    android:layout_marginTop="?attr/actionBarSize"
+    android:layout_weight="3" >
 
     <Switch
         style="@style/styleSwitchDefault"
@@ -29,12 +30,5 @@
         android:text="@string/action_discover_services"
         android:id="@+id/discoverServicesButton"
         android:enabled="false" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Device"
-        android:id="@+id/thisDeviceTextView"
-        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>

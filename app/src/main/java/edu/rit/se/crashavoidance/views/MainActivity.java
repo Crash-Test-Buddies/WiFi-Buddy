@@ -105,6 +105,9 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             MainFragment mainFragment = new MainFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, mainFragment).commit();
+            DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, deviceInfoFragment).commit();
         }
 
         @Override
@@ -121,6 +124,15 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     public void replaceFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+    }
+
+    public void addFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.fragment_container, fragment);
         transaction.addToBackStack(null);
 
         // Commit the transaction

@@ -808,6 +808,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     public String getThisDeviceInfo() {
-        return deviceToString(thisDevice);
+        if (thisDevice == null) {
+            return "No Device Info";
+        } else {
+            return deviceToString(thisDevice);
+        }
     }
 }
