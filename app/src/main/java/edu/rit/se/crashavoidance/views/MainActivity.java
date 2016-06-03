@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
 
     private Handler handler = new Handler(this);
     private LogsDialogFragment logsDialogFragment;
+    private DeviceInfoFragment deviceInfoFragment;
     private ChatReceiver receiver;
 
     @Override
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             // Add MainFragment to the 'fragment_container' when wifiDirectHandler is bound
             mainFragment = new MainFragment();
             replaceFragment(mainFragment);
-            DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+            deviceInfoFragment = new DeviceInfoFragment();
             addFragment(deviceInfoFragment);
         }
 
@@ -294,8 +295,9 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
                 ChatFragment newFrag = new ChatFragment();
                 wifiDirectHandler.setChatFragment(newFrag);
                 replaceFragment(newFrag);
+            } else if (intent.getAction().equals(WifiDirectHandler.Action.DEVICE_CHANGED)) {
+                deviceInfoFragment.getThisDeviceInfoTextView().setText(wifiDirectHandler.getThisDeviceInfo());
             }
-
         }
     }
 }
