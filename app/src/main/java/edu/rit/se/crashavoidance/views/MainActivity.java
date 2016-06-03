@@ -49,12 +49,13 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity created");
+        Log.i(WifiDirectHandler.LOG_TAG, "Creating MainActivity");
         setContentView(R.layout.activity_main);
 
         // Initialize ActionBar
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
         setSupportActionBar(toolbar);
+        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity created");
     }
 
     /**
@@ -104,11 +105,14 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             // Add MainFragment to the 'fragment_container' when wifiDirectHandler is bound
             mainFragment = new MainFragment();
             replaceFragment(mainFragment);
+            DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+            addFragment(deviceInfoFragment);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             wifiDirectHandlerBound = false;
+            Log.i(WifiDirectHandler.LOG_TAG, "WifiDirectHandler service unbound");
         }
     };
 
@@ -125,6 +129,14 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         transaction.commit();
     }
 
+    public void addFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.fragment_container, fragment);
+
+        // Commit the transaction
+        transaction.commit();
+    }
+
     /**
      * Returns the wifiDirectHandler
      * @return The wifiDirectHandler
@@ -135,12 +147,11 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     }
 
     public void onServiceClick(DnsSdService service) {
-        wifiDirectHandler.connectToService(service);
-
-        Log.i(WifiDirectHandler.LOG_TAG, "Service connected");
-
+        Log.i(WifiDirectHandler.LOG_TAG, "\nService List item tapped");
+        wifiDirectHandler.initiateConnectToService(service);
     }
 
+    // TODO: Add JavaDoc
     @Override
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
@@ -158,10 +169,10 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         return true;
     }
 
+    // TODO: Add JavaDoc
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
-
-        Thread handler = null;
+        Thread handler;
         /*
          * The group owner accepts connections using a server socket and then spawns a
          * client socket for every client. This is handled by {@code
@@ -171,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             Log.i(WifiDirectHandler.LOG_TAG, "Connected as group owner");
             try {
                 handler = new OwnerSocketHandler(
-                        ((ChatFragment.MessageTarget) this).getHandler());
+                        this.getHandler());
                 handler.start();
             } catch (IOException e) {
                 Log.i(WifiDirectHandler.LOG_TAG, "Failed to create a server thread - " + e.getMessage());
@@ -180,13 +191,13 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         } else {
             Log.i(WifiDirectHandler.LOG_TAG, "Connected as peer");
             handler = new ClientSocketHandler(
-                    ((ChatFragment.MessageTarget) this).getHandler(),
+                    this.getHandler(),
                     p2pInfo.groupOwnerAddress);
             handler.start();
         }
+
         chatFragment = new ChatFragment();
         replaceFragment(chatFragment);
-
     }
 
     @Override
@@ -200,47 +211,57 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
 
     protected void onPause() {
         super.onPause();
+        Log.i(WifiDirectHandler.LOG_TAG, "Pausing MainActivity");
+        if (wifiDirectHandlerBound) {
+            Log.i(WifiDirectHandler.LOG_TAG, "WifiDirectHandler service unbound");
+            unbindService(wifiServiceConnection);
+            wifiDirectHandlerBound = false;
+        }
         Log.i(WifiDirectHandler.LOG_TAG, "MainActivity paused");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(wifiDirectHandler.LOG_TAG, "MainActivity resumed");
+        Log.i(WifiDirectHandler.LOG_TAG, "Resuming MainActivity");
         Intent intent = new Intent(this, WifiDirectHandler.class);
         if(!wifiDirectHandlerBound) {
             bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
         }
+        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity resumed");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity started");
+        Log.i(WifiDirectHandler.LOG_TAG, "Starting MainActivity");
         Intent intent = new Intent(this, WifiDirectHandler.class);
         bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
+        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity started");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity stopped");
+        Log.i(WifiDirectHandler.LOG_TAG, "Stopping MainActivity");
         if(wifiDirectHandlerBound) {
             Intent intent = new Intent(this, WifiDirectHandler.class);
             stopService(intent);
             unbindService(wifiServiceConnection);
             wifiDirectHandlerBound = false;
         }
+        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity stopped");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity destroyed");
+        Log.i(WifiDirectHandler.LOG_TAG, "Destroying MainActivity");
         if (wifiDirectHandlerBound) {
-            Log.i(WifiDirectHandler.LOG_TAG, "- WifiDirectHandler service unbound");
+            Log.i(WifiDirectHandler.LOG_TAG, "WifiDirectHandler service unbound");
             unbindService(wifiServiceConnection);
             wifiDirectHandlerBound = false;
+            Log.i(WifiDirectHandler.LOG_TAG, "MainActivity destroyed");
         }
     }
 }

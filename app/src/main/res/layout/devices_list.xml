@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginLeft="20dip"
+            android:layout_marginStart="20dip"
             android:layout_centerHorizontal="true"
             style="@android:style/Widget.ProgressBar.Small" >
         </ProgressBar>
@@ -41,7 +41,7 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:text="Reset"
             android:id="@+id/reset_button" />
     </RelativeLayout>

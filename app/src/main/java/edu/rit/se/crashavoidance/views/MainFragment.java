@@ -34,9 +34,9 @@ public class MainFragment extends Fragment {
     private Switch serviceRegistrationSwitch;
     private Switch noPromptServiceRegistrationSwitch;
     private Button discoverServicesButton;
-    AvailableServicesFragment availableServicesFragment;
-    MainActivity mainActivity;
-    private ChatReceiver receiver;
+    private AvailableServicesFragment availableServicesFragment;
+    private DeviceInfoFragment deviceInfoFragment;
+    private MainActivity mainActivity;
 
     /**
      * Sets the layout for the UI, initializes the Buttons and Switches, and returns the View
@@ -96,7 +96,7 @@ public class MainFragment extends Fragment {
                 if (isChecked) {
                     // Add local service
                     ServiceData serviceData = new ServiceData(
-                            "Wi-Fi Direct Handler",                   // Name
+                            "Wi-Fi Direct Handler",         // Name
                             4545,                           // Port
                             new HashMap<String, String>(),  // Record
                             ServiceType.PRESENCE_TCP        // Type
@@ -122,7 +122,7 @@ public class MainFragment extends Fragment {
                 if (isChecked) {
                     // Add no-prompt local service
                     ServiceData serviceData = new ServiceData(
-                            "Wi-Fi Direct Handler",                   // Name
+                            "Wi-Fi Direct Handler",         // Name
                             4545,                           // Port
                             new HashMap<String, String>(),  // Record
                             ServiceType.PRESENCE_TCP        // Type
@@ -149,15 +149,14 @@ public class MainFragment extends Fragment {
                     availableServicesFragment = new AvailableServicesFragment();
                 }
                 mainActivity.replaceFragment(availableServicesFragment);
+                if (deviceInfoFragment == null) {
+                    deviceInfoFragment = new DeviceInfoFragment();
+                }
+                mainActivity.addFragment(new DeviceInfoFragment());
             }
         });
 
         return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
     }
 
     /**
@@ -180,11 +179,13 @@ public class MainFragment extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
-        //Set the receiver for moving to the chat fragment
-        receiver = new ChatReceiver();
+
+        // Set the receiver for moving to the chat fragment
+        ChatReceiver receiver = new ChatReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Action.SERVICE_CONNECTED);
         filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        filter.addAction(WifiDirectHandler.Action.DEVICE_CHANGED);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
     }
 
@@ -223,12 +224,13 @@ public class MainFragment extends Fragment {
             // Get the intent sent by WifiDirectHandler when a service is found
 
             if (intent.getAction().equals(WifiDirectHandler.Action.SERVICE_CONNECTED)
-               || intent.getAction().equals(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
-                    ) {
+               || intent.getAction().equals(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION) ) {
                 Log.i(WifiDirectHandler.LOG_TAG, "FRAGMENT SWITCH: Connected to service");
                 ChatFragment newFrag = new ChatFragment();
                 getHandler().setChatFragment(newFrag);
                 mainActivity.replaceFragment(newFrag);
+            } else if (intent.getAction().equals(WifiDirectHandler.Action.DEVICE_CHANGED)) {
+                //deviceInfoFragment.getThisDeviceInfoTextView().setText(getHandler().getThisDeviceInfo());
             }
         }
     }

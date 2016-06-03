@@ -27,11 +27,11 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 public class AvailableServicesFragment extends Fragment{
 
     private WifiDirectHandler wifiDirectHandler;
-    List<DnsSdService> services = new ArrayList<>();
-    AvailableServicesListViewAdapter servicesListAdapter;
-    MainActivity mainActivity;
-    WifiDirectReceiver receiver;
-    ListView deviceList;
+    private List<DnsSdService> services = new ArrayList<>();
+    private AvailableServicesListViewAdapter servicesListAdapter;
+    private MainActivity mainActivity;
+    private WifiDirectReceiver receiver;
+    private ListView deviceList;
 
     /**
      * Sets the Layout for the UI
@@ -100,7 +100,7 @@ public class AvailableServicesFragment extends Fragment{
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
         // Make a call to setup services discovery
         wifiDirectHandler.setupServiceDiscovery();
-        // Make continous service discovery calls
+        // Make continuous service discovery calls
         wifiDirectHandler.continuouslyDiscoverServices();
     }
 
@@ -113,7 +113,7 @@ public class AvailableServicesFragment extends Fragment{
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found
             if (intent.getAction().equals(WifiDirectHandler.Action.DNS_SD_SERVICE_AVAILABLE)) {
-                String serviceKey = intent.getStringExtra(wifiDirectHandler.SERVICE_MAP_KEY);
+                String serviceKey = intent.getStringExtra(WifiDirectHandler.SERVICE_MAP_KEY);
                 DnsSdService service = wifiDirectHandler.getDnsSdServiceMap().get(serviceKey);
                 // Add the service to the UI and update
                 servicesListAdapter.addUnique(service);

@@ -1,8 +1,5 @@
 package edu.rit.se.crashavoidance.wifi;
 
-/**
- * Created by Dan on 4/19/2016.
- */
 import android.os.Handler;
 import android.util.Log;
 import java.io.IOException;
@@ -15,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * group owner.
  */
 public class OwnerSocketHandler extends Thread {
-    ServerSocket socket = null;
+    private ServerSocket socket = null;
     private final int THREAD_COUNT = 10;
     private Handler handler;
     private static final String TAG = "GroupOwnerSocketHandler";
