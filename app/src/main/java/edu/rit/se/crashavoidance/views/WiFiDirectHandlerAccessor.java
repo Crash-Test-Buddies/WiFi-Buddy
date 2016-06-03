@@ -5,6 +5,6 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 /**
  *
  */
-public interface WiFiDirectHandlerAccessor {
+interface WiFiDirectHandlerAccessor {
     WifiDirectHandler getWifiHandler();
 }

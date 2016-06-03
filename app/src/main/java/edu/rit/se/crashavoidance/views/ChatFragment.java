@@ -1,42 +1,34 @@
 package edu.rit.se.crashavoidance.views;
 
-/**
- * Created by Dan on 4/18/2016.
- */
-        import android.app.Fragment;
-        import android.content.BroadcastReceiver;
-        import android.content.Context;
-        import android.content.Intent;
-        import android.os.Bundle;
-        import android.os.Handler;
-        import android.support.v4.app.ListFragment;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.ArrayAdapter;
-        import android.widget.ListView;
-        import android.widget.TextView;
-        import java.util.ArrayList;
-        import java.util.List;
+import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.ListFragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
-        import edu.rit.se.crashavoidance.R;
-        import edu.rit.se.crashavoidance.wifi.ChatManager;
-        import edu.rit.se.crashavoidance.wifi.DnsSdService;
-        import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.rit.se.crashavoidance.R;
+import edu.rit.se.crashavoidance.wifi.ChatManager;
+import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 /**
  * This fragment handles chat related UI which includes a list view for messages
  * and a message entry field with send button.
  */
 public class ChatFragment extends ListFragment {
-    private View view;
     private ChatManager chatManager;
     private TextView chatLine;
-    private ListView listView;
-    ChatMessageAdapter adapter = null;
-    private List<String> items = new ArrayList<String>();
-    WifiDirectHandler wiFiDirectHandler;
-    MainActivity mainActivity;
+    private ChatMessageAdapter adapter = null;
+    private List<String> items = new ArrayList<>();
+    private WifiDirectHandler wiFiDirectHandler;
+    private MainActivity mainActivity;
 
 
     @Override
@@ -48,9 +40,9 @@ public class ChatFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_chat, container, false);
+        View view = inflater.inflate(R.layout.fragment_chat, container, false);
         chatLine = (TextView) view.findViewById(R.id.txtChatLine);
-        listView = (ListView) view.findViewById(android.R.id.list);
+        ListView listView = (ListView) view.findViewById(android.R.id.list);
         adapter = new ChatMessageAdapter(getActivity(), android.R.id.text1,
                 items);
         listView.setAdapter(adapter);
@@ -71,7 +63,7 @@ public class ChatFragment extends ListFragment {
     }
 
     public interface MessageTarget {
-        public Handler getHandler();
+        Handler getHandler();
     }
 
     public void setChatManager(ChatManager obj) {

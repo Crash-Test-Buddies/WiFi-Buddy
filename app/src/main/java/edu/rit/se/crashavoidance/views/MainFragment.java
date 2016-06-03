@@ -34,8 +34,10 @@ public class MainFragment extends Fragment {
     private Switch serviceRegistrationSwitch;
     private Switch noPromptServiceRegistrationSwitch;
     private Button discoverServicesButton;
-    AvailableServicesFragment availableServicesFragment;
-    MainActivity mainActivity;
+    private AvailableServicesFragment availableServicesFragment;
+    private DeviceInfoFragment deviceInfoFragment;
+    private MainActivity mainActivity;
+
     /**
      * Sets the layout for the UI, initializes the Buttons and Switches, and returns the View
      */
@@ -94,7 +96,7 @@ public class MainFragment extends Fragment {
                 if (isChecked) {
                     // Add local service
                     ServiceData serviceData = new ServiceData(
-                            "Wi-Fi Direct Handler",                   // Name
+                            "Wi-Fi Direct Handler",         // Name
                             4545,                           // Port
                             new HashMap<String, String>(),  // Record
                             ServiceType.PRESENCE_TCP        // Type
@@ -120,7 +122,7 @@ public class MainFragment extends Fragment {
                 if (isChecked) {
                     // Add no-prompt local service
                     ServiceData serviceData = new ServiceData(
-                            "Wi-Fi Direct Handler",                   // Name
+                            "Wi-Fi Direct Handler",         // Name
                             4545,                           // Port
                             new HashMap<String, String>(),  // Record
                             ServiceType.PRESENCE_TCP        // Type
@@ -147,15 +149,14 @@ public class MainFragment extends Fragment {
                     availableServicesFragment = new AvailableServicesFragment();
                 }
                 mainActivity.replaceFragment(availableServicesFragment);
+                if (deviceInfoFragment == null) {
+                    deviceInfoFragment = new DeviceInfoFragment();
+                }
+                mainActivity.addFragment(new DeviceInfoFragment());
             }
         });
 
         return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
     }
 
     /**
@@ -204,5 +205,4 @@ public class MainFragment extends Fragment {
         }
         Log.i(WifiDirectHandler.LOG_TAG, "Updating toggle switches");
     }
-
 }

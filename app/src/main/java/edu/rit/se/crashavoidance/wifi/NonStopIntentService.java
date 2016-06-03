@@ -9,7 +9,7 @@ import android.os.Looper;
 import android.os.Message;
 
 /*
- * This class comes from  Graeme on Stackoverflow: http://stackoverflow.com/users/726954/graeme
+ * This class comes from  Graeme on StackOverflow: http://stackoverflow.com/users/726954/graeme
  * Link to the answer: http://stackoverflow.com/a/9944203/2354849
  */
 public abstract class NonStopIntentService extends Service {
