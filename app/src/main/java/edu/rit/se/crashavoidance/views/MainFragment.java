@@ -179,14 +179,6 @@ public class MainFragment extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
-
-        // Set the receiver for moving to the chat fragment
-        ChatReceiver receiver = new ChatReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(WifiDirectHandler.Action.SERVICE_CONNECTED);
-        filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-        filter.addAction(WifiDirectHandler.Action.DEVICE_CHANGED);
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
     }
 
     /**
@@ -212,26 +204,5 @@ public class MainFragment extends Fragment {
             discoverServicesButton.setEnabled(false);
         }
         Log.i(WifiDirectHandler.LOG_TAG, "Updating toggle switches");
-    }
-
-    /**
-     * Receiver for receiving intents from the WifiDirectHandler to update UI
-     * when Wi-Fi Direct commands are completed
-     */
-    public class ChatReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Get the intent sent by WifiDirectHandler when a service is found
-
-            if (intent.getAction().equals(WifiDirectHandler.Action.SERVICE_CONNECTED)
-               || intent.getAction().equals(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION) ) {
-                Log.i(WifiDirectHandler.LOG_TAG, "FRAGMENT SWITCH: Connected to service");
-                ChatFragment newFrag = new ChatFragment();
-                getHandler().setChatFragment(newFrag);
-                mainActivity.replaceFragment(newFrag);
-            } else if (intent.getAction().equals(WifiDirectHandler.Action.DEVICE_CHANGED)) {
-                //deviceInfoFragment.getThisDeviceInfoTextView().setText(getHandler().getThisDeviceInfo());
-            }
-        }
     }
 }
