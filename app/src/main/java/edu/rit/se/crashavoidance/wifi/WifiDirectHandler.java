@@ -36,8 +36,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import edu.rit.se.crashavoidance.views.ChatFragment;
-import edu.rit.se.crashavoidance.views.MainActivity;
 import edu.rit.se.crashavoidance.views.ChatFragment.MessageTarget;
+import edu.rit.se.crashavoidance.views.MainActivity;
 
 /**
  * TODO add comment
@@ -175,39 +175,12 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
-        Thread handler;
         /*
          * The group owner accepts connections using a server socket and then spawns a
          * client socket for every client. This is handled by {@code
          * GroupOwnerSocketHandler}
          */
-        Log.i(LOG_TAG, "In onConnectionInfoAvailable.");
-        if (p2pInfo.groupFormed) {
-            if (p2pInfo.isGroupOwner) {
-                Log.i(LOG_TAG, "Connected as group owner");
-                try {
-                    handler = new OwnerSocketHandler(
-                            this.getHandler());
-                    handler.start();
-                } catch (IOException e) {
-                    Log.i(LOG_TAG, 
-                            "Failed to create a server thread - " + e.getMessage());
-                    return;
-                }
-            } else {
-                Log.i(LOG_TAG, "Connected as peer");
-                handler = new ClientSocketHandler(
-                        this.getHandler(),
-                        p2pInfo.groupOwnerAddress);
-                handler.start();
-            }
-
-            Intent intent = new Intent(Action.SERVICE_CONNECTED);
-            localBroadcastManager.sendBroadcast(intent);
-        } else {
-            Log.i(LOG_TAG, "Tried to connect, not in a group.");
-        }
-
+        Log.i(LOG_TAG, "Connection info available");
     }
 
     /**
@@ -342,9 +315,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 Log.e(LOG_TAG, "Failure adding service discovery request: " + FailureReason.fromInteger(reason).toString());
             }
         });
-
-
-
     }
 
     /**
@@ -697,6 +667,25 @@ public class WifiDirectHandler extends NonStopIntentService implements
                         }
                     }
                 });
+
+                Thread handler;
+                if (isGroupOwnerP2pInfo) {
+                    Log.i(LOG_TAG, "Connected as group owner");
+                    try {
+                        handler = new OwnerSocketHandler(this.getHandler());
+                        handler.start();
+                    } catch (IOException e) {
+                        Log.i(LOG_TAG, "Failed to create a server thread - " + e.getMessage());
+                        return;
+                    }
+                } else {
+                    Log.i(LOG_TAG, "Connected as peer");
+                    handler = new ClientSocketHandler(this.getHandler(), groupOwnerAddress);
+                    handler.start();
+                }
+
+                Intent connectionIntent = new Intent(Action.SERVICE_CONNECTED);
+                localBroadcastManager.sendBroadcast(connectionIntent);
             }
         } else if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
             // Indicates whether Wi-Fi P2P is enabled
