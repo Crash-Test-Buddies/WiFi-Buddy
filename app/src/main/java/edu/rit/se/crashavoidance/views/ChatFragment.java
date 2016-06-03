@@ -30,7 +30,6 @@ public class ChatFragment extends ListFragment {
     private WifiDirectHandler wiFiDirectHandler;
     private MainActivity mainActivity;
 
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -38,21 +37,18 @@ public class ChatFragment extends ListFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
         chatLine = (TextView) view.findViewById(R.id.txtChatLine);
         ListView listView = (ListView) view.findViewById(android.R.id.list);
-        adapter = new ChatMessageAdapter(getActivity(), android.R.id.text1,
-                items);
+        adapter = new ChatMessageAdapter(getActivity(), android.R.id.text1, items);
         listView.setAdapter(adapter);
         view.findViewById(R.id.button1).setOnClickListener(
                       new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
-                      if (chatManager != null) {
-                            chatManager.write(chatLine.getText().toString()
-                                    .getBytes());
+                        if (chatManager != null) {
+                            chatManager.write(chatLine.getText().toString().getBytes());
                             pushMessage("Me: " + chatLine.getText().toString());
                             chatLine.setText("");
                             chatLine.clearFocus();
@@ -79,37 +75,31 @@ public class ChatFragment extends ListFragment {
      */
     public class ChatMessageAdapter extends ArrayAdapter<String> {
         List<String> messages = null;
-        public ChatMessageAdapter(Context context, int textViewResourceId,
-                                  List<String> items) {
+        public ChatMessageAdapter(Context context, int textViewResourceId, List<String> items) {
             super(context, textViewResourceId, items);
         }
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View v = convertView;
             if (v == null) {
-                LayoutInflater vi = (LayoutInflater) getActivity()
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 v = vi.inflate(android.R.layout.simple_list_item_1, null);
             }
             String message = items.get(position);
             if (message != null && !message.isEmpty()) {
-                TextView nameText = (TextView) v
-                        .findViewById(android.R.id.text1);
+                TextView nameText = (TextView) v.findViewById(android.R.id.text1);
                 if (nameText != null) {
                     nameText.setText(message);
                     if (message.startsWith("Me: ")) {
-                        nameText.setTextAppearance(getActivity(),
-                                R.style.normalText);
+                        nameText.setTextAppearance(getActivity(), R.style.normalText);
                     } else {
-                        nameText.setTextAppearance(getActivity(),
-                                R.style.boldText);
+                        nameText.setTextAppearance(getActivity(), R.style.boldText);
                     }
                 }
             }
             return v;
         }
     }
-
 
     /**
      * This is called when the Fragment is opened and is attached to MainActivity

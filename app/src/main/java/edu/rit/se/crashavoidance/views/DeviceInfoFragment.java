@@ -30,8 +30,13 @@ public class DeviceInfoFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_device_info, container, false);
         thisDeviceInfoTextView = (TextView) view.findViewById((R.id.thisDeviceInfoTextView));
         WifiP2pDevice thisDevice = wifiDirectHandler.getThisDevice();
-        String thisDeviceInfo = wifiDirectHandler.getThisDevice().deviceName +
-                "\n" + wifiDirectHandler.deviceStatusToString(wifiDirectHandler.getThisDevice().status);
+        String thisDeviceInfo;
+        if (thisDevice != null) {
+            thisDeviceInfo = thisDevice.deviceName +
+                    "\n" + wifiDirectHandler.deviceStatusToString(thisDevice.status);
+        } else {
+            thisDeviceInfo = "No Device Info";
+        }
         thisDeviceInfoTextView.setText(thisDeviceInfo);
         return view;
     }

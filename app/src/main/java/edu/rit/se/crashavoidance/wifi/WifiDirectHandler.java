@@ -708,6 +708,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
             // Indicates this device's configuration details have changed
             // Sticky Intent
 
+            Log.i(LOG_TAG, "This device changed");
+
             // Extra information from EXTRA_WIFI_P2P_DEVICE
             thisDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
 
@@ -715,7 +717,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
             localBroadcastManager.sendBroadcast(deviceChangedIntent);
 
             // Logs extra information from EXTRA_WIFI_P2P_DEVICE
-            Log.i(LOG_TAG, "This device changed");
             Log.i(LOG_TAG, deviceToString(thisDevice));
         }
     }
