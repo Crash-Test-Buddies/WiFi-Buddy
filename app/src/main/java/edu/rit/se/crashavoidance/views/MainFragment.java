@@ -149,6 +149,10 @@ public class MainFragment extends Fragment {
                     availableServicesFragment = new AvailableServicesFragment();
                 }
                 mainActivity.replaceFragment(availableServicesFragment);
+                if (deviceInfoFragment == null) {
+                    deviceInfoFragment = new DeviceInfoFragment();
+                }
+                mainActivity.addFragment(new DeviceInfoFragment());
             }
         });
 
