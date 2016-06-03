@@ -33,7 +33,6 @@ public class AvailableServicesFragment extends Fragment{
     private MainActivity mainActivity;
     private WifiDirectReceiver receiver;
     private ListView deviceList;
-    private Button resetButton;
 
     /**
      * Sets the Layout for the UI
@@ -59,7 +58,7 @@ public class AvailableServicesFragment extends Fragment{
     }
 
     private void prepareResetButton(View view){
-        resetButton = (Button)view.findViewById(R.id.reset_button);
+        Button resetButton = (Button)view.findViewById(R.id.reset_button);
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

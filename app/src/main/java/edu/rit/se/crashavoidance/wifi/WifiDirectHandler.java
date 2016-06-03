@@ -394,7 +394,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private void submitDiscoverTask(){
         Log.i(LOG_TAG, "Submitting discover task");
         // Discover times out after 2 minutes so we set the timer to that
-        int timeToWait = 20000;
+        int timeToWait = 120000;
         DiscoverTask task = new DiscoverTask();
         Timer timer = new Timer();
         // Submit the task and add it to the List
