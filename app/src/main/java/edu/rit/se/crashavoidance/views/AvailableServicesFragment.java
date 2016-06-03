@@ -30,8 +30,6 @@ public class AvailableServicesFragment extends Fragment{
     private WifiDirectHandler wifiDirectHandler;
     private List<DnsSdService> services = new ArrayList<>();
     private AvailableServicesListViewAdapter servicesListAdapter;
-    private MainActivity mainActivity;
-    private WifiDirectReceiver receiver;
     private ListView deviceList;
 
     /**
@@ -46,15 +44,6 @@ public class AvailableServicesFragment extends Fragment{
         startDiscoveringServices();
         prepareResetButton(rootView);
         return rootView;
-    }
-
-    /**
-     * Sets the WifiDirectHandler instance when AvailableServicesFragment is attached to MainActivity
-     */
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mainActivity = (MainActivity) getActivity();
     }
 
     private void prepareResetButton(View view){
@@ -96,7 +85,7 @@ public class AvailableServicesFragment extends Fragment{
      * and calls service discovery
      */
     private void startDiscoveringServices() {
-        receiver = new WifiDirectReceiver();
+        WifiDirectReceiver receiver = new WifiDirectReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Action.DNS_SD_SERVICE_AVAILABLE);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);

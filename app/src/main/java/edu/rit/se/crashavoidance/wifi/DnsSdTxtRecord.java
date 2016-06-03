@@ -18,15 +18,7 @@ public class DnsSdTxtRecord {
         this.device = device;
     }
 
-    public String getFullDomain() {
-        return fullDomain;
-    }
-
     public Map getRecord() {
         return record;
-    }
-
-    public WifiP2pDevice getDevice() {
-        return device;
     }
 }

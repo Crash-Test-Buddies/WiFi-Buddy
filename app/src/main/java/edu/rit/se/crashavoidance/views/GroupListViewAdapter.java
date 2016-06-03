@@ -17,7 +17,7 @@ import edu.rit.se.crashavoidance.R;
 class GroupListViewAdapter extends BaseAdapter{
 
     private List<String> peers;
-    private GroupMessageActivity context;
+    private final GroupMessageActivity context;
 
     public GroupListViewAdapter(GroupMessageActivity context, List<String> peers){
         this.context = context;

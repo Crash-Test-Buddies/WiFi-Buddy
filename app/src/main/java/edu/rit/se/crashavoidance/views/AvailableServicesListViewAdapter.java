@@ -19,7 +19,7 @@ import edu.rit.se.crashavoidance.wifi.DnsSdTxtRecord;
 class AvailableServicesListViewAdapter extends BaseAdapter {
 
     private List<DnsSdService> serviceList;
-    private MainActivity context;
+    private final MainActivity context;
 
     public AvailableServicesListViewAdapter(MainActivity context, List<DnsSdService> serviceList) {
         this.context = context;

@@ -2,7 +2,6 @@
     <!-- Titles -->
     <string name="app_name">Wi-Fi Direct Handler</string>
     <string name="title_logs">Logs</string>
-    <string name="title_discover_services">Discover Services</string>
 
     <!-- Actions -->
     <string name="action_toggle_wifi">Toggle Wi-Fi</string>

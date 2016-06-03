@@ -1,14 +1,9 @@
 package edu.rit.se.crashavoidance.views;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +24,7 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
  */
 public class MainFragment extends Fragment {
 
-    private WiFiDirectHandlerAccessor wifiDirectHandlerAcessor;
+    private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
     private Switch toggleWifiSwitch;
     private Switch serviceRegistrationSwitch;
     private Switch noPromptServiceRegistrationSwitch;
@@ -175,7 +170,7 @@ public class MainFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            wifiDirectHandlerAcessor = ((WiFiDirectHandlerAccessor) getActivity());
+            wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
@@ -185,7 +180,7 @@ public class MainFragment extends Fragment {
      * Shortcut for accessing the wifi handler
      */
     private WifiDirectHandler getHandler() {
-        return wifiDirectHandlerAcessor.getWifiHandler();
+        return wifiDirectHandlerAccessor.getWifiHandler();
     }
 
     private void updateToggles() {

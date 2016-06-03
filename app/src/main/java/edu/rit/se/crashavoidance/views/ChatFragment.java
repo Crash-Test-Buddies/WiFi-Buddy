@@ -1,6 +1,7 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ListFragment;
@@ -27,14 +28,6 @@ public class ChatFragment extends ListFragment {
     private TextView chatLine;
     private ChatMessageAdapter adapter = null;
     private List<String> items = new ArrayList<>();
-    private WifiDirectHandler wiFiDirectHandler;
-    private MainActivity mainActivity;
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mainActivity = (MainActivity) getActivity();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -91,9 +84,9 @@ public class ChatFragment extends ListFragment {
                 if (nameText != null) {
                     nameText.setText(message);
                     if (message.startsWith("Me: ")) {
-                        nameText.setTextAppearance(getActivity(), R.style.normalText);
+                        nameText.setTypeface(null, Typeface.NORMAL);
                     } else {
-                        nameText.setTextAppearance(getActivity(), R.style.boldText);
+                        nameText.setTypeface(null, Typeface.BOLD);
                     }
                 }
             }
@@ -110,7 +103,7 @@ public class ChatFragment extends ListFragment {
         super.onAttach(context);
         try {
             WiFiDirectHandlerAccessor wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
-            wiFiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
+            WifiDirectHandler wiFiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
 
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");

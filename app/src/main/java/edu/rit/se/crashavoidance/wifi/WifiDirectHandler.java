@@ -37,7 +37,6 @@ import java.util.TimerTask;
 
 import edu.rit.se.crashavoidance.views.ChatFragment;
 import edu.rit.se.crashavoidance.views.ChatFragment.MessageTarget;
-import edu.rit.se.crashavoidance.views.MainActivity;
 
 /**
  * TODO add comment
@@ -62,9 +61,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private BroadcastReceiver receiver;
     private WifiP2pServiceInfo serviceInfo;
     private WifiP2pServiceRequest serviceRequest;
-    private MainActivity mainActivity;
     private ChatFragment chatFragment;
-    private Boolean isConnected;
     private Boolean isWifiP2pEnabled;
     private Handler handler = new Handler((Handler.Callback) this);
     private static final int MESSAGE_READ = 0x400 + 1;
@@ -183,10 +180,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         Log.i(LOG_TAG, "Connection info available");
     }
 
-    /**
-     * // TODO add comment
-     * @param serviceData
-     */
+    // TODO add JavaDoc
     public void startAddingLocalService(ServiceData serviceData) {
         Map<String, String> records = new HashMap<>(serviceData.getRecord());
         records.put("listenport", Integer.toString(serviceData.getPort()));
@@ -503,13 +497,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
         });
     }
 
-    private void setIsConnected(boolean value) {
-        isConnected = value;
-    }
-    private Boolean getIsConnected() {
-        return isConnected;
-    }
-
     /**
      * Creates a service that can be connected to without prompting. This is possible by creating an
      * access point and broadcasting the password for peers to use. Peers connect via normal wifi, not
@@ -617,7 +604,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             if (wifiP2pManager != null && groupFormed) {
                 // Logs extra information from EXTRA_WIFI_P2P_INFO
                 Log.i(LOG_TAG, "\nEXTRA_WIFI_P2P_INFO:");
-                Log.i(LOG_TAG, "- Group formed: " + groupFormed);
+                Log.i(LOG_TAG, "- Group formed");
                 Log.i(LOG_TAG, "- Is group owner: " + isGroupOwnerP2pInfo);
                 Log.i(LOG_TAG, "- Group owner address: " + groupOwnerAddress);
 
@@ -646,12 +633,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
                     @Override
                     public void onGroupInfoAvailable(WifiP2pGroup group) {
                         Log.i(LOG_TAG, "Requesting group info");
-                        if (group == null) {
-                            Log.i(LOG_TAG, "- No Wi-Fi P2P group found");
-                        } else {
-                            //Log.i(LOG_TAG, "- Group info available " + group.toString());
-                            //Log.i(LOG_TAG, "- Group name: " + group.getNetworkName() + " - Pass: " + group.getPassphrase());
-                        }
 
                         if (isCreatingNoPrompt) {
                             if (group == null) {
@@ -744,9 +725,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     public Handler getHandler() {
         return handler;
-    }
-    public void setHandler(Handler handler) {
-        this.handler = handler;
     }
 
     @Override

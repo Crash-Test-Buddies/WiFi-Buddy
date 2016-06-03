@@ -40,7 +40,6 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:text="Refresh"
-            android:onClick="resetServiceDiscovery"
             android:id="@+id/reset_button" >
         </Button>
     </RelativeLayout>
@@ -48,7 +47,7 @@
     <ListView
         android:id="@+id/device_list"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         tools:listitem="@layout/service_item"
         android:layout_weight="1"
         android:paddingLeft="@dimen/activity_horizontal_margin"
