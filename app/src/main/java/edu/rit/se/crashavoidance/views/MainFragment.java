@@ -149,10 +149,6 @@ public class MainFragment extends Fragment {
                     availableServicesFragment = new AvailableServicesFragment();
                 }
                 mainActivity.replaceFragment(availableServicesFragment);
-                if (deviceInfoFragment == null) {
-                    deviceInfoFragment = new DeviceInfoFragment();
-                }
-                mainActivity.addFragment(new DeviceInfoFragment());
             }
         });
 
@@ -230,7 +226,7 @@ public class MainFragment extends Fragment {
                 getHandler().setChatFragment(newFrag);
                 mainActivity.replaceFragment(newFrag);
             } else if (intent.getAction().equals(WifiDirectHandler.Action.DEVICE_CHANGED)) {
-                //deviceInfoFragment.getThisDeviceInfoTextView().setText(wifiDirectHandler.getThisDeviceInfo());
+                //deviceInfoFragment.getThisDeviceInfoTextView().setText(getHandler().getThisDeviceInfo());
             }
         }
     }
