@@ -252,10 +252,38 @@ public class WifiDirectHandler extends NonStopIntentService implements
     @Override
     public void onDestroy() {
         super.onDestroy();
+        removeGroup();
         removeService();
         unregisterP2pReceiver();
         unregisterP2p();
         Log.i(LOG_TAG, "Wifi Handler service destroyed");
+    }
+
+    private void removeGroup() {
+        wifiP2pManager.cancelConnect(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                Log.i(LOG_TAG, "P2P negotiation canceled");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Log.e(LOG_TAG, "Failure canceling P2P negotiation: " + FailureReason.fromInteger(reason).toString());
+            }
+        });
+        if (thisDevice.status == WifiP2pDevice.CONNECTED) {
+            wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.i(LOG_TAG, "Group removed");
+                }
+
+                @Override
+                public void onFailure(int reason) {
+                    Log.e(LOG_TAG, "Failure removing group: " + FailureReason.fromInteger(reason).toString());
+                }
+            });
+        }
     }
 
     /**
