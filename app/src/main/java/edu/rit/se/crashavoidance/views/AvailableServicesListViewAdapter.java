@@ -36,10 +36,10 @@ class AvailableServicesListViewAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.service_item, parent, false);
         }
 
-        TextView instanceName = (TextView) convertView.findViewById(R.id.instanceName);
+        TextView deviceName = (TextView) convertView.findViewById(R.id.deviceName);
         TextView deviceInfo = (TextView) convertView.findViewById(R.id.deviceInfo);
 
-        instanceName.setText(service.getInstanceName());
+        deviceName.setText(service.getSrcDevice().deviceName);
 
         String records = "";
         if (context.getWifiHandler() != null) {
@@ -48,8 +48,8 @@ class AvailableServicesListViewAdapter extends BaseAdapter {
                 records = txtRecord.getRecord().toString();
             }
         }
-
-        deviceInfo.setText(context.getWifiHandler().deviceToString(service.getSrcDevice()) + records);
+        String status = context.getWifiHandler().deviceStatusToString(context.getWifiHandler().getThisDevice().status);
+        deviceInfo.setText(status + "\n" + records);
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override

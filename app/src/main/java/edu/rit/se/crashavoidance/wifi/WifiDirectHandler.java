@@ -65,10 +65,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private MainActivity mainActivity;
     private ChatFragment chatFragment;
     private Boolean isConnected;
+    private Boolean isWifiP2pEnabled;
     private Handler handler = new Handler((Handler.Callback) this);
     private static final int MESSAGE_READ = 0x400 + 1;
     private static final int MY_HANDLE = 0x400 + 2;
-
 
     private boolean continueDiscovering = false;
 
@@ -172,6 +172,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         filter = null;
         Log.i(LOG_TAG, "P2P BroadcastReceiver unregistered");
     }
+
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
         Thread handler;
@@ -393,7 +394,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private void submitDiscoverTask(){
         Log.i(LOG_TAG, "Submitting discover task");
         // Discover times out after 2 minutes so we set the timer to that
-        int timeToWait = 120000;
+        int timeToWait = 20000;
         DiscoverTask task = new DiscoverTask();
         Timer timer = new Timer();
         // Submit the task and add it to the List
@@ -707,9 +708,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                 // Wi-Fi Direct is enabled
+                isWifiP2pEnabled = true;
                 Log.i(LOG_TAG, "- Wi-Fi Direct is enabled");
             } else {
                 // Wi-Fi Direct is not enabled
+                isWifiP2pEnabled = false;
                 Log.i(LOG_TAG, "- Wi-Fi Direct is not enabled");
             }
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
@@ -814,24 +817,26 @@ public class WifiDirectHandler extends NonStopIntentService implements
     public String deviceToString(WifiP2pDevice device) {
         String strDevice = "";
         strDevice += "Device name: " + device.deviceName;
+        strDevice += "\nDevice address: " + device.deviceAddress;
         strDevice += "\nIs group owner: " + device.isGroupOwner();
-        int status = device.status;
-        String strStatus;
-        if (status == WifiP2pDevice.AVAILABLE) {
-            strStatus = "Available";
-        } else if (status == WifiP2pDevice.INVITED) {
-            strStatus = "Invited";
-        } else if (status == WifiP2pDevice.CONNECTED) {
-            strStatus = "Connected";
-        } else if (status == WifiP2pDevice.FAILED) {
-            strStatus = "Failed";
-        } else if (status == WifiP2pDevice.UNAVAILABLE) {
-            strStatus = "Unavailable";
-        } else {
-            strStatus = "Unknown";
-        }
-        strDevice += "\nStatus: " + strStatus + "\n";
+        strDevice += "\nStatus: " + deviceStatusToString(device.status) + "\n";
         return strDevice;
+    }
+
+    public String deviceStatusToString(int status) {
+        if (status == WifiP2pDevice.AVAILABLE) {
+            return "Available";
+        } else if (status == WifiP2pDevice.INVITED) {
+            return "Invited";
+        } else if (status == WifiP2pDevice.CONNECTED) {
+            return "Connected";
+        } else if (status == WifiP2pDevice.FAILED) {
+            return "Failed";
+        } else if (status == WifiP2pDevice.UNAVAILABLE) {
+            return "Unavailable";
+        } else {
+            return "Unknown";
+        }
     }
 
     public String getThisDeviceInfo() {
@@ -840,5 +845,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
         } else {
             return deviceToString(thisDevice);
         }
+    }
+
+    public WifiP2pDevice getThisDevice() {
+        return thisDevice;
     }
 }

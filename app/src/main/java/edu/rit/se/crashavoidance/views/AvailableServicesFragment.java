@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,7 @@ public class AvailableServicesFragment extends Fragment{
     private MainActivity mainActivity;
     private WifiDirectReceiver receiver;
     private ListView deviceList;
+    private Button resetButton;
 
     /**
      * Sets the Layout for the UI
@@ -57,7 +59,7 @@ public class AvailableServicesFragment extends Fragment{
     }
 
     private void prepareResetButton(View view){
-        Button resetButton = (Button)view.findViewById(R.id.reset_button);
+        resetButton = (Button)view.findViewById(R.id.reset_button);
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,6 +84,7 @@ public class AvailableServicesFragment extends Fragment{
     private void resetServiceDiscovery(){
         // Clear the list, notify the list adapter, and start discovering
         // services again
+        Log.i(WifiDirectHandler.LOG_TAG, "Resetting service discovery");
         services.clear();
         servicesListAdapter.notifyDataSetChanged();
         wifiDirectHandler.stopDiscoveringServices();
