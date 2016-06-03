@@ -1,6 +1,7 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -28,7 +29,10 @@ public class DeviceInfoFragment extends Fragment {
         // Sets the Layout for the UI
         final View view = inflater.inflate(R.layout.fragment_device_info, container, false);
         thisDeviceInfoTextView = (TextView) view.findViewById((R.id.thisDeviceInfoTextView));
-        thisDeviceInfoTextView.setText(wifiDirectHandler.getThisDeviceInfo());
+        WifiP2pDevice thisDevice = wifiDirectHandler.getThisDevice();
+        String thisDeviceInfo = wifiDirectHandler.getThisDevice().deviceName +
+                "\n" + wifiDirectHandler.deviceStatusToString(wifiDirectHandler.getThisDevice().status);
+        thisDeviceInfoTextView.setText(thisDeviceInfo);
         return view;
     }
 

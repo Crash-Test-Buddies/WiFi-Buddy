@@ -7,8 +7,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/instanceName"
-        tools:text="Instance name"
+        android:id="@+id/deviceName"
+        tools:text="Device name"
         android:textSize="@dimen/abc_text_size_headline_material" />
 
     <LinearLayout

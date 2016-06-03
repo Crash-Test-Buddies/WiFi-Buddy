@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,6 +83,7 @@ public class AvailableServicesFragment extends Fragment{
     private void resetServiceDiscovery(){
         // Clear the list, notify the list adapter, and start discovering
         // services again
+        Log.i(WifiDirectHandler.LOG_TAG, "Resetting service discovery");
         services.clear();
         servicesListAdapter.notifyDataSetChanged();
         wifiDirectHandler.stopDiscoveringServices();
