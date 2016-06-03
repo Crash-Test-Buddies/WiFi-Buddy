@@ -1,7 +1,6 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
-import android.net.wifi.p2p.WifiP2pDevice;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +49,7 @@ class AvailableServicesListViewAdapter extends BaseAdapter {
             }
         }
 
-        deviceInfo.setText(deviceToString(service.getSrcDevice()) + records);
+        deviceInfo.setText(context.getWifiHandler().deviceToString(service.getSrcDevice()) + records);
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,32 +75,6 @@ class AvailableServicesListViewAdapter extends BaseAdapter {
             this.notifyDataSetChanged();
             return true;
         }
-    }
-
-    private String deviceToString(WifiP2pDevice device) {
-        String strDevice = "  - Device address: " + device.deviceAddress
-                + "\n  - Device name: " + device.deviceName
-                + "\n  - Is group owner: " + device.isGroupOwner()
-                + "\n  - Is Service Discoverable: " + device.isServiceDiscoveryCapable();
-
-        int status = device.status;
-        String strStatus;
-        if (status == WifiP2pDevice.AVAILABLE) {
-            strStatus = "Available";
-        } else if (status == WifiP2pDevice.INVITED) {
-            strStatus = "Invited";
-        } else if (status == WifiP2pDevice.CONNECTED) {
-            strStatus = "Connected";
-        } else if (status == WifiP2pDevice.FAILED) {
-            strStatus = "Failed";
-        } else if (status == WifiP2pDevice.UNAVAILABLE) {
-            strStatus = "Unavailable";
-        } else {
-            strStatus = "Unknown";
-        }
-
-        strDevice += "\n  - Status: " + strStatus + "\n";
-        return strDevice;
     }
 
     @Override

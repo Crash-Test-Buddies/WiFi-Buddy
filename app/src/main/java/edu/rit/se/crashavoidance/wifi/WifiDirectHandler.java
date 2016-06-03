@@ -783,7 +783,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         chatFragment = theFragment;
     }
 
-    private String deviceToString(WifiP2pDevice device) {
+    public String deviceToString(WifiP2pDevice device) {
         String strDevice = "";
         strDevice += "Device name: " + device.deviceName;
         strDevice += "\nIs group owner: " + device.isGroupOwner();
