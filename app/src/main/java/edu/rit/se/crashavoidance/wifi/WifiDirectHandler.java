@@ -64,8 +64,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private Boolean isWifiP2pEnabled;
     private Handler handler = new Handler((Handler.Callback) this);
     private ChatManager chatManager = null;
-    private static final int MESSAGE_READ = 0x400 + 1;
-    private static final int MY_HANDLE = 0x400 + 2;
+    public static final int MESSAGE_READ = 0x400 + 1;
+    public static final int MY_HANDLE = 0x400 + 2;
+    public static final int SERVER_PORT = 4545;
 
     private boolean continueDiscovering = false;
 
