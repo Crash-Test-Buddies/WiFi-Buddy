@@ -23,7 +23,8 @@
             android:layout_weight="0.90"
             android:focusableInTouchMode="true"
             android:hint="@string/type_message"
-            android:visibility="visible" >
+            android:visibility="visible"
+            android:inputType="textCapSentences">
         </EditText>
         <Button
             android:id="@+id/button1"
@@ -31,6 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_weight="0.10"
-            android:text="@string/send" />
+            android:text="@string/send"
+            android:textSize="25dp" />
     </LinearLayout>
 </FrameLayout>
