@@ -400,7 +400,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
-
     public Map<String, DnsSdService> getDnsSdServiceMap(){
         return dnsSdServiceMap;
     }
@@ -729,17 +728,18 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     @Override
     public boolean handleMessage(Message msg) {
+        Log.e(LOG_TAG, "handleMessage() called");
         switch (msg.what) {
             case MESSAGE_READ:
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
                 String readMessage = new String(readBuf, 0, msg.arg1);
                 Log.d("wifiDirectTester", readMessage);
-                (chatFragment).pushMessage("Buddy: " + readMessage);
+                chatFragment.pushMessage("Buddy: " + readMessage);
                 break;
             case MY_HANDLE:
                 Object obj = msg.obj;
-                (chatFragment).setChatManager((ChatManager) obj);
+                chatFragment.setChatManager((ChatManager) obj);
         }
         return true;
     }
