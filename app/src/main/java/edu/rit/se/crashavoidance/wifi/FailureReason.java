@@ -11,7 +11,7 @@ public enum FailureReason {
     NO_SERVICE_REQUESTS("NO SERVICE REQUESTS");
 
     private static FailureReason[] values;
-    private String reason;
+    private final String reason;
 
     FailureReason(String reason) {
         this.reason = reason;

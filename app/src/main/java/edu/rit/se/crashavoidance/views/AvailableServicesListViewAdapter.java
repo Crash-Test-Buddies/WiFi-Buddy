@@ -1,7 +1,6 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
-import android.net.wifi.p2p.WifiP2pDevice;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +16,10 @@ import edu.rit.se.crashavoidance.wifi.DnsSdTxtRecord;
 /**
  *
  */
-public class AvailableServicesListViewAdapter extends BaseAdapter {
+class AvailableServicesListViewAdapter extends BaseAdapter {
 
     private List<DnsSdService> serviceList;
-    private MainActivity context;
+    private final MainActivity context;
 
     public AvailableServicesListViewAdapter(MainActivity context, List<DnsSdService> serviceList) {
         this.context = context;
@@ -37,10 +36,10 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.service_item, parent, false);
         }
 
-        TextView instanceName = (TextView) convertView.findViewById(R.id.instanceName);
+        TextView deviceName = (TextView) convertView.findViewById(R.id.deviceName);
         TextView deviceInfo = (TextView) convertView.findViewById(R.id.deviceInfo);
 
-        instanceName.setText(service.getInstanceName());
+        deviceName.setText(service.getSrcDevice().deviceName);
 
         String records = "";
         if (context.getWifiHandler() != null) {
@@ -49,8 +48,8 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
                 records = txtRecord.getRecord().toString();
             }
         }
-
-        deviceInfo.setText(deviceToString(service.getSrcDevice()) + records);
+        String status = context.getWifiHandler().deviceStatusToString(context.getWifiHandler().getThisDevice().status);
+        deviceInfo.setText(status + "\n" + records);
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,6 +66,7 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
      * @param service Service to be added to list
      * @return false if item was already in the list
      */
+    // TODO: the returned boolean of this method is never checked
     public Boolean addUnique(DnsSdService service) {
         if (serviceList.contains(service)) {
             return false;
@@ -75,32 +75,6 @@ public class AvailableServicesListViewAdapter extends BaseAdapter {
             this.notifyDataSetChanged();
             return true;
         }
-    }
-
-    private String deviceToString(WifiP2pDevice device) {
-        String strDevice = "  - Device address: " + device.deviceAddress
-                + "\n  - Device name: " + device.deviceName
-                + "\n  - Is group owner: " + device.isGroupOwner()
-                + "\n  - Is Service Discoverable: " + device.isServiceDiscoveryCapable();
-
-        int status = device.status;
-        String strStatus;
-        if (status == WifiP2pDevice.AVAILABLE) {
-            strStatus = "Available";
-        } else if (status == WifiP2pDevice.INVITED) {
-            strStatus = "Invited";
-        } else if (status == WifiP2pDevice.CONNECTED) {
-            strStatus = "Connected";
-        } else if (status == WifiP2pDevice.FAILED) {
-            strStatus = "Failed";
-        } else if (status == WifiP2pDevice.UNAVAILABLE) {
-            strStatus = "Unavailable";
-        } else {
-            strStatus = "Unknown";
-        }
-
-        strDevice += "\n  - Status: " + strStatus + "\n";
-        return strDevice;
     }
 
     @Override

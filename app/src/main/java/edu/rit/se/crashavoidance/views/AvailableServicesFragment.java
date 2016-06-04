@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +28,9 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 public class AvailableServicesFragment extends Fragment{
 
     private WifiDirectHandler wifiDirectHandler;
-    List<DnsSdService> services = new ArrayList<>();
-    AvailableServicesListViewAdapter servicesListAdapter;
-    MainActivity mainActivity;
-    WifiDirectReceiver receiver;
-    ListView deviceList;
+    private List<DnsSdService> services = new ArrayList<>();
+    private AvailableServicesListViewAdapter servicesListAdapter;
+    private ListView deviceList;
 
     /**
      * Sets the Layout for the UI
@@ -45,15 +44,6 @@ public class AvailableServicesFragment extends Fragment{
         startDiscoveringServices();
         prepareResetButton(rootView);
         return rootView;
-    }
-
-    /**
-     * Sets the WifiDirectHandler instance when AvailableServicesFragment is attached to MainActivity
-     */
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mainActivity = (MainActivity) getActivity();
     }
 
     private void prepareResetButton(View view){
@@ -82,6 +72,7 @@ public class AvailableServicesFragment extends Fragment{
     private void resetServiceDiscovery(){
         // Clear the list, notify the list adapter, and start discovering
         // services again
+        Log.i(WifiDirectHandler.LOG_TAG, "Resetting service discovery");
         services.clear();
         servicesListAdapter.notifyDataSetChanged();
         wifiDirectHandler.stopDiscoveringServices();
@@ -94,13 +85,13 @@ public class AvailableServicesFragment extends Fragment{
      * and calls service discovery
      */
     private void startDiscoveringServices() {
-        receiver = new WifiDirectReceiver();
+        WifiDirectReceiver receiver = new WifiDirectReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Action.DNS_SD_SERVICE_AVAILABLE);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
         // Make a call to setup services discovery
         wifiDirectHandler.setupServiceDiscovery();
-        // Make continous service discovery calls
+        // Make continuous service discovery calls
         wifiDirectHandler.continuouslyDiscoverServices();
     }
 
@@ -113,7 +104,7 @@ public class AvailableServicesFragment extends Fragment{
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found
             if (intent.getAction().equals(WifiDirectHandler.Action.DNS_SD_SERVICE_AVAILABLE)) {
-                String serviceKey = intent.getStringExtra(wifiDirectHandler.SERVICE_MAP_KEY);
+                String serviceKey = intent.getStringExtra(WifiDirectHandler.SERVICE_MAP_KEY);
                 DnsSdService service = wifiDirectHandler.getDnsSdServiceMap().get(serviceKey);
                 // Add the service to the UI and update
                 servicesListAdapter.addUnique(service);

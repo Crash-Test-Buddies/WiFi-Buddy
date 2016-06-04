@@ -1,7 +1,10 @@
 package edu.rit.se.crashavoidance.views;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -9,6 +12,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -27,25 +31,32 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
  * The main Activity of the application, which is a container for Fragments and the ActionBar
  * Also contains the WifiDirectHandler
  */
-public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor,
-        WifiP2pManager.ConnectionInfoListener {
+public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor {
 
     private WifiDirectHandler wifiDirectHandler;
     private boolean wifiDirectHandlerBound = false;
-    private MainFragment mainFragment = null;
     private ChatFragment chatFragment = null;
 
     private LogsDialogFragment logsDialogFragment;
+    private DeviceInfoFragment deviceInfoFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity created");
+        Log.i(WifiDirectHandler.LOG_TAG, "Creating MainActivity");
         setContentView(R.layout.activity_main);
 
         // Initialize ActionBar
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
         setSupportActionBar(toolbar);
+
+        //Set the receiver for moving to the chat fragment
+        ChatReceiver receiver = new ChatReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(WifiDirectHandler.Action.SERVICE_CONNECTED);
+        filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
+        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity created");
     }
 
     /**
@@ -93,13 +104,16 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             Log.i(WifiDirectHandler.LOG_TAG, "WifiDirectHandler service bound");
 
             // Add MainFragment to the 'fragment_container' when wifiDirectHandler is bound
-            mainFragment = new MainFragment();
+            MainFragment mainFragment = new MainFragment();
             replaceFragment(mainFragment);
+            deviceInfoFragment = new DeviceInfoFragment();
+            addFragment(deviceInfoFragment);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             wifiDirectHandlerBound = false;
+            Log.i(WifiDirectHandler.LOG_TAG, "WifiDirectHandler service unbound");
         }
     };
 
@@ -116,6 +130,14 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         transaction.commit();
     }
 
+    public void addFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.fragment_container, fragment);
+
+        // Commit the transaction
+        transaction.commit();
+    }
+
     /**
      * Returns the wifiDirectHandler
      * @return The wifiDirectHandler
@@ -126,86 +148,90 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     }
 
     public void onServiceClick(DnsSdService service) {
-        wifiDirectHandler.connectToService(service);
-
-        Log.i(WifiDirectHandler.LOG_TAG, "Service connected");
-
-    }
-
-    @Override
-    public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
-
-        Thread handler = null;
-        /*
-         * The group owner accepts connections using a server socket and then spawns a
-         * client socket for every client. This is handled by {@code
-         * GroupOwnerSocketHandler}
-         */
-        if (p2pInfo.isGroupOwner) {
-            Log.i(WifiDirectHandler.LOG_TAG, "Connected as group owner");
-            try {
-                handler = new OwnerSocketHandler(
-                        ((ChatFragment.MessageTarget) this).getHandler());
-                handler.start();
-            } catch (IOException e) {
-                Log.i(WifiDirectHandler.LOG_TAG, "Failed to create a server thread - " + e.getMessage());
-                return;
-            }
-        } else {
-            Log.i(WifiDirectHandler.LOG_TAG, "Connected as peer");
-            handler = new ClientSocketHandler(
-                    ((ChatFragment.MessageTarget) this).getHandler(),
-                    p2pInfo.groupOwnerAddress);
-            handler.start();
-        }
-        chatFragment = new ChatFragment();
-        replaceFragment(chatFragment);
-
+        Log.i(WifiDirectHandler.LOG_TAG, "\nService List item tapped");
+        wifiDirectHandler.initiateConnectToService(service);
     }
 
     protected void onPause() {
         super.onPause();
+        Log.i(WifiDirectHandler.LOG_TAG, "Pausing MainActivity");
+        if (wifiDirectHandlerBound) {
+            Log.i(WifiDirectHandler.LOG_TAG, "WifiDirectHandler service unbound");
+            unbindService(wifiServiceConnection);
+            wifiDirectHandlerBound = false;
+        }
         Log.i(WifiDirectHandler.LOG_TAG, "MainActivity paused");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(wifiDirectHandler.LOG_TAG, "MainActivity resumed");
+        Log.i(WifiDirectHandler.LOG_TAG, "Resuming MainActivity");
         Intent intent = new Intent(this, WifiDirectHandler.class);
         if(!wifiDirectHandlerBound) {
             bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
         }
+        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity resumed");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity started");
+        Log.i(WifiDirectHandler.LOG_TAG, "Starting MainActivity");
         Intent intent = new Intent(this, WifiDirectHandler.class);
         bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
+        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity started");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity stopped");
+        Log.i(WifiDirectHandler.LOG_TAG, "Stopping MainActivity");
         if(wifiDirectHandlerBound) {
             Intent intent = new Intent(this, WifiDirectHandler.class);
             stopService(intent);
             unbindService(wifiServiceConnection);
             wifiDirectHandlerBound = false;
         }
+        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity stopped");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.i(WifiDirectHandler.LOG_TAG, "MainActivity destroyed");
+        Log.i(WifiDirectHandler.LOG_TAG, "Destroying MainActivity");
         if (wifiDirectHandlerBound) {
-            Log.i(WifiDirectHandler.LOG_TAG, "- WifiDirectHandler service unbound");
+            Log.i(WifiDirectHandler.LOG_TAG, "WifiDirectHandler service unbound");
             unbindService(wifiServiceConnection);
             wifiDirectHandlerBound = false;
+            Log.i(WifiDirectHandler.LOG_TAG, "MainActivity destroyed");
+        }
+    }
+
+    /**
+     * Receiver for receiving intents from the WifiDirectHandler to update UI
+     * when Wi-Fi Direct commands are completed
+     */
+
+    public class ChatReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get the intent sent by WifiDirectHandler when a service is found
+            if (intent.getAction().equals(WifiDirectHandler.Action.SERVICE_CONNECTED)
+                    || intent.getAction().equals(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION) ) {
+                Log.i(WifiDirectHandler.LOG_TAG, "FRAGMENT SWITCH: Connected to service");
+                if (chatFragment == null) {
+                    chatFragment = new ChatFragment();
+                }
+                wifiDirectHandler.setChatFragment(chatFragment);
+                replaceFragment(chatFragment);
+                if (deviceInfoFragment == null) {
+                    deviceInfoFragment = new DeviceInfoFragment();
+                }
+                addFragment(deviceInfoFragment);
+            } else if (intent.getAction().equals(WifiDirectHandler.Action.DEVICE_CHANGED)) {
+                deviceInfoFragment.getThisDeviceInfoTextView().setText(wifiDirectHandler.getThisDeviceInfo());
+            }
         }
     }
 }

@@ -1,8 +1,5 @@
 package edu.rit.se.crashavoidance.wifi;
 
-/**
- * Created by Dan on 4/19/2016.
- */
 import android.os.Handler;
 import android.util.Log;
 import java.io.IOException;
@@ -38,7 +35,6 @@ public class ClientSocketHandler extends Thread {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            return;
         }
     }
     public ChatManager getChat() {
