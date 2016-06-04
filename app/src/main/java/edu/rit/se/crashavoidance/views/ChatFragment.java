@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.ChatManager;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 /**
@@ -26,10 +25,10 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
  * and a message entry field with send button.
  */
 public class ChatFragment extends ListFragment {
-    private ChatManager chatManager;
     private EditText textMessageEditText;
     private ChatMessageAdapter adapter = null;
     private List<String> items = new ArrayList<>();
+    private WiFiDirectHandlerAccessor handlerAccessor;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,8 +44,8 @@ public class ChatFragment extends ListFragment {
             @Override
             public void onClick(View arg0) {
                 Log.i(WifiDirectHandler.LOG_TAG, "Send button tapped");
-                if (chatManager != null) {
-                    chatManager.write(textMessageEditText.getText().toString().getBytes());
+                if (handlerAccessor.getWifiHandler().getChatManager() != null) {
+                    handlerAccessor.getWifiHandler().getChatManager().write(textMessageEditText.getText().toString().getBytes());
                     String message = textMessageEditText.getText().toString();
                     Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
                     pushMessage("Me: " + message);
@@ -63,14 +62,16 @@ public class ChatFragment extends ListFragment {
         Handler getHandler();
     }
 
-    public void setChatManager(ChatManager obj) {
-        chatManager = obj;
+    public void pushMessage(byte[] readMessage) {
+        String message = new String(readMessage);
+        pushMessage(message);
     }
 
-    public void pushMessage(String readMessage) {
-        adapter.add(readMessage);
+    public void pushMessage(String message) {
+        adapter.add(message);
         adapter.notifyDataSetChanged();
     }
+
     /**
      * ArrayAdapter to manage chat messages.
      */
@@ -110,9 +111,7 @@ public class ChatFragment extends ListFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            WiFiDirectHandlerAccessor wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
-            WifiDirectHandler wiFiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
-
+            handlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }

@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import edu.rit.se.crashavoidance.views.ChatFragment;
 import edu.rit.se.crashavoidance.views.ChatFragment.MessageTarget;
 
 /**
@@ -51,6 +50,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private final IBinder binder = new WifiTesterBinder();
 
     public static final String SERVICE_MAP_KEY = "serviceMapKey";
+    public static final String MESSAGE_KEY = "messageKey";
     private final String PEERS = "peers";
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
@@ -61,9 +61,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private BroadcastReceiver receiver;
     private WifiP2pServiceInfo serviceInfo;
     private WifiP2pServiceRequest serviceRequest;
-    private ChatFragment chatFragment;
     private Boolean isWifiP2pEnabled;
     private Handler handler = new Handler((Handler.Callback) this);
+    private ChatManager chatManager = null;
     private static final int MESSAGE_READ = 0x400 + 1;
     private static final int MY_HANDLE = 0x400 + 2;
 
@@ -734,14 +734,20 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
                 String readMessage = new String(readBuf, 0, msg.arg1);
-                Log.d("wifiDirectTester", readMessage);
-                (chatFragment).pushMessage("Buddy: " + readMessage);
+                Log.i(LOG_TAG, readMessage);
+                Intent messageReceived = new Intent(Action.MESSAGE_RECEIVED);
+                messageReceived.putExtra(MESSAGE_KEY, readMessage);
+                localBroadcastManager.sendBroadcast(messageReceived);
                 break;
             case MY_HANDLE:
                 Object obj = msg.obj;
-                (chatFragment).setChatManager((ChatManager) obj);
+                chatManager = (ChatManager) obj;
         }
         return true;
+    }
+
+    public ChatManager getChatManager() {
+        return chatManager;
     }
 
     /**
@@ -763,7 +769,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
         SERVICE_REMOVED = "serviceRemoved",
         PEERS_CHANGED = "peersChanged",
         SERVICE_CONNECTED = "serviceConnected",
-        DEVICE_CHANGED = "deviceChanged";
+        DEVICE_CHANGED = "deviceChanged",
+        MESSAGE_RECEIVED = "messageReceived";
     }
 
     private class Keys {
@@ -776,10 +783,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
         public void onReceive(Context context, Intent intent) {
             onHandleIntent(intent);
         }
-    }
-
-    public void setChatFragment(ChatFragment theFragment){
-        chatFragment = theFragment;
     }
 
     public String deviceToString(WifiP2pDevice device) {

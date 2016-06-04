@@ -217,8 +217,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found
-            if (intent.getAction().equals(WifiDirectHandler.Action.SERVICE_CONNECTED)
-                    || intent.getAction().equals(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION) ) {
+            if (intent.getAction().equals(WifiDirectHandler.Action.SERVICE_CONNECTED)) {
                 Log.i(WifiDirectHandler.LOG_TAG, "FRAGMENT SWITCH: Connected to service");
                 if (chatFragment == null) {
                     chatFragment = new ChatFragment();
@@ -231,6 +230,10 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
                 addFragment(deviceInfoFragment);
             } else if (intent.getAction().equals(WifiDirectHandler.Action.DEVICE_CHANGED)) {
                 deviceInfoFragment.getThisDeviceInfoTextView().setText(wifiDirectHandler.getThisDeviceInfo());
+            } else if (intent.getAction().equals(WifiDirectHandler.Action.MESSAGE_RECEIVED)) {
+                if(chatFragment != null) {
+                    chatFragment.pushMessage(intent.getByteArrayExtra(WifiDirectHandler.MESSAGE_KEY));
+                }
             }
         }
     }
