@@ -147,7 +147,7 @@ public class MainFragment extends Fragment {
                 if (deviceInfoFragment == null) {
                     deviceInfoFragment = new DeviceInfoFragment();
                 }
-                mainActivity.addFragment(new DeviceInfoFragment());
+                mainActivity.addFragment(deviceInfoFragment);
             }
         });
 

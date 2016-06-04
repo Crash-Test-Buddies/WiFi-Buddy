@@ -171,11 +171,11 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
                 // construct a string from the valid bytes in the buffer
                 String readMessage = new String(readBuf, 0, msg.arg1);
                 Log.i(WifiDirectHandler.LOG_TAG, readMessage);
-                (chatFragment).pushMessage("Buddy: " + readMessage);
+                chatFragment.pushMessage("Buddy: " + readMessage);
                 break;
             case MY_HANDLE:
                 Object obj = msg.obj;
-                (chatFragment).setChatManager((ChatManager) obj);
+                chatFragment.setChatManager((ChatManager) obj);
         }
         return true;
     }
@@ -205,9 +205,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
                     p2pInfo.groupOwnerAddress);
             handler.start();
         }
-
-        chatFragment = new ChatFragment();
-        replaceFragment(chatFragment);
     }
 
     @Override
@@ -283,9 +280,15 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             if (intent.getAction().equals(WifiDirectHandler.Action.SERVICE_CONNECTED)
                     || intent.getAction().equals(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION) ) {
                 Log.i(WifiDirectHandler.LOG_TAG, "FRAGMENT SWITCH: Connected to service");
-                ChatFragment newFrag = new ChatFragment();
-                wifiDirectHandler.setChatFragment(newFrag);
-                replaceFragment(newFrag);
+                if (chatFragment == null) {
+                    chatFragment = new ChatFragment();
+                }
+                wifiDirectHandler.setChatFragment(chatFragment);
+                replaceFragment(chatFragment);
+                if (deviceInfoFragment == null) {
+                    deviceInfoFragment = new DeviceInfoFragment();
+                }
+                addFragment(deviceInfoFragment);
             } else if (intent.getAction().equals(WifiDirectHandler.Action.DEVICE_CHANGED)) {
                 deviceInfoFragment.getThisDeviceInfoTextView().setText(wifiDirectHandler.getThisDeviceInfo());
             }
