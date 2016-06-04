@@ -31,9 +31,6 @@
             </intent-filter>
         </activity>
 
-        <!-- GroupMessageActivity -->
-        <activity android:name=".views.GroupMessageActivity" />
-
         <service android:name=".wifi.WifiDirectHandler" />
 
         <meta-data

@@ -5,10 +5,12 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -25,29 +27,35 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
  */
 public class ChatFragment extends ListFragment {
     private ChatManager chatManager;
-    private TextView chatLine;
+    private EditText textMessageEditText;
     private ChatMessageAdapter adapter = null;
     private List<String> items = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
-        chatLine = (TextView) view.findViewById(R.id.txtChatLine);
+
+        textMessageEditText = (EditText) view.findViewById(R.id.textMessageEditText);
+
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         adapter = new ChatMessageAdapter(getActivity(), android.R.id.text1, items);
         listView.setAdapter(adapter);
-        view.findViewById(R.id.button1).setOnClickListener(
-                      new View.OnClickListener() {
-                    @Override
-                    public void onClick(View arg0) {
-                        if (chatManager != null) {
-                            chatManager.write(chatLine.getText().toString().getBytes());
-                            pushMessage("Me: " + chatLine.getText().toString());
-                            chatLine.setText("");
-                            chatLine.clearFocus();
-                        }
-                    }
-                });
+
+        view.findViewById(R.id.sendButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                Log.i(WifiDirectHandler.LOG_TAG, "Send button tapped");
+                if (chatManager != null) {
+                    chatManager.write(textMessageEditText.getText().toString().getBytes());
+                    String message = textMessageEditText.getText().toString();
+                    Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
+                    pushMessage("Me: " + message);
+                    textMessageEditText.setText("");
+                } else {
+                    Log.e(WifiDirectHandler.LOG_TAG, "Chat manager is null");
+                }
+            }
+        });
         return view;
     }
 
