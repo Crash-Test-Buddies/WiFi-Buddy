@@ -21,18 +21,19 @@
         android:layout_gravity="bottom" >
 
         <EditText
-            android:id="@+id/txtChatLine"
+            android:id="@+id/textMessageEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_weight="0.90"
             android:focusableInTouchMode="true"
             android:hint="@string/type_message"
-            android:visibility="visible" >
+            android:visibility="visible"
+            android:inputType="textCapSentences">
         </EditText>
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/sendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
