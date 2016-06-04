@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -19,12 +18,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.io.IOException;
-
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.ClientSocketHandler;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
-import edu.rit.se.crashavoidance.wifi.OwnerSocketHandler;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 /**
@@ -222,7 +217,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
                 if (chatFragment == null) {
                     chatFragment = new ChatFragment();
                 }
-                wifiDirectHandler.setChatFragment(chatFragment);
                 replaceFragment(chatFragment);
                 if (deviceInfoFragment == null) {
                     deviceInfoFragment = new DeviceInfoFragment();
