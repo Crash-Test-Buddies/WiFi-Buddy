@@ -45,12 +45,12 @@ public class ChatFragment extends ListFragment {
             @Override
             public void onClick(View arg0) {
                 Log.i(WifiDirectHandler.LOG_TAG, "Send button tapped");
+                String message = textMessageEditText.getText().toString();
+                Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
+                pushMessage("Me: " + message);
+                textMessageEditText.setText("");
                 if (chatManager != null) {
                     chatManager.write(textMessageEditText.getText().toString().getBytes());
-                    String message = textMessageEditText.getText().toString();
-                    Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
-                    pushMessage("Me: " + message);
-                    textMessageEditText.setText("");
                 } else {
                     Log.e(WifiDirectHandler.LOG_TAG, "Chat manager is null");
                 }
