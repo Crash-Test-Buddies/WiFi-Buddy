@@ -165,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     // TODO: Add JavaDoc
     @Override
     public boolean handleMessage(Message msg) {
+        Log.i(WifiDirectHandler.LOG_TAG, "handleMessage: " + msg.toString());
         switch (msg.what) {
             case MESSAGE_READ:
                 byte[] readBuf = (byte[]) msg.obj;

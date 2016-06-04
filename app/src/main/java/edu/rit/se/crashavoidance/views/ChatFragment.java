@@ -51,6 +51,8 @@ public class ChatFragment extends ListFragment {
                     Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
                     pushMessage("Me: " + message);
                     textMessageEditText.setText("");
+                } else {
+                    Log.e(WifiDirectHandler.LOG_TAG, "Chat manager is null");
                 }
             }
         });
