@@ -19,9 +19,9 @@ public class OwnerSocketHandler extends Thread {
 
     public OwnerSocketHandler(Handler handler) throws IOException {
         try {
-            socket = new ServerSocket(4545);
+            socket = new ServerSocket(WifiDirectHandler.SERVER_PORT);
             this.handler = handler;
-            Log.d("GroupOwnerSocketHandler", "Socket Started");
+            Log.i(TAG, "Socket Started");
         } catch (IOException e) {
             e.printStackTrace();
             pool.shutdownNow();
@@ -36,12 +36,13 @@ public class OwnerSocketHandler extends Thread {
             new LinkedBlockingQueue<Runnable>());
     @Override
     public void run() {
+        Log.i(TAG, "Owner socket handler run");
         while (true) {
             try {
                 // A blocking operation. Initiate a ChatManager instance when
                 // there is a new connection
                 pool.execute(new ChatManager(socket.accept(), handler));
-                Log.d(TAG, "Launching the I/O handler");
+                Log.i(TAG, "Launching the I/O handler");
             } catch (IOException e) {
                 try {
                     if (socket != null && !socket.isClosed())

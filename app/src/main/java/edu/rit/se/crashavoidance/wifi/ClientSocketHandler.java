@@ -19,12 +19,13 @@ public class ClientSocketHandler extends Thread {
     }
     @Override
     public void run() {
+        Log.i(TAG, "Client socket handler run");
         Socket socket = new Socket();
         try {
             socket.bind(null);
             socket.connect(new InetSocketAddress(mAddress.getHostAddress(),
                     WifiDirectHandler.SERVER_PORT), 5000);
-            Log.d(TAG, "Launching the I/O handler");
+            Log.i(TAG, "Launching the I/O handler");
             chat = new ChatManager(socket, handler);
             new Thread(chat).start();
         } catch (IOException e) {

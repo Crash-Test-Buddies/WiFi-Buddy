@@ -729,7 +729,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     @Override
     public boolean handleMessage(Message msg) {
-        Log.e(LOG_TAG, "handleMessage() called");
+        Log.i(LOG_TAG, "handleMessage() called");
         switch (msg.what) {
             case MESSAGE_READ:
                 byte[] readBuf = (byte[]) msg.obj;
