@@ -6,9 +6,7 @@ import android.content.ServiceConnection;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +18,6 @@ import android.view.MenuItem;
 import java.io.IOException;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.ChatManager;
 import edu.rit.se.crashavoidance.wifi.ClientSocketHandler;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
 import edu.rit.se.crashavoidance.wifi.OwnerSocketHandler;
@@ -31,7 +28,6 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
  * Also contains the WifiDirectHandler
  */
 public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor,
-        Handler.Callback, ChatFragment.MessageTarget,
         WifiP2pManager.ConnectionInfoListener {
 
     private WifiDirectHandler wifiDirectHandler;
@@ -39,11 +35,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     private MainFragment mainFragment = null;
     private ChatFragment chatFragment = null;
 
-    public static final int MESSAGE_READ = 0x400 + 1;
-    public static final int MY_HANDLE = 0x400 + 2;
-    public static final int SERVER_PORT = 4545;
-
-    private Handler handler = new Handler(this);
     private LogsDialogFragment logsDialogFragment;
 
     @Override
@@ -142,23 +133,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     }
 
     @Override
-    public boolean handleMessage(Message msg) {
-        switch (msg.what) {
-            case MESSAGE_READ:
-                byte[] readBuf = (byte[]) msg.obj;
-                // construct a string from the valid bytes in the buffer
-                String readMessage = new String(readBuf, 0, msg.arg1);
-                Log.i(WifiDirectHandler.LOG_TAG, readMessage);
-                (chatFragment).pushMessage("Buddy: " + readMessage);
-                break;
-            case MY_HANDLE:
-                Object obj = msg.obj;
-                (chatFragment).setChatManager((ChatManager) obj);
-        }
-        return true;
-    }
-
-    @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
 
         Thread handler = null;
@@ -187,15 +161,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         chatFragment = new ChatFragment();
         replaceFragment(chatFragment);
 
-    }
-
-    @Override
-    public Handler getHandler() {
-        return handler;
-    }
-
-    public void setHandler(Handler handler) {
-        this.handler = handler;
     }
 
     protected void onPause() {
