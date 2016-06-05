@@ -46,13 +46,13 @@ public class ChatFragment extends ListFragment {
                 Log.i(WifiDirectHandler.LOG_TAG, "Send button tapped");
                 if (handlerAccessor.getWifiHandler().getChatManager() != null) {
                     handlerAccessor.getWifiHandler().getChatManager().write(textMessageEditText.getText().toString().getBytes());
-                    String message = textMessageEditText.getText().toString();
-                    Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
-                    pushMessage("Me: " + message);
-                    textMessageEditText.setText("");
                 } else {
                     Log.e(WifiDirectHandler.LOG_TAG, "Chat manager is null");
                 }
+                String message = textMessageEditText.getText().toString();
+                Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
+                pushMessage("Me: " + message);
+                textMessageEditText.setText("");
             }
         });
         return view;

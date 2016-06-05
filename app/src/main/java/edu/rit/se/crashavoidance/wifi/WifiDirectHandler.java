@@ -69,6 +69,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     public static final int SERVER_PORT = 4545;
 
     private boolean continueDiscovering = false;
+    private boolean groupFormed = false;
 
     // Flag for creating a no prompt service
     private boolean isCreatingNoPrompt = false;
@@ -229,17 +230,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     private void removeGroup() {
-        wifiP2pManager.cancelConnect(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Log.i(LOG_TAG, "P2P negotiation canceled");
-            }
-
-            @Override
-            public void onFailure(int reason) {
-                Log.e(LOG_TAG, "Failure canceling P2P negotiation: " + FailureReason.fromInteger(reason).toString());
-            }
-        });
         if (thisDevice.status == WifiP2pDevice.CONNECTED) {
             wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
                 @Override
@@ -585,7 +575,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
             // Extra information from EXTRA_WIFI_P2P_INFO
             WifiP2pInfo extraWifiP2pInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO);
-            boolean groupFormed = extraWifiP2pInfo.groupFormed;
+            groupFormed = extraWifiP2pInfo.groupFormed;
             boolean isGroupOwnerP2pInfo = extraWifiP2pInfo.isGroupOwner;
             InetAddress groupOwnerAddress = extraWifiP2pInfo.groupOwnerAddress;
 
@@ -763,7 +753,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
   /**
    * Actions that can be broadcast or received by the handler
    */
-
     public class Action {
         public static final String DNS_SD_TXT_RECORD_ADDED = "dnsSdTxtRecordAdded",
         DNS_SD_SERVICE_AVAILABLE = "dnsSdServiceAvailable",
