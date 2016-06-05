@@ -63,7 +63,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private WifiP2pServiceRequest serviceRequest;
     private Boolean isWifiP2pEnabled;
     private Handler handler = new Handler((Handler.Callback) this);
-    private ChatManager chatManager = null;
+    private CommunicationManager communicationManager = null;
     public static final int MESSAGE_READ = 0x400 + 1;
     public static final int MY_HANDLE = 0x400 + 2;
     public static final int SERVER_PORT = 4545;
@@ -732,13 +732,13 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 break;
             case MY_HANDLE:
                 Object obj = msg.obj;
-                chatManager = (ChatManager) obj;
+                communicationManager = (CommunicationManager) obj;
         }
         return true;
     }
 
-    public ChatManager getChatManager() {
-        return chatManager;
+    public CommunicationManager getCommunicationManager() {
+        return communicationManager;
     }
 
     /**

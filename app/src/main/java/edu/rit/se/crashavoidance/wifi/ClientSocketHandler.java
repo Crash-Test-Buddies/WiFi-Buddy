@@ -31,8 +31,8 @@ public class ClientSocketHandler extends Thread {
             Log.i(TAG, "Client socket - " + socket.isConnected());
 
             Log.i(TAG, "Launching the I/O handler");
-            ChatManager chatManager = new ChatManager(socket, handler);
-            new Thread(chatManager).start();
+            CommunicationManager communicationManager = new CommunicationManager(socket, handler);
+            new Thread(communicationManager).start();
         } catch (IOException e) {
             Log.e(TAG, "Error launching I/O handler");
             Log.e(TAG, e.getMessage());
