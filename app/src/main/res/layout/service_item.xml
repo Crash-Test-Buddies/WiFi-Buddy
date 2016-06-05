@@ -22,5 +22,4 @@
             android:id="@+id/deviceInfo"
             tools:text="Device information"/>
     </LinearLayout>
-
 </LinearLayout>

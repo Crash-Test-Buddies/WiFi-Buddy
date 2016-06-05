@@ -14,6 +14,7 @@ import java.util.Arrays;
  * to post messages to UI thread for UI updates.
  */
 public class CommunicationManager implements Runnable {
+
     private Socket socket = null;
     private Handler handler;
     private OutputStream outputStream;
@@ -24,6 +25,7 @@ public class CommunicationManager implements Runnable {
         this.handler = handler;
     }
 
+    // TODO: Add JavaDoc
     @Override
     public void run() {
         try {

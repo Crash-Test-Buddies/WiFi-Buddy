@@ -51,12 +51,11 @@ public class LogsDialogFragment extends DialogFragment {
                 }
             }
 
-
             this.log.append(log.toString().replace(this.log.toString(), ""));
             //Runtime.getRuntime().exec("logcat -c");
             logTextView.setText(this.log.toString());
         } catch (IOException e) {
-            Log.e("wifiDirectHandler", "Failure reading logcat");
+            Log.e(WifiDirectHandler.LOG_TAG, "Failure reading logcat");
         }
 
         // Creates and returns the AlertDialog for the logs

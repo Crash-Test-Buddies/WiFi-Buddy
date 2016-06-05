@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
  * The implementation of a ServerSocket handler. This is used by the Wi-Fi P2P group owner.
  */
 public class OwnerSocketHandler extends Thread {
+
     private ServerSocket serverSocket = null;
     private final int THREAD_COUNT = 10;
     private Handler handler;

@@ -25,6 +25,7 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
  * and a message entry field with a send button.
  */
 public class ChatFragment extends ListFragment {
+
     private EditText textMessageEditText;
     private ChatMessageAdapter adapter = null;
     private List<String> items = new ArrayList<>();
