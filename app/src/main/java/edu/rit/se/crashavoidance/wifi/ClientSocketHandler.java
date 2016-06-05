@@ -23,7 +23,7 @@ public class ClientSocketHandler extends Thread {
     // TODO: Add JavaDoc
     @Override
     public void run() {
-        Log.i(TAG, "Client socket handler run");
+        Log.i(TAG, "Client socket thread running");
         Socket socket = new Socket();
         try {
             Log.i(TAG, "Opening client socket");

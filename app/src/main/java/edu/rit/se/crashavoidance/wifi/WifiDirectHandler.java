@@ -643,20 +643,20 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 }
             });
 
-            Thread handler;
+            Thread communicationThread;
             if (isGroupOwnerP2pInfo) {
                 Log.i(LOG_TAG, "Connected as group owner");
                 try {
-                    handler = new OwnerSocketHandler(this.getHandler());
-                    handler.start();
+                    communicationThread = new OwnerSocketHandler(this.getHandler());
+                    communicationThread.start();
                 } catch (IOException e) {
-                    Log.i(LOG_TAG, "Failed to create a server thread - " + e.getMessage());
+                    Log.e(LOG_TAG, "Failed to create a server thread - " + e.getMessage());
                     return;
                 }
             } else {
                 Log.i(LOG_TAG, "Connected as peer");
-                handler = new ClientSocketHandler(this.getHandler(), groupOwnerAddress);
-                handler.start();
+                communicationThread = new ClientSocketHandler(this.getHandler(), groupOwnerAddress);
+                communicationThread.start();
             }
 
             Intent connectionIntent = new Intent(Action.SERVICE_CONNECTED);
@@ -737,14 +737,14 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
                 String readMessage = new String(readBuf, 0, msg.arg1);
-                Log.i(LOG_TAG, readMessage);
+                Log.i(LOG_TAG, "Message: " + readMessage);
                 Intent messageReceived = new Intent(Action.MESSAGE_RECEIVED);
                 messageReceived.putExtra(MESSAGE_KEY, readMessage);
                 localBroadcastManager.sendBroadcast(messageReceived);
                 break;
             case MY_HANDLE:
-                Object obj = msg.obj;
-                communicationManager = (CommunicationManager) obj;
+                Object messageObject = msg.obj;
+                communicationManager = (CommunicationManager) messageObject;
         }
         return true;
     }
