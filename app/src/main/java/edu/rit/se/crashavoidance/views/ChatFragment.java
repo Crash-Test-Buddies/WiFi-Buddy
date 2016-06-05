@@ -22,7 +22,7 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 /**
  * This fragment handles chat related UI which includes a list view for messages
- * and a message entry field with send button.
+ * and a message entry field with a send button.
  */
 public class ChatFragment extends ListFragment {
     private EditText textMessageEditText;
@@ -77,9 +77,11 @@ public class ChatFragment extends ListFragment {
      */
     public class ChatMessageAdapter extends ArrayAdapter<String> {
         List<String> messages = null;
+
         public ChatMessageAdapter(Context context, int textViewResourceId, List<String> items) {
             super(context, textViewResourceId, items);
         }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View v = convertView;
@@ -105,7 +107,6 @@ public class ChatFragment extends ListFragment {
 
     /**
      * This is called when the Fragment is opened and is attached to MainActivity
-     * Sets the ListAdapter for the Service List and initiates the service discovery
      */
     @Override
     public void onAttach(Context context) {

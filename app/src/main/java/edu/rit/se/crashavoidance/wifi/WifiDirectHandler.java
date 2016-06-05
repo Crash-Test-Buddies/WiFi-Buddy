@@ -45,7 +45,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         MessageTarget,
         Handler.Callback{
 
-    private static final String androidServiceName = "Wi-Fi Direct Handler";
+    private static final String ANDROID_SERVICE_NAME = "Wi-Fi Direct Handler";
     public static final String LOG_TAG = "wifiDirectHandler";
     private final IBinder binder = new WifiTesterBinder();
 
@@ -83,7 +83,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     /** Constructor **/
     public WifiDirectHandler() {
-        super(androidServiceName);
+        super(ANDROID_SERVICE_NAME);
         dnsSdTxtRecordMap = new HashMap<>();
         dnsSdServiceMap = new HashMap<>();
         peers = new WifiP2pDeviceList();

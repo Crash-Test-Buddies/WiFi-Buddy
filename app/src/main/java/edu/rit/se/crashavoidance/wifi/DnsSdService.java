@@ -17,14 +17,6 @@ public class DnsSdService{
         this.srcDevice = srcDevice;
     }
 
-    public String getInstanceName() {
-        return instanceName;
-    }
-
-    public String getRegistrationType() {
-        return registrationType;
-    }
-
     public WifiP2pDevice getSrcDevice() {
         return srcDevice;
     }
@@ -40,5 +32,4 @@ public class DnsSdService{
                 && other.srcDevice.deviceAddress.equals(this.srcDevice.deviceAddress);
         }
     }
-
 }

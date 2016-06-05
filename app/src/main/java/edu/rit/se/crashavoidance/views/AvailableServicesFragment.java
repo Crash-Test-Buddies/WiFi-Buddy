@@ -27,7 +27,7 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
  */
 public class AvailableServicesFragment extends Fragment{
 
-    private WifiDirectHandler wifiDirectHandler;
+    private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
     private List<DnsSdService> services = new ArrayList<>();
     private AvailableServicesListViewAdapter servicesListAdapter;
     private ListView deviceList;
@@ -75,8 +75,8 @@ public class AvailableServicesFragment extends Fragment{
         Log.i(WifiDirectHandler.LOG_TAG, "Resetting service discovery");
         services.clear();
         servicesListAdapter.notifyDataSetChanged();
-        wifiDirectHandler.stopDiscoveringServices();
-        wifiDirectHandler.continuouslyDiscoverServices();
+        wifiDirectHandlerAccessor.getWifiHandler().stopDiscoveringServices();
+        wifiDirectHandlerAccessor.getWifiHandler().continuouslyDiscoverServices();
     }
 
 
@@ -90,9 +90,9 @@ public class AvailableServicesFragment extends Fragment{
         filter.addAction(WifiDirectHandler.Action.DNS_SD_SERVICE_AVAILABLE);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
         // Make a call to setup services discovery
-        wifiDirectHandler.setupServiceDiscovery();
+        wifiDirectHandlerAccessor.getWifiHandler().setupServiceDiscovery();
         // Make continuous service discovery calls
-        wifiDirectHandler.continuouslyDiscoverServices();
+        wifiDirectHandlerAccessor.getWifiHandler().continuouslyDiscoverServices();
     }
 
     /**
@@ -105,7 +105,7 @@ public class AvailableServicesFragment extends Fragment{
             // Get the intent sent by WifiDirectHandler when a service is found
             if (intent.getAction().equals(WifiDirectHandler.Action.DNS_SD_SERVICE_AVAILABLE)) {
                 String serviceKey = intent.getStringExtra(WifiDirectHandler.SERVICE_MAP_KEY);
-                DnsSdService service = wifiDirectHandler.getDnsSdServiceMap().get(serviceKey);
+                DnsSdService service = wifiDirectHandlerAccessor.getWifiHandler().getDnsSdServiceMap().get(serviceKey);
                 // Add the service to the UI and update
                 servicesListAdapter.addUnique(service);
                 // TODO Capture an intent that indicates the peer list has changed
@@ -113,6 +113,7 @@ public class AvailableServicesFragment extends Fragment{
             }
         }
     }
+
     /**
      * This is called when the Fragment is opened and is attached to MainActivity
      * Sets the ListAdapter for the Service List and initiates the service discovery
@@ -121,8 +122,7 @@ public class AvailableServicesFragment extends Fragment{
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            WiFiDirectHandlerAccessor wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
-            wifiDirectHandler = wifiDirectHandlerAccessor.getWifiHandler();
+            wifiDirectHandlerAccessor = ((WiFiDirectHandlerAccessor) getActivity());
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }

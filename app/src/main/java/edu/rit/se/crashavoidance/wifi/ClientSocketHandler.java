@@ -9,35 +9,39 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class ClientSocketHandler extends Thread {
+    private static final int SOCKET_TIMEOUT = 5000;
     private static final String TAG = "ClientSocketHandler";
     private Handler handler;
-    private ChatManager chat;
-    private InetAddress mAddress;
+    private InetAddress inetAddress;
+
     public ClientSocketHandler(Handler handler, InetAddress groupOwnerAddress) {
         this.handler = handler;
-        this.mAddress = groupOwnerAddress;
+        this.inetAddress = groupOwnerAddress;
     }
+
     @Override
     public void run() {
         Log.i(TAG, "Client socket handler run");
         Socket socket = new Socket();
         try {
+            Log.i(TAG, "Opening client socket");
             socket.bind(null);
-            socket.connect(new InetSocketAddress(mAddress.getHostAddress(),
-                    WifiDirectHandler.SERVER_PORT), 5000);
+            socket.connect(new InetSocketAddress(inetAddress.getHostAddress(),
+                    WifiDirectHandler.SERVER_PORT), SOCKET_TIMEOUT);
+            Log.i(TAG, "Client socket - " + socket.isConnected());
+
             Log.i(TAG, "Launching the I/O handler");
-            chat = new ChatManager(socket, handler);
-            new Thread(chat).start();
+            ChatManager chatManager = new ChatManager(socket, handler);
+            new Thread(chatManager).start();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error launching I/O handler");
+            Log.e(TAG, e.getMessage());
             try {
                 socket.close();
             } catch (IOException e1) {
+                Log.e(TAG, "Error closing socket");
                 e1.printStackTrace();
             }
         }
-    }
-    public ChatManager getChat() {
-        return chat;
     }
 }

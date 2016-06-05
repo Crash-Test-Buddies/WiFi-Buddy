@@ -7,19 +7,19 @@ import java.net.ServerSocket;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 /**
- * The implementation of a ServerSocket handler. This is used by the wifi p2p
- * group owner.
+ * The implementation of a ServerSocket handler. This is used by the Wi-Fi P2P group owner.
  */
 public class OwnerSocketHandler extends Thread {
-    private ServerSocket socket = null;
+    private ServerSocket serverSocket = null;
     private final int THREAD_COUNT = 10;
     private Handler handler;
     private static final String TAG = "GroupOwnerSocketHandler";
 
     public OwnerSocketHandler(Handler handler) throws IOException {
         try {
-            socket = new ServerSocket(WifiDirectHandler.SERVER_PORT);
+            serverSocket = new ServerSocket(WifiDirectHandler.SERVER_PORT);
             this.handler = handler;
             Log.i(TAG, "Socket Started");
         } catch (IOException e) {
@@ -28,28 +28,34 @@ public class OwnerSocketHandler extends Thread {
             throw e;
         }
     }
+
     /**
      * A ThreadPool for client sockets.
      */
     private final ThreadPoolExecutor pool = new ThreadPoolExecutor(
             THREAD_COUNT, THREAD_COUNT, 10, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>());
+
     @Override
     public void run() {
-        Log.i(TAG, "Owner socket handler run");
+        Log.i(TAG, "Owner serverSocket handler run");
         while (true) {
             try {
                 // A blocking operation. Initiate a ChatManager instance when
                 // there is a new connection
-                pool.execute(new ChatManager(socket.accept(), handler));
+                pool.execute(new ChatManager(serverSocket.accept(), handler));
                 Log.i(TAG, "Launching the I/O handler");
             } catch (IOException e) {
+                Log.e(TAG, "Error launching the I/O handler");
+                Log.e(TAG, e.getMessage());
                 try {
-                    if (socket != null && !socket.isClosed())
-                        socket.close();
+                    if (serverSocket != null && !serverSocket.isClosed()) {
+                        serverSocket.close();
+                    }
                 } catch (IOException ioe) {
+                    Log.e(TAG, "Error closing socket");
+                    Log.e(TAG, ioe.getMessage());
                 }
-                e.printStackTrace();
                 pool.shutdownNow();
                 break;
             }
