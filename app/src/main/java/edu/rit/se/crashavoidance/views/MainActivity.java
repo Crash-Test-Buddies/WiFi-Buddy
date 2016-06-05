@@ -6,12 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
@@ -21,32 +18,20 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.io.IOException;
-
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.ChatManager;
-import edu.rit.se.crashavoidance.wifi.ClientSocketHandler;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
-import edu.rit.se.crashavoidance.wifi.OwnerSocketHandler;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 /**
  * The main Activity of the application, which is a container for Fragments and the ActionBar
  * Also contains the WifiDirectHandler
  */
-public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor,
-        Handler.Callback, ChatFragment.MessageTarget,
-        WifiP2pManager.ConnectionInfoListener {
+public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor {
 
     private WifiDirectHandler wifiDirectHandler;
     private boolean wifiDirectHandlerBound = false;
     private ChatFragment chatFragment = null;
 
-    public static final int MESSAGE_READ = 0x400 + 1;
-    public static final int MY_HANDLE = 0x400 + 2;
-    public static final int SERVER_PORT = 4545;
-
-    private Handler handler = new Handler(this);
     private LogsDialogFragment logsDialogFragment;
     private DeviceInfoFragment deviceInfoFragment;
 
@@ -162,57 +147,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         wifiDirectHandler.initiateConnectToService(service);
     }
 
-    // TODO: Add JavaDoc
-    @Override
-    public boolean handleMessage(Message msg) {
-        Log.i(WifiDirectHandler.LOG_TAG, "handleMessage: " + msg.toString());
-        switch (msg.what) {
-            case MESSAGE_READ:
-                byte[] readBuf = (byte[]) msg.obj;
-                // construct a string from the valid bytes in the buffer
-                String readMessage = new String(readBuf, 0, msg.arg1);
-                Log.i(WifiDirectHandler.LOG_TAG, readMessage);
-                chatFragment.pushMessage("Buddy: " + readMessage);
-                break;
-            case MY_HANDLE:
-                Object obj = msg.obj;
-                chatFragment.setChatManager((ChatManager) obj);
-        }
-        return true;
-    }
-
-    // TODO: Add JavaDoc
-    @Override
-    public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
-        Thread handler;
-        /*
-         * The group owner accepts connections using a server socket and then spawns a
-         * client socket for every client. This is handled by {@code
-         * GroupOwnerSocketHandler}
-         */
-        if (p2pInfo.isGroupOwner) {
-            Log.i(WifiDirectHandler.LOG_TAG, "Connected as group owner");
-            try {
-                handler = new OwnerSocketHandler(this.getHandler());
-                handler.start();
-            } catch (IOException e) {
-                Log.i(WifiDirectHandler.LOG_TAG, "Failed to create a server thread - " + e.getMessage());
-                return;
-            }
-        } else {
-            Log.i(WifiDirectHandler.LOG_TAG, "Connected as peer");
-            handler = new ClientSocketHandler(
-                    this.getHandler(),
-                    p2pInfo.groupOwnerAddress);
-            handler.start();
-        }
-    }
-
-    @Override
-    public Handler getHandler() {
-        return handler;
-    }
-
     protected void onPause() {
         super.onPause();
         Log.i(WifiDirectHandler.LOG_TAG, "Pausing MainActivity");
@@ -278,13 +212,11 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found
-            if (intent.getAction().equals(WifiDirectHandler.Action.SERVICE_CONNECTED)
-                    || intent.getAction().equals(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION) ) {
+            if (intent.getAction().equals(WifiDirectHandler.Action.SERVICE_CONNECTED)) {
                 Log.i(WifiDirectHandler.LOG_TAG, "FRAGMENT SWITCH: Connected to service");
                 if (chatFragment == null) {
                     chatFragment = new ChatFragment();
                 }
-                wifiDirectHandler.setChatFragment(chatFragment);
                 replaceFragment(chatFragment);
                 if (deviceInfoFragment == null) {
                     deviceInfoFragment = new DeviceInfoFragment();
@@ -292,6 +224,10 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
                 addFragment(deviceInfoFragment);
             } else if (intent.getAction().equals(WifiDirectHandler.Action.DEVICE_CHANGED)) {
                 deviceInfoFragment.getThisDeviceInfoTextView().setText(wifiDirectHandler.getThisDeviceInfo());
+            } else if (intent.getAction().equals(WifiDirectHandler.Action.MESSAGE_RECEIVED)) {
+                if(chatFragment != null) {
+                    chatFragment.pushMessage(intent.getByteArrayExtra(WifiDirectHandler.MESSAGE_KEY));
+                }
             }
         }
     }

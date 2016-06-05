@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import edu.rit.se.crashavoidance.views.ChatFragment;
 import edu.rit.se.crashavoidance.views.ChatFragment.MessageTarget;
 
 /**
@@ -46,11 +45,12 @@ public class WifiDirectHandler extends NonStopIntentService implements
         MessageTarget,
         Handler.Callback{
 
-    private static final String androidServiceName = "Wi-Fi Direct Handler";
+    private static final String ANDROID_SERVICE_NAME = "Wi-Fi Direct Handler";
     public static final String LOG_TAG = "wifiDirectHandler";
     private final IBinder binder = new WifiTesterBinder();
 
     public static final String SERVICE_MAP_KEY = "serviceMapKey";
+    public static final String MESSAGE_KEY = "messageKey";
     private final String PEERS = "peers";
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
@@ -61,13 +61,15 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private BroadcastReceiver receiver;
     private WifiP2pServiceInfo serviceInfo;
     private WifiP2pServiceRequest serviceRequest;
-    private ChatFragment chatFragment;
     private Boolean isWifiP2pEnabled;
     private Handler handler = new Handler((Handler.Callback) this);
-    private static final int MESSAGE_READ = 0x400 + 1;
-    private static final int MY_HANDLE = 0x400 + 2;
+    private ChatManager chatManager = null;
+    public static final int MESSAGE_READ = 0x400 + 1;
+    public static final int MY_HANDLE = 0x400 + 2;
+    public static final int SERVER_PORT = 4545;
 
     private boolean continueDiscovering = false;
+    private boolean groupFormed = false;
 
     // Flag for creating a no prompt service
     private boolean isCreatingNoPrompt = false;
@@ -82,7 +84,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     /** Constructor **/
     public WifiDirectHandler() {
-        super(androidServiceName);
+        super(ANDROID_SERVICE_NAME);
         dnsSdTxtRecordMap = new HashMap<>();
         dnsSdServiceMap = new HashMap<>();
         peers = new WifiP2pDeviceList();
@@ -228,17 +230,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     private void removeGroup() {
-        wifiP2pManager.cancelConnect(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Log.i(LOG_TAG, "P2P negotiation canceled");
-            }
-
-            @Override
-            public void onFailure(int reason) {
-                Log.e(LOG_TAG, "Failure canceling P2P negotiation: " + FailureReason.fromInteger(reason).toString());
-            }
-        });
         if (thisDevice.status == WifiP2pDevice.CONNECTED) {
             wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
                 @Override
@@ -584,7 +575,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
             // Extra information from EXTRA_WIFI_P2P_INFO
             WifiP2pInfo extraWifiP2pInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO);
-            boolean groupFormed = extraWifiP2pInfo.groupFormed;
+            groupFormed = extraWifiP2pInfo.groupFormed;
             boolean isGroupOwnerP2pInfo = extraWifiP2pInfo.isGroupOwner;
             InetAddress groupOwnerAddress = extraWifiP2pInfo.groupOwnerAddress;
 
@@ -728,20 +719,26 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     @Override
     public boolean handleMessage(Message msg) {
-        Log.e(LOG_TAG, "handleMessage() called");
+        Log.i(LOG_TAG, "handleMessage() called");
         switch (msg.what) {
             case MESSAGE_READ:
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
                 String readMessage = new String(readBuf, 0, msg.arg1);
-                Log.d("wifiDirectTester", readMessage);
-                chatFragment.pushMessage("Buddy: " + readMessage);
+                Log.i(LOG_TAG, readMessage);
+                Intent messageReceived = new Intent(Action.MESSAGE_RECEIVED);
+                messageReceived.putExtra(MESSAGE_KEY, readMessage);
+                localBroadcastManager.sendBroadcast(messageReceived);
                 break;
             case MY_HANDLE:
                 Object obj = msg.obj;
-                chatFragment.setChatManager((ChatManager) obj);
+                chatManager = (ChatManager) obj;
         }
         return true;
+    }
+
+    public ChatManager getChatManager() {
+        return chatManager;
     }
 
     /**
@@ -756,14 +753,14 @@ public class WifiDirectHandler extends NonStopIntentService implements
   /**
    * Actions that can be broadcast or received by the handler
    */
-
     public class Action {
         public static final String DNS_SD_TXT_RECORD_ADDED = "dnsSdTxtRecordAdded",
         DNS_SD_SERVICE_AVAILABLE = "dnsSdServiceAvailable",
         SERVICE_REMOVED = "serviceRemoved",
         PEERS_CHANGED = "peersChanged",
         SERVICE_CONNECTED = "serviceConnected",
-        DEVICE_CHANGED = "deviceChanged";
+        DEVICE_CHANGED = "deviceChanged",
+        MESSAGE_RECEIVED = "messageReceived";
     }
 
     private class Keys {
@@ -776,10 +773,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
         public void onReceive(Context context, Intent intent) {
             onHandleIntent(intent);
         }
-    }
-
-    public void setChatFragment(ChatFragment theFragment){
-        chatFragment = theFragment;
     }
 
     public String deviceToString(WifiP2pDevice device) {

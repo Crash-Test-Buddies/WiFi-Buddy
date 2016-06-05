@@ -4,7 +4,6 @@ package edu.rit.se.crashavoidance.wifi;
  *
  */
 public enum FailureReason {
-
     ERROR("ERROR"),
     P2P_UNSUPPORTED("P2P UNSUPPORTED"),
     BUSY("BUSY"),
