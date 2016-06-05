@@ -22,9 +22,10 @@ public class OwnerSocketHandler extends Thread {
         try {
             serverSocket = new ServerSocket(WifiDirectHandler.SERVER_PORT);
             this.handler = handler;
-            Log.i(TAG, "Socket Started");
+            Log.i(TAG, "Group owner server socket started");
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error starting server socket");
+            Log.e(TAG, e.getMessage());
             pool.shutdownNow();
             throw e;
         }
@@ -39,7 +40,7 @@ public class OwnerSocketHandler extends Thread {
 
     @Override
     public void run() {
-        Log.i(TAG, "Owner serverSocket handler run");
+        Log.i(TAG, "Group owner server socket thread running");
         while (true) {
             try {
                 // A blocking operation. Initiate a CommunicationManager instance when
@@ -52,6 +53,7 @@ public class OwnerSocketHandler extends Thread {
                 try {
                     if (serverSocket != null && !serverSocket.isClosed()) {
                         serverSocket.close();
+                        Log.i(TAG, "Server socket closed");
                     }
                 } catch (IOException ioe) {
                     Log.e(TAG, "Error closing socket");
