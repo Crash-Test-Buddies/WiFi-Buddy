@@ -44,13 +44,14 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
         setSupportActionBar(toolbar);
 
-        //Set the receiver for moving to the chat fragment
+        // Set the CommunicationReceiver for receiving intents fired from the WifiDirectHandler
+        // Used to update device info, update connection status, and receive communication messages
         CommunicationReceiver communicationReceiver = new CommunicationReceiver();
-        Log.i(WifiDirectHandler.LOG_TAG, "Communication Receiver registered");
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Action.SERVICE_CONNECTED);
-        filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        /* TODO: Remove this line? */ filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         LocalBroadcastManager.getInstance(this).registerReceiver(communicationReceiver, filter);
+        Log.i(WifiDirectHandler.LOG_TAG, "Communication Receiver registered");
         Log.i(WifiDirectHandler.LOG_TAG, "MainActivity created");
     }
 
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     };
 
     /**
-     * Adds a Fragment to the 'fragment_container'
+     * Replaces a Fragment in the 'fragment_container'
      * @param fragment Fragment to add
      */
     public void replaceFragment(Fragment fragment) {
@@ -123,6 +124,10 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         transaction.commit();
     }
 
+    /**
+     * Adds a Fragment in the 'fragment_container'
+     * @param fragment Fragment to add
+     */
     public void addFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(R.id.fragment_container, fragment);
@@ -140,6 +145,11 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         return wifiDirectHandler;
     }
 
+    /**
+     * Initiate a connection to a service when a Service ListItem is tapped.
+     * An invitation appears on the other device to accept or decline the connection.
+     * @param service The service to connect to
+     */
     public void onServiceClick(DnsSdService service) {
         Log.i(WifiDirectHandler.LOG_TAG, "\nService List item tapped");
         wifiDirectHandler.initiateConnectToService(service);
@@ -210,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found
             if (intent.getAction().equals(WifiDirectHandler.Action.SERVICE_CONNECTED)) {
-                Log.i(WifiDirectHandler.LOG_TAG, "FRAGMENT SWITCH: Connected to service");
+                Log.i(WifiDirectHandler.LOG_TAG, "Communication Receiver: Service connected");
                 if (chatFragment == null) {
                     chatFragment = new ChatFragment();
                 }
@@ -219,9 +229,13 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
                     deviceInfoFragment = new DeviceInfoFragment();
                 }
                 addFragment(deviceInfoFragment);
+                Log.i(WifiDirectHandler.LOG_TAG, "Switching to Chat fragment");
             } else if (intent.getAction().equals(WifiDirectHandler.Action.DEVICE_CHANGED)) {
+                // TODO: check if this is actually working
+                Log.i(WifiDirectHandler.LOG_TAG, "Communication Receiver: Device changed");
                 deviceInfoFragment.getThisDeviceInfoTextView().setText(wifiDirectHandler.getThisDeviceInfo());
             } else if (intent.getAction().equals(WifiDirectHandler.Action.MESSAGE_RECEIVED)) {
+                Log.i(WifiDirectHandler.LOG_TAG, "Communication Receiver: Message received");
                 if(chatFragment != null) {
                     chatFragment.pushMessage(intent.getByteArrayExtra(WifiDirectHandler.MESSAGE_KEY));
                 }

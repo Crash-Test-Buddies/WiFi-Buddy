@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
+import edu.rit.se.crashavoidance.wifi.CommunicationManager;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 /**
@@ -45,8 +46,10 @@ public class ChatFragment extends ListFragment {
             @Override
             public void onClick(View arg0) {
                 Log.i(WifiDirectHandler.LOG_TAG, "Send button tapped");
-                if (handlerAccessor.getWifiHandler().getCommunicationManager() != null) {
-                    handlerAccessor.getWifiHandler().getCommunicationManager().write(textMessageEditText.getText().toString().getBytes());
+                CommunicationManager communicationManager = handlerAccessor.getWifiHandler().getCommunicationManager();
+                if (communicationManager != null) {
+                    byte[] messageBytes = textMessageEditText.getText().toString().getBytes();
+                    communicationManager.write(messageBytes);
                 } else {
                     Log.e(WifiDirectHandler.LOG_TAG, "Communication Manager is null");
                 }
