@@ -3,7 +3,7 @@ package edu.rit.se.crashavoidance.wifi;
 import android.net.wifi.p2p.WifiP2pDevice;
 
 /**
- *
+ * A class for storing Bonjour service information that is advertised over a Wi-Fi P2P connection.
  */
 public class DnsSdService{
 

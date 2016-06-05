@@ -30,5 +30,4 @@
         android:text="@string/action_discover_services"
         android:id="@+id/discoverServicesButton"
         android:enabled="false" />
-
 </LinearLayout>

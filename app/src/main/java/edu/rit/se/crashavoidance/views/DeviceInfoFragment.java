@@ -12,6 +12,7 @@ import android.widget.TextView;
 import edu.rit.se.crashavoidance.R;
 
 public class DeviceInfoFragment extends Fragment {
+
     private WiFiDirectHandlerAccessor wifiDirectHandlerAccessor;
     private TextView thisDeviceInfoTextView;
 

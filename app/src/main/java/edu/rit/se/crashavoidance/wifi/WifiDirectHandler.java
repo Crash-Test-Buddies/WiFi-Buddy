@@ -37,9 +37,7 @@ import java.util.TimerTask;
 
 import edu.rit.se.crashavoidance.views.ChatFragment.MessageTarget;
 
-/**
- * TODO add comment
- */
+// TODO: Add JavaDoc
 public class WifiDirectHandler extends NonStopIntentService implements
         WifiP2pManager.ConnectionInfoListener,
         MessageTarget,
@@ -63,7 +61,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private WifiP2pServiceRequest serviceRequest;
     private Boolean isWifiP2pEnabled;
     private Handler handler = new Handler((Handler.Callback) this);
-    private ChatManager chatManager = null;
+    private CommunicationManager communicationManager = null;
     public static final int MESSAGE_READ = 0x400 + 1;
     public static final int MY_HANDLE = 0x400 + 2;
     public static final int SERVER_PORT = 4545;
@@ -229,6 +227,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
         Log.i(LOG_TAG, "Wifi Handler service destroyed");
     }
 
+    /**
+     * Removes the current WifiP2pGroup in the WifiP2pChannel.
+     */
     private void removeGroup() {
         if (thisDevice.status == WifiP2pDevice.CONNECTED) {
             wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
@@ -399,6 +400,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
         return dnsSdTxtRecordMap;
     }
 
+    /**
+     * Uses wifiManager to determine if Wi-Fi is enabled
+     * @return Whether Wi-Fi is enabled or not
+     */
     public boolean isWifiEnabled() {
         return wifiManager.isWifiEnabled();
     }
@@ -428,28 +433,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
-    private void requestPeers() {
-        // Initiates peer discovery
-        wifiP2pManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                // Discovery initiation is successful. No services have actually been discovered yet
-                // No data about peers can be collected here
-                Log.i(LOG_TAG, "Initiate discovering peers successful");
-            }
-
-            @Override
-            public void onFailure(int reason) {
-                Log.e(LOG_TAG, "Failure initiating discovering peers: " + FailureReason.fromInteger(reason).toString());
-            }
-        });
-    }
-
   /**
-   * Initiates a connection to a service
+   * Removes a service discovery request and initiates a connection to a service
    * @param service The service to connect to
    */
-
     public void initiateConnectToService(DnsSdService service) {
         // Device info of peer to connect to
         WifiP2pConfig config = new WifiP2pConfig();
@@ -470,6 +457,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             });
         }
 
+        // TODO: Should this go in the onSuccess() method above, in removeServiceRequest()?
         // Starts a peer-to-peer connection with a device with the specified configuration
         wifiP2pManager.connect(channel, config, new WifiP2pManager.ActionListener() {
             // The ActionListener only notifies that initiation of connection has succeeded or failed
@@ -514,6 +502,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         });
     }
 
+    // TODO: Use this method
     /**
      * Connects to a no prompt service
      * @param service The service to connect to
@@ -538,11 +527,13 @@ public class WifiDirectHandler extends NonStopIntentService implements
         Log.i(LOG_TAG, "Connected to no prompt network");
     }
 
+    //
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return binder;
     }
+
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -732,13 +723,13 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 break;
             case MY_HANDLE:
                 Object obj = msg.obj;
-                chatManager = (ChatManager) obj;
+                communicationManager = (CommunicationManager) obj;
         }
         return true;
     }
 
-    public ChatManager getChatManager() {
-        return chatManager;
+    public CommunicationManager getCommunicationManager() {
+        return communicationManager;
     }
 
     /**

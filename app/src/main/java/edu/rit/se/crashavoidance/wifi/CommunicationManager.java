@@ -13,17 +13,19 @@ import java.util.Arrays;
  * Handles reading and writing of messages with socket buffers. Uses a Handler
  * to post messages to UI thread for UI updates.
  */
-public class ChatManager implements Runnable {
+public class CommunicationManager implements Runnable {
+
     private Socket socket = null;
     private Handler handler;
     private OutputStream outputStream;
-    private static final String TAG = "ChatHandler";
+    private static final String TAG = "CommunicationManager";
 
-    public ChatManager(Socket socket, Handler handler) {
+    public CommunicationManager(Socket socket, Handler handler) {
         this.socket = socket;
         this.handler = handler;
     }
 
+    // TODO: Add JavaDoc
     @Override
     public void run() {
         try {

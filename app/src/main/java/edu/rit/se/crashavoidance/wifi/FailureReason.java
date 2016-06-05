@@ -1,9 +1,10 @@
 package edu.rit.se.crashavoidance.wifi;
 
 /**
- *
+ * An enum for translating P2P error codes to readable Strings.
  */
 public enum FailureReason {
+
     ERROR("ERROR"),
     P2P_UNSUPPORTED("P2P UNSUPPORTED"),
     BUSY("BUSY"),

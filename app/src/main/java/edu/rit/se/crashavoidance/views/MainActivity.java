@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     private WifiDirectHandler wifiDirectHandler;
     private boolean wifiDirectHandlerBound = false;
     private ChatFragment chatFragment = null;
-
     private LogsDialogFragment logsDialogFragment;
     private DeviceInfoFragment deviceInfoFragment;
 
@@ -46,11 +45,12 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         setSupportActionBar(toolbar);
 
         //Set the receiver for moving to the chat fragment
-        ChatReceiver receiver = new ChatReceiver();
+        CommunicationReceiver communicationReceiver = new CommunicationReceiver();
+        Log.i(WifiDirectHandler.LOG_TAG, "Communication Receiver registered");
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Action.SERVICE_CONNECTED);
         filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(communicationReceiver, filter);
         Log.i(WifiDirectHandler.LOG_TAG, "MainActivity created");
     }
 
@@ -86,9 +86,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         }
     }
 
-    /**
-     * TODO add comment
-     */
+    // TODO: Add JavaDoc
     private ServiceConnection wifiServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -207,8 +205,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
      * Receiver for receiving intents from the WifiDirectHandler to update UI
      * when Wi-Fi Direct commands are completed
      */
-
-    public class ChatReceiver extends BroadcastReceiver {
+    public class CommunicationReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found

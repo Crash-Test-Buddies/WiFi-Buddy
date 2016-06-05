@@ -5,9 +5,10 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import java.util.Map;
 
 /**
- *
+ * A class for storing a Bonjour TXT record.
  */
 public class DnsSdTxtRecord {
+
     private String fullDomain;
     private Map<String, String> record;
     private WifiP2pDevice device;
