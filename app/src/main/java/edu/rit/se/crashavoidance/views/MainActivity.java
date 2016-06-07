@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -49,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         CommunicationReceiver communicationReceiver = new CommunicationReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Action.SERVICE_CONNECTED);
-        /* TODO: Remove this line? */ filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        filter.addAction(WifiDirectHandler.Action.MESSAGE_RECEIVED);
         LocalBroadcastManager.getInstance(this).registerReceiver(communicationReceiver, filter);
         Log.i(WifiDirectHandler.LOG_TAG, "Communication Receiver registered");
         Log.i(WifiDirectHandler.LOG_TAG, "MainActivity created");
