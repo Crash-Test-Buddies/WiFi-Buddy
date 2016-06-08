@@ -26,6 +26,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -235,10 +236,32 @@ public class WifiDirectHandler extends NonStopIntentService implements
     public void onDestroy() {
         super.onDestroy();
         removeGroup();
+        removePersistentGroups();
         removeService();
         unregisterP2pReceiver();
         unregisterP2p();
         Log.i(LOG_TAG, "Wifi Handler service destroyed");
+    }
+
+    /**
+     * Removes persistent/remembered groups
+     * Uses reflection to call the hidden deletePersistentGroup() method
+     */
+    private void removePersistentGroups() {
+        try {
+            Method[] methods = WifiP2pManager.class.getMethods();
+            for (int i = 0; i < methods.length; i++) {
+                if (methods[i].getName().equals("deletePersistentGroup")) {
+                    // Delete any persistent group
+                    for (int netid = 0; netid < 32; netid++) {
+                        methods[i].invoke(wifiP2pManager, channel, netid, null);
+                    }
+                }
+            }
+        } catch(Exception e) {
+            Log.e(LOG_TAG, "Failure removing persistent groups: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
