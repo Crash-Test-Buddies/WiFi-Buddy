@@ -245,19 +245,29 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     /**
      * Removes persistent/remembered groups
-     * Uses reflection to call the hidden deletePersistentGroup() method
+     *
+     * Source: https://android.googlesource.com/platform/cts/+/jb-mr1-dev%5E1%5E2..jb-mr1-dev%5E1/
+     * Author: Nick  Kralevich <nnk@google.com>
+     *
+     * WifiP2pManager.java has a method deletePersistentGroup(), but it is not accessible in the
+     * SDK. According to Vinit Deshpande <vinitd@google.com>, it is a common Android paradigm to
+     * expose certain APIs in the SDK and hide others. This allows Android to maintain stability and
+     * security. As a workaround, this removePersistentGroups() method uses Java reflection to call
+     * the hidden method. We can list all the methods in WifiP2pManager and invoke "deletePersistentGroup"
+     * if it exists. This is used to remove all possible persistent/remembered groups. 
      */
     private void removePersistentGroups() {
         try {
             Method[] methods = WifiP2pManager.class.getMethods();
             for (int i = 0; i < methods.length; i++) {
                 if (methods[i].getName().equals("deletePersistentGroup")) {
-                    // Delete any persistent group
+                    // Remove any persistent group
                     for (int netid = 0; netid < 32; netid++) {
                         methods[i].invoke(wifiP2pManager, channel, netid, null);
                     }
                 }
             }
+            Log.i(LOG_TAG, "Persistent groups removed");
         } catch(Exception e) {
             Log.e(LOG_TAG, "Failure removing persistent groups: " + e.getMessage());
             e.printStackTrace();
