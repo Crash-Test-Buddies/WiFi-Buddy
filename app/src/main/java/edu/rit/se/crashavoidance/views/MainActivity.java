@@ -22,8 +22,9 @@ import edu.rit.se.crashavoidance.wifi.DnsSdService;
 import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 
 /**
- * The main Activity of the application, which is a container for Fragments and the ActionBar
- * Also contains the WifiDirectHandler
+ * The main Activity of the application, which is a container for Fragments and the ActionBar.
+ * Contains WifiDirectHandler, which is a service
+ * MainActivity has a Communication BroadcastReceiver to handle Intents fired from WifiDirectHandler.
  */
 public class MainActivity extends AppCompatActivity implements WiFiDirectHandlerAccessor {
 
@@ -33,6 +34,11 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     private LogsDialogFragment logsDialogFragment;
     private DeviceInfoFragment deviceInfoFragment;
 
+    /**
+     * Sets the UI layout for the Activity.
+     * Registers a Communication BroadcastReceiver so the Activity can be notified of
+     * intents fired in WifiDirectHandler, like Service Connected and Messaged Received.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         setSupportActionBar(toolbar);
 
         // Set the CommunicationReceiver for receiving intents fired from the WifiDirectHandler
-        // Used to update device info, update connection status, and receive communication messages
+        // Used to update the UI and receive communication messages
         CommunicationReceiver communicationReceiver = new CommunicationReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Action.SERVICE_CONNECTED);
@@ -86,10 +92,21 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         }
     }
 
-    // TODO: Add JavaDoc
+    // TODO: BRETT, add JavaDoc
+    // Note: This is used to run WifiDirectHandler as a Service instead of being coupled to an
+    //          Activity. This is NOT a connection to a P2P service being broadcast from a device
     private ServiceConnection wifiServiceConnection = new ServiceConnection() {
+
+        /**
+         * Called when a connection to the Service has been established, with the IBinder of the
+         * communication channel to the Service.
+         * @param name The component name of the service that has been connected
+         * @param service The IBinder of the Service's communication channel
+         */
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.i(WifiDirectHandler.LOG_TAG, "ComponentName: " + name);
+            Log.i(WifiDirectHandler.LOG_TAG, "Service: " + service);
             WifiDirectHandler.WifiTesterBinder binder = (WifiDirectHandler.WifiTesterBinder) service;
 
             wifiDirectHandler = binder.getService();
@@ -103,6 +120,13 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             addFragment(deviceInfoFragment);
         }
 
+        /**
+         * Called when a connection to the Service has been lost.  This typically
+         * happens when the process hosting the service has crashed or been killed.
+         * This does not remove the ServiceConnection itself -- this
+         * binding to the service will remain active, and you will receive a call
+         * to onServiceConnected when the Service is next running.
+         */
         @Override
         public void onServiceDisconnected(ComponentName name) {
             wifiDirectHandlerBound = false;
@@ -145,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     }
 
     /**
-     * Initiate a connection to a service when a Service ListItem is tapped.
+     * Initiates a P2P connection to a service when a Service ListItem is tapped.
      * An invitation appears on the other device to accept or decline the connection.
      * @param service The service to connect to
      */
@@ -211,8 +235,8 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     }
 
     /**
-     * Receiver for receiving intents from the WifiDirectHandler to update UI
-     * when Wi-Fi Direct commands are completed
+     * BroadcastReceiver used to receive Intents fired from the WifiDirectHandler when P2P events occur
+     * Used to update the UI and receive communication messages
      */
     public class CommunicationReceiver extends BroadcastReceiver {
         @Override
