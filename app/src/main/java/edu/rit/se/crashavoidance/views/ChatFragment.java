@@ -62,9 +62,11 @@ public class ChatFragment extends ListFragment {
                     Log.e(WifiDirectHandler.LOG_TAG, "Communication Manager is null");
                 }
                 String message = textMessageEditText.getText().toString();
-                Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
-                pushMessage("Me: " + message);
-                textMessageEditText.setText("");
+                if (!message.equals("")) {
+                    Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
+                    pushMessage("Me: " + message);
+                    textMessageEditText.setText("");
+                }
             }
         });
 
