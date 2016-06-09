@@ -1,7 +1,6 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ListFragment;
@@ -57,17 +56,20 @@ public class ChatFragment extends ListFragment {
             public void onClick(View arg0) {
                 Log.i(WifiDirectHandler.LOG_TAG, "Send button tapped");
                 CommunicationManager communicationManager = handlerAccessor.getWifiHandler().getCommunicationManager();
-                if (communicationManager != null) {
-                    byte[] messageBytes = textMessageEditText.getText().toString().getBytes();
+                if (communicationManager != null && !textMessageEditText.toString().equals("")) {
+                    String message = textMessageEditText.getText().toString();
+                    // Gets first word of device name
+                    String author = handlerAccessor.getWifiHandler().getThisDevice().deviceName.split(" ")[0];
+                    byte[] messageBytes = (author + ": " + message).getBytes();
                     communicationManager.write(messageBytes);
                 } else {
                     Log.e(WifiDirectHandler.LOG_TAG, "Communication Manager is null");
                 }
                 String message = textMessageEditText.getText().toString();
                 if (!message.equals("")) {
-                    Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
                     pushMessage("Me: " + message);
                     messages.add(message);
+                    Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
                     textMessageEditText.setText("");
                 }
             }
@@ -115,11 +117,9 @@ public class ChatFragment extends ListFragment {
                     nameText.setText(message);
                     if (message.startsWith("Me: ")) {
                         // My message
-                        nameText.setTypeface(null, Typeface.NORMAL);
                         nameText.setGravity(Gravity.RIGHT);
                     } else {
                         // Buddy's message
-                        nameText.setTypeface(null, Typeface.BOLD);
                         nameText.setGravity(Gravity.LEFT);
                     }
                 }
