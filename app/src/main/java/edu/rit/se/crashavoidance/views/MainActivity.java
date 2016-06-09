@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
@@ -166,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
      */
     public void onServiceClick(DnsSdService service) {
         Log.i(WifiDirectHandler.LOG_TAG, "\nService List item tapped");
+        Toast.makeText(this, "Invitation sent to " + service.getSrcDevice().deviceName, Toast.LENGTH_LONG).show();
         wifiDirectHandler.initiateConnectToService(service);
     }
 
