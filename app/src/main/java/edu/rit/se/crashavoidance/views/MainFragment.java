@@ -30,7 +30,6 @@ public class MainFragment extends Fragment {
     private Switch noPromptServiceRegistrationSwitch;
     private Button discoverServicesButton;
     private AvailableServicesFragment availableServicesFragment;
-    private DeviceInfoFragment deviceInfoFragment;
     private MainActivity mainActivity;
 
     /**
@@ -144,10 +143,6 @@ public class MainFragment extends Fragment {
                     availableServicesFragment = new AvailableServicesFragment();
                 }
                 mainActivity.replaceFragment(availableServicesFragment);
-                if (deviceInfoFragment == null) {
-                    deviceInfoFragment = new DeviceInfoFragment();
-                }
-                mainActivity.addFragment(deviceInfoFragment);
             }
         });
 

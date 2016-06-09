@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.crashavoidance.wifi.DnsSdService;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
     private boolean wifiDirectHandlerBound = false;
     private ChatFragment chatFragment = null;
     private LogsDialogFragment logsDialogFragment;
-    private DeviceInfoFragment deviceInfoFragment;
+    private TextView deviceInfoTextView;
 
     /**
      * Sets the UI layout for the Activity.
@@ -48,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         // Initialize ActionBar
         Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
         setSupportActionBar(toolbar);
+
+        deviceInfoTextView = (TextView) findViewById(R.id.thisDeviceInfoTextView);
 
         // Set the CommunicationReceiver for receiving intents fired from the WifiDirectHandler
         // Used to update the UI and receive communication messages
@@ -116,8 +119,8 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
             // Add MainFragment to the 'fragment_container' when wifiDirectHandler is bound
             MainFragment mainFragment = new MainFragment();
             replaceFragment(mainFragment);
-            deviceInfoFragment = new DeviceInfoFragment();
-            addFragment(deviceInfoFragment);
+
+            deviceInfoTextView.setText(wifiDirectHandler.getThisDeviceInfo());
         }
 
         /**
@@ -142,18 +145,6 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
         transaction.addToBackStack(null);
-
-        // Commit the transaction
-        transaction.commit();
-    }
-
-    /**
-     * Adds a Fragment in the 'fragment_container'
-     * @param fragment Fragment to add
-     */
-    public void addFragment(Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.fragment_container, fragment);
 
         // Commit the transaction
         transaction.commit();
@@ -248,15 +239,11 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
                     chatFragment = new ChatFragment();
                 }
                 replaceFragment(chatFragment);
-                if (deviceInfoFragment == null) {
-                    deviceInfoFragment = new DeviceInfoFragment();
-                }
-                addFragment(deviceInfoFragment);
                 Log.i(WifiDirectHandler.LOG_TAG, "Switching to Chat fragment");
             } else if (intent.getAction().equals(WifiDirectHandler.Action.DEVICE_CHANGED)) {
                 // TODO: check if this is actually working
                 Log.i(WifiDirectHandler.LOG_TAG, "Communication Receiver: Device changed");
-                deviceInfoFragment.getThisDeviceInfoTextView().setText(wifiDirectHandler.getThisDeviceInfo());
+                deviceInfoTextView.setText(wifiDirectHandler.getThisDeviceInfo());
             } else if (intent.getAction().equals(WifiDirectHandler.Action.MESSAGE_RECEIVED)) {
                 Log.i(WifiDirectHandler.LOG_TAG, "Communication Receiver: Message received");
                 if(chatFragment != null) {
