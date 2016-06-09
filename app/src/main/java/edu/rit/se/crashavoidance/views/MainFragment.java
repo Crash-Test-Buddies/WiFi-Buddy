@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ public class MainFragment extends Fragment {
     private Button discoverServicesButton;
     private AvailableServicesFragment availableServicesFragment;
     private MainActivity mainActivity;
+    private Toolbar toolbar;
 
     /**
      * Sets the layout for the UI, initializes the Buttons and Switches, and returns the View
@@ -146,6 +148,8 @@ public class MainFragment extends Fragment {
             }
         });
 
+        toolbar = (Toolbar) getActivity().findViewById(R.id.mainToolbar);
+
         return view;
     }
 
@@ -169,6 +173,12 @@ public class MainFragment extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement WiFiDirectHandlerAccessor");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        toolbar.setTitle("Wi-Fi Direct Handler");
     }
 
     /**
