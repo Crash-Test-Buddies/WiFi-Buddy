@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         setContentView(R.layout.activity_main);
 
         // Initialize ActionBar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.initToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
 
         deviceInfoTextView = (TextView) findViewById(R.id.thisDeviceInfoTextView);

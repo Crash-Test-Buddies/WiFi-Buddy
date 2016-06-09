@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,8 @@ public class AvailableServicesFragment extends Fragment{
     private List<DnsSdService> services = new ArrayList<>();
     private AvailableServicesListViewAdapter servicesListAdapter;
     private ListView deviceList;
+    private Toolbar toolbar;
+
 
     /**
      * Sets the Layout for the UI
@@ -39,6 +42,7 @@ public class AvailableServicesFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_available_services, container, false);
+        toolbar = (Toolbar) getActivity().findViewById(R.id.mainToolbar);
         deviceList = (ListView)rootView.findViewById(R.id.device_list);
         setServiceList();
         startDiscoveringServices();
@@ -111,6 +115,14 @@ public class AvailableServicesFragment extends Fragment{
                 // TODO Capture an intent that indicates the peer list has changed
                 // and see if we need to remove anything from our list
             }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (toolbar != null) {
+            toolbar.setTitle("Service Discovery");
         }
     }
 

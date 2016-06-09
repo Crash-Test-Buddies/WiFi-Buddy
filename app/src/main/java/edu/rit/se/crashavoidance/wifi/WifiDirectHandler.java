@@ -642,6 +642,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             wifiP2pManager.requestConnectionInfo(channel, WifiDirectHandler.this);
         }
 
+        // TODO: clean this up
 //        // Extra information from EXTRA_WIFI_P2P_INFO
 //        WifiP2pInfo extraWifiP2pInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO);
 //        groupFormed = extraWifiP2pInfo.groupFormed;

@@ -12,7 +12,7 @@
     <string name="action_register_service">Register Local Service</string>
     <string name="action_discover_services">Discover Local Services</string>
     <string name="action_register_no_prompt">Register No-Prompt Service</string>
-    <string name="type_message">Type text message</string>
+    <string name="type_message">Type message</string>
     <string name="send">➤</string>
     <string name="finding_services">Finding services</string>
 </resources>

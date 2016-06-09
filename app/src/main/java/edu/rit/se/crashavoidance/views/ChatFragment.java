@@ -5,7 +5,9 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ListFragment;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +33,7 @@ public class ChatFragment extends ListFragment {
     private ChatMessageAdapter adapter = null;
     private List<String> items = new ArrayList<>();
     private WiFiDirectHandlerAccessor handlerAccessor;
+    private Toolbar toolbar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,6 +44,7 @@ public class ChatFragment extends ListFragment {
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         adapter = new ChatMessageAdapter(getActivity(), android.R.id.text1, items);
         listView.setAdapter(adapter);
+        listView.setDividerHeight(0);
 
         // Prevents the keyboard from pushing the fragment and messages up and off the screen
         listView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
@@ -63,6 +67,9 @@ public class ChatFragment extends ListFragment {
                 textMessageEditText.setText("");
             }
         });
+
+        toolbar = (Toolbar) getActivity().findViewById(R.id.mainToolbar);
+
         return view;
     }
 
@@ -103,14 +110,24 @@ public class ChatFragment extends ListFragment {
                 if (nameText != null) {
                     nameText.setText(message);
                     if (message.startsWith("Me: ")) {
+                        // My message
                         nameText.setTypeface(null, Typeface.NORMAL);
+                        nameText.setGravity(Gravity.RIGHT);
                     } else {
+                        // Buddy's message
                         nameText.setTypeface(null, Typeface.BOLD);
+                        nameText.setGravity(Gravity.LEFT);
                     }
                 }
             }
             return v;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        toolbar.setTitle("Chat");
     }
 
     /**
