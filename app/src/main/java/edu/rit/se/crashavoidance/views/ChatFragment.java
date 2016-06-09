@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -32,6 +33,7 @@ public class ChatFragment extends ListFragment {
     private EditText textMessageEditText;
     private ChatMessageAdapter adapter = null;
     private List<String> items = new ArrayList<>();
+    private ArrayList<String> messages = new ArrayList<>();
     private WiFiDirectHandlerAccessor handlerAccessor;
     private Toolbar toolbar;
 
@@ -65,6 +67,7 @@ public class ChatFragment extends ListFragment {
                 if (!message.equals("")) {
                     Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
                     pushMessage("Me: " + message);
+                    messages.add(message);
                     textMessageEditText.setText("");
                 }
             }
@@ -93,7 +96,6 @@ public class ChatFragment extends ListFragment {
      * ArrayAdapter to manage chat messages.
      */
     public class ChatMessageAdapter extends ArrayAdapter<String> {
-        List<String> messages = null;
 
         public ChatMessageAdapter(Context context, int textViewResourceId, List<String> items) {
             super(context, textViewResourceId, items);
@@ -130,6 +132,13 @@ public class ChatFragment extends ListFragment {
     public void onResume() {
         super.onResume();
         toolbar.setTitle("Chat");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(textMessageEditText.getWindowToken(), 0);
     }
 
     /**
