@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ListFragment;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,12 +38,29 @@ public class ChatFragment extends ListFragment {
     private ArrayList<String> messages = new ArrayList<>();
     private WiFiDirectHandlerAccessor handlerAccessor;
     private Toolbar toolbar;
+    private Button sendButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
+        sendButton = (Button) view.findViewById(R.id.sendButton);
+        sendButton.setEnabled(false);
+
         textMessageEditText = (EditText) view.findViewById(R.id.textMessageEditText);
+        textMessageEditText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                sendButton.setEnabled(true);
+            }
+        });
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         adapter = new ChatMessageAdapter(getActivity(), android.R.id.text1, items);
@@ -51,7 +71,7 @@ public class ChatFragment extends ListFragment {
         listView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         listView.setStackFromBottom(true);
 
-        view.findViewById(R.id.sendButton).setOnClickListener(new View.OnClickListener() {
+        sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 Log.i(WifiDirectHandler.LOG_TAG, "Send button tapped");
@@ -72,6 +92,7 @@ public class ChatFragment extends ListFragment {
                     Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
                     textMessageEditText.setText("");
                 }
+                sendButton.setEnabled(false);
             }
         });
 
