@@ -42,6 +42,10 @@ public class ChatFragment extends ListFragment {
         adapter = new ChatMessageAdapter(getActivity(), android.R.id.text1, items);
         listView.setAdapter(adapter);
 
+        // Prevents the keyboard from pushing the fragment and messages up and off the screen
+        listView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+        listView.setStackFromBottom(true);
+
         view.findViewById(R.id.sendButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
