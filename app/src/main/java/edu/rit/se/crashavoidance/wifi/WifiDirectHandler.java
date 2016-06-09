@@ -801,11 +801,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
             case MESSAGE_READ:
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
-                String readMessage = new String(readBuf, 0, msg.arg1);
-                Log.i(LOG_TAG, "Message: " + readMessage);
-                Intent messageReceived = new Intent(Action.MESSAGE_RECEIVED);
-                messageReceived.putExtra(MESSAGE_KEY, readBuf);
-                localBroadcastManager.sendBroadcast(messageReceived);
+                String receivedMessage = new String(readBuf, 0, msg.arg1);
+                Log.i(LOG_TAG, "Received message: " + receivedMessage);
+                Intent messageReceivedIntent = new Intent(Action.MESSAGE_RECEIVED);
+                messageReceivedIntent.putExtra(MESSAGE_KEY, readBuf);
+                localBroadcastManager.sendBroadcast(messageReceivedIntent);
                 break;
             case MY_HANDLE:
                 Object messageObject = msg.obj;

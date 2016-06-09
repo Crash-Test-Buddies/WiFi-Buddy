@@ -1,7 +1,6 @@
 package edu.rit.se.crashavoidance.views;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ListFragment;
@@ -11,6 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -32,6 +32,7 @@ public class ChatFragment extends ListFragment {
     private EditText textMessageEditText;
     private ChatMessageAdapter adapter = null;
     private List<String> items = new ArrayList<>();
+    private ArrayList<String> messages = new ArrayList<>();
     private WiFiDirectHandlerAccessor handlerAccessor;
     private Toolbar toolbar;
 
@@ -55,16 +56,22 @@ public class ChatFragment extends ListFragment {
             public void onClick(View arg0) {
                 Log.i(WifiDirectHandler.LOG_TAG, "Send button tapped");
                 CommunicationManager communicationManager = handlerAccessor.getWifiHandler().getCommunicationManager();
-                if (communicationManager != null) {
-                    byte[] messageBytes = textMessageEditText.getText().toString().getBytes();
+                if (communicationManager != null && !textMessageEditText.toString().equals("")) {
+                    String message = textMessageEditText.getText().toString();
+                    // Gets first word of device name
+                    String author = handlerAccessor.getWifiHandler().getThisDevice().deviceName.split(" ")[0];
+                    byte[] messageBytes = (author + ": " + message).getBytes();
                     communicationManager.write(messageBytes);
                 } else {
                     Log.e(WifiDirectHandler.LOG_TAG, "Communication Manager is null");
                 }
                 String message = textMessageEditText.getText().toString();
-                Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
-                pushMessage("Me: " + message);
-                textMessageEditText.setText("");
+                if (!message.equals("")) {
+                    pushMessage("Me: " + message);
+                    messages.add(message);
+                    Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
+                    textMessageEditText.setText("");
+                }
             }
         });
 
@@ -91,7 +98,6 @@ public class ChatFragment extends ListFragment {
      * ArrayAdapter to manage chat messages.
      */
     public class ChatMessageAdapter extends ArrayAdapter<String> {
-        List<String> messages = null;
 
         public ChatMessageAdapter(Context context, int textViewResourceId, List<String> items) {
             super(context, textViewResourceId, items);
@@ -111,11 +117,9 @@ public class ChatFragment extends ListFragment {
                     nameText.setText(message);
                     if (message.startsWith("Me: ")) {
                         // My message
-                        nameText.setTypeface(null, Typeface.NORMAL);
                         nameText.setGravity(Gravity.RIGHT);
                     } else {
                         // Buddy's message
-                        nameText.setTypeface(null, Typeface.BOLD);
                         nameText.setGravity(Gravity.LEFT);
                     }
                 }
@@ -128,6 +132,13 @@ public class ChatFragment extends ListFragment {
     public void onResume() {
         super.onResume();
         toolbar.setTitle("Chat");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(textMessageEditText.getWindowToken(), 0);
     }
 
     /**
