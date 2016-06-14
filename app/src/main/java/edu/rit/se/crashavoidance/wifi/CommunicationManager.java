@@ -46,7 +46,8 @@ public class CommunicationManager implements Runnable {
                     // Send the obtained bytes to the UI Activity
                     Log.i(TAG, "Rec:" + Arrays.toString(buffer));
                     handler.obtainMessage(WifiDirectHandler.MESSAGE_READ,
-                            bytes, -1, buffer).sendToTarget();
+                            bytes, -1, buffer.clone()).sendToTarget();
+                    buffer = new byte[1024];
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                 }
