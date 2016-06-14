@@ -62,14 +62,14 @@ public class ChatFragment extends ListFragment {
             }
         });
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        ListView messagesListView = (ListView) view.findViewById(android.R.id.list);
         adapter = new ChatMessageAdapter(getActivity(), android.R.id.text1, items);
-        listView.setAdapter(adapter);
-        listView.setDividerHeight(0);
+        messagesListView.setAdapter(adapter);
+        messagesListView.setDividerHeight(0);
 
         // Prevents the keyboard from pushing the fragment and messages up and off the screen
-        listView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
-        listView.setStackFromBottom(true);
+        messagesListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+        messagesListView.setStackFromBottom(true);
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
