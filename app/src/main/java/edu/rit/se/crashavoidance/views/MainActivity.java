@@ -169,7 +169,12 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
      */
     public void onServiceClick(DnsSdService service) {
         Log.i(TAG, "\nService List item tapped");
-        Toast.makeText(this, "Invitation sent to " + service.getSrcDevice().deviceName, Toast.LENGTH_LONG).show();
+        String sourceDeviceName = service.getSrcDevice().deviceName;
+        if (sourceDeviceName.equals("")) {
+            sourceDeviceName = "other device";
+        }
+        Toast.makeText(this, "Inviting " + sourceDeviceName + " to connect", Toast.LENGTH_LONG).show();
+        // TODO: maybe make it so that if you are already connected then go to chat
         wifiDirectHandler.initiateConnectToService(service);
     }
 
