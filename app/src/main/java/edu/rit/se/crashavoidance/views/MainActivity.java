@@ -20,8 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.DnsSdService;
-import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
+import edu.rit.se.wifibuddy.DnsSdService;
+import edu.rit.se.wifibuddy.WifiDirectHandler;
 
 /**
  * The main Activity of the application, which is a container for Fragments and the ActionBar.

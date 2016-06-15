@@ -1,4 +1,4 @@
-package edu.rit.se.crashavoidance.wifi;
+package edu.rit.se.wifibuddy;
 
 import java.util.HashMap;
 

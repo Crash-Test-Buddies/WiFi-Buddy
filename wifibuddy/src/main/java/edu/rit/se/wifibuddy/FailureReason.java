@@ -1,4 +1,4 @@
-package edu.rit.se.crashavoidance.wifi;
+package edu.rit.se.wifibuddy;
 
 /**
  * An enum for translating P2P error codes to readable Strings.

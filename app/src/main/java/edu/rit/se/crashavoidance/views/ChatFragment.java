@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.CommunicationManager;
-import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
+import edu.rit.se.wifibuddy.CommunicationManager;
+import edu.rit.se.wifibuddy.WifiDirectHandler;
 
 /**
  * This fragment handles chat related UI which includes a list view for messages

@@ -16,9 +16,9 @@ import android.widget.Switch;
 import java.util.HashMap;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.ServiceData;
-import edu.rit.se.crashavoidance.wifi.ServiceType;
-import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
+import edu.rit.se.wifibuddy.ServiceData;
+import edu.rit.se.wifibuddy.ServiceType;
+import edu.rit.se.wifibuddy.WifiDirectHandler;
 
 /**
  * The Main Fragment of the application, which contains the Switches and Buttons to perform P2P tasks

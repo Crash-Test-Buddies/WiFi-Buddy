@@ -10,8 +10,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.DnsSdService;
-import edu.rit.se.crashavoidance.wifi.DnsSdTxtRecord;
+import edu.rit.se.wifibuddy.DnsSdService;
+import edu.rit.se.wifibuddy.DnsSdTxtRecord;
 
 /**
  *
