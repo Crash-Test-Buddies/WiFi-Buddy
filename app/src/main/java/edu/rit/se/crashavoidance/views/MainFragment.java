@@ -16,9 +16,9 @@ import android.widget.Switch;
 import java.util.HashMap;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.ServiceData;
-import edu.rit.se.crashavoidance.wifi.ServiceType;
-import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
+import edu.rit.se.wifibuddy.ServiceData;
+import edu.rit.se.wifibuddy.ServiceType;
+import edu.rit.se.wifibuddy.WifiDirectHandler;
 
 /**
  * The Main Fragment of the application, which contains the Switches and Buttons to perform P2P tasks
@@ -33,6 +33,7 @@ public class MainFragment extends Fragment {
     private AvailableServicesFragment availableServicesFragment;
     private MainActivity mainActivity;
     private Toolbar toolbar;
+    private static final String TAG = WifiDirectHandler.TAG + "MainFragment";
 
     /**
      * Sets the layout for the UI, initializes the Buttons and Switches, and returns the View
@@ -60,7 +61,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.i(WifiDirectHandler.LOG_TAG, "\nWi-Fi Switch Toggled");
+                Log.i(TAG, "\nWi-Fi Switch Toggled");
                 if(getHandler().isWifiEnabled()) {
                     // Disable Wi-Fi, disable all switches and buttons
                     toggleWifiSwitch.setChecked(false);
@@ -88,7 +89,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.i(WifiDirectHandler.LOG_TAG, "\nService Registration Switch Toggled");
+                Log.i(TAG, "\nService Registration Switch Toggled");
                 if (isChecked) {
                     // Add local service
                     ServiceData serviceData = new ServiceData(
@@ -114,7 +115,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.i(WifiDirectHandler.LOG_TAG, "\nNo-Prompt Service Registration Switch Toggled");
+                Log.i(TAG, "\nNo-Prompt Service Registration Switch Toggled");
                 if (isChecked) {
                     // Add no-prompt local service
                     ServiceData serviceData = new ServiceData(
@@ -140,7 +141,7 @@ public class MainFragment extends Fragment {
              */
             @Override
             public void onClick(View v) {
-                Log.i(WifiDirectHandler.LOG_TAG, "\nDiscover Services Button Pressed");
+                Log.i(TAG, "\nDiscover Services Button Pressed");
                 if (availableServicesFragment == null) {
                     availableServicesFragment = new AvailableServicesFragment();
                 }
@@ -203,6 +204,6 @@ public class MainFragment extends Fragment {
             noPromptServiceRegistrationSwitch.setEnabled(false);
             discoverServicesButton.setEnabled(false);
         }
-        Log.i(WifiDirectHandler.LOG_TAG, "Updating toggle switches");
+        Log.i(TAG, "Updating toggle switches");
     }
 }

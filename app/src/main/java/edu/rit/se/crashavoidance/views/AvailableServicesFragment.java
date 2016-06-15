@@ -17,11 +17,12 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.DnsSdService;
-import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
+import edu.rit.se.wifibuddy.DnsSdService;
+import edu.rit.se.wifibuddy.WifiDirectHandler;
 
 /**
  * ListFragment that shows a list of available discovered services
@@ -34,7 +35,6 @@ public class AvailableServicesFragment extends Fragment{
     private ListView deviceList;
     private Toolbar toolbar;
 
-
     /**
      * Sets the Layout for the UI
      */
@@ -45,6 +45,7 @@ public class AvailableServicesFragment extends Fragment{
         toolbar = (Toolbar) getActivity().findViewById(R.id.mainToolbar);
         deviceList = (ListView)rootView.findViewById(R.id.device_list);
         setServiceList();
+        Log.d("TIMING", "Discovering started " + (new Date()).getTime());
         startDiscoveringServices();
         prepareResetButton(rootView);
         return rootView;
@@ -76,7 +77,7 @@ public class AvailableServicesFragment extends Fragment{
     private void resetServiceDiscovery(){
         // Clear the list, notify the list adapter, and start discovering
         // services again
-        Log.i(WifiDirectHandler.LOG_TAG, "Resetting service discovery");
+        Log.i(WifiDirectHandler.TAG, "Resetting service discovery");
         services.clear();
         servicesListAdapter.notifyDataSetChanged();
         wifiDirectHandlerAccessor.getWifiHandler().stopDiscoveringServices();
@@ -110,6 +111,7 @@ public class AvailableServicesFragment extends Fragment{
             if (intent.getAction().equals(WifiDirectHandler.Action.DNS_SD_SERVICE_AVAILABLE)) {
                 String serviceKey = intent.getStringExtra(WifiDirectHandler.SERVICE_MAP_KEY);
                 DnsSdService service = wifiDirectHandlerAccessor.getWifiHandler().getDnsSdServiceMap().get(serviceKey);
+                Log.d("TIMING", "Service Discovered and Accessed " + (new Date()).getTime());
                 // Add the service to the UI and update
                 servicesListAdapter.addUnique(service);
                 // TODO Capture an intent that indicates the peer list has changed

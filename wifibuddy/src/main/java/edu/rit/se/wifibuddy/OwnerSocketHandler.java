@@ -1,4 +1,4 @@
-package edu.rit.se.crashavoidance.wifi;
+package edu.rit.se.wifibuddy;
 
 import android.os.Handler;
 import android.util.Log;
@@ -16,7 +16,7 @@ public class OwnerSocketHandler extends Thread {
     private ServerSocket serverSocket = null;
     private final int THREAD_COUNT = 10;
     private Handler handler;
-    private static final String TAG = "GroupOwnerSocketHandler";
+    private static final String TAG = WifiDirectHandler.TAG + "OwnerSocketHandler";
 
     public OwnerSocketHandler(Handler handler) throws IOException {
         try {

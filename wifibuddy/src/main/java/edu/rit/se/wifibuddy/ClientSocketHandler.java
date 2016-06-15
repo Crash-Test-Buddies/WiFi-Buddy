@@ -1,4 +1,4 @@
-package edu.rit.se.crashavoidance.wifi;
+package edu.rit.se.wifibuddy;
 
 import android.os.Handler;
 import android.util.Log;
@@ -11,7 +11,7 @@ import java.net.Socket;
 public class ClientSocketHandler extends Thread {
 
     private static final int SOCKET_TIMEOUT = 5000;
-    private static final String TAG = "ClientSocketHandler";
+    private static final String TAG = WifiDirectHandler.TAG + "ClientSocketHandler";
     private Handler handler;
     private InetAddress inetAddress;
 

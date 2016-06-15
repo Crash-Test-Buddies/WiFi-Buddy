@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.CommunicationManager;
-import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
+import edu.rit.se.wifibuddy.CommunicationManager;
+import edu.rit.se.wifibuddy.WifiDirectHandler;
 
 /**
  * This fragment handles chat related UI which includes a list view for messages
@@ -39,6 +39,7 @@ public class ChatFragment extends ListFragment {
     private WiFiDirectHandlerAccessor handlerAccessor;
     private Toolbar toolbar;
     private Button sendButton;
+    private static final String TAG = WifiDirectHandler.TAG + "ListFragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,19 +63,19 @@ public class ChatFragment extends ListFragment {
             }
         });
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        ListView messagesListView = (ListView) view.findViewById(android.R.id.list);
         adapter = new ChatMessageAdapter(getActivity(), android.R.id.text1, items);
-        listView.setAdapter(adapter);
-        listView.setDividerHeight(0);
+        messagesListView.setAdapter(adapter);
+        messagesListView.setDividerHeight(0);
 
         // Prevents the keyboard from pushing the fragment and messages up and off the screen
-        listView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
-        listView.setStackFromBottom(true);
+        messagesListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+        messagesListView.setStackFromBottom(true);
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                Log.i(WifiDirectHandler.LOG_TAG, "Send button tapped");
+                Log.i(WifiDirectHandler.TAG, "Send button tapped");
                 CommunicationManager communicationManager = handlerAccessor.getWifiHandler().getCommunicationManager();
                 if (communicationManager != null && !textMessageEditText.toString().equals("")) {
                     String message = textMessageEditText.getText().toString();
@@ -83,13 +84,13 @@ public class ChatFragment extends ListFragment {
                     byte[] messageBytes = (author + ": " + message).getBytes();
                     communicationManager.write(messageBytes);
                 } else {
-                    Log.e(WifiDirectHandler.LOG_TAG, "Communication Manager is null");
+                    Log.e(TAG, "Communication Manager is null");
                 }
                 String message = textMessageEditText.getText().toString();
                 if (!message.equals("")) {
                     pushMessage("Me: " + message);
                     messages.add(message);
-                    Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
+                    Log.i(TAG, "Message: " + message);
                     textMessageEditText.setText("");
                 }
                 sendButton.setEnabled(false);

@@ -1,4 +1,4 @@
-package edu.rit.se.crashavoidance.wifi;
+package edu.rit.se.wifibuddy;
 
 import android.os.Handler;
 import android.util.Log;
@@ -18,7 +18,7 @@ public class CommunicationManager implements Runnable {
     private Socket socket = null;
     private Handler handler;
     private OutputStream outputStream;
-    private static final String TAG = "CommunicationManager";
+    private static final String TAG = WifiDirectHandler.TAG + "CommManager";
 
     public CommunicationManager(Socket socket, Handler handler) {
         this.socket = socket;
@@ -46,7 +46,8 @@ public class CommunicationManager implements Runnable {
                     // Send the obtained bytes to the UI Activity
                     Log.i(TAG, "Rec:" + Arrays.toString(buffer));
                     handler.obtainMessage(WifiDirectHandler.MESSAGE_READ,
-                            bytes, -1, buffer).sendToTarget();
+                            bytes, -1, buffer.clone()).sendToTarget();
+                    buffer = new byte[1024];
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                 }

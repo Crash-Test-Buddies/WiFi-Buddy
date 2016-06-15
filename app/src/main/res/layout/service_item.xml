@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingRight="10sp"
+    android:paddingLeft="10sp" >
 
     <TextView
         android:layout_width="match_parent"
@@ -10,6 +12,16 @@
         android:id="@+id/deviceName"
         tools:text="Device name"
         android:textSize="@dimen/abc_text_size_headline_material" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/connect"
+        tools:text="Connect"
+        android:layout_gravity="end"
+        android:textAlignment="textEnd"
+        android:textSize="20sp"
+        android:textColor="#2196F3"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
