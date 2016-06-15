@@ -32,6 +32,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".views.AndroidDatabaseManager"
+            android:label="AndroidDatabaseManager"
+            android:parentActivityName="views.MainActivity">
+        </activity>
         <service android:name="edu.rit.se.wifibuddy.WifiDirectHandler" />
 
         <meta-data
