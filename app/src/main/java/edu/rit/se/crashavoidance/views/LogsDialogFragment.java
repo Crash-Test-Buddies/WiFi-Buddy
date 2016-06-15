@@ -24,6 +24,7 @@ import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
 public class LogsDialogFragment extends DialogFragment {
 
     private StringBuilder log = new StringBuilder();
+    private static final String TAG = WifiDirectHandler.TAG + "LogsDialog";
 
     /**
      * Creates the AlertDialog, sets the WifiDirectHandler instance, and sets the logs TextView
@@ -45,7 +46,7 @@ public class LogsDialogFragment extends DialogFragment {
             StringBuilder log = new StringBuilder();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                if (line.contains(WifiDirectHandler.LOG_TAG)){
+                if (line.contains(WifiDirectHandler.TAG)){
                     // Removes log tag and PID from the log line
                     log.append(line.substring(line.indexOf(": ") + 2)).append("\n");
                 }
@@ -55,7 +56,7 @@ public class LogsDialogFragment extends DialogFragment {
             //Runtime.getRuntime().exec("logcat -c");
             logTextView.setText(this.log.toString());
         } catch (IOException e) {
-            Log.e(WifiDirectHandler.LOG_TAG, "Failure reading logcat");
+            Log.e(TAG, "Failure reading logcat");
         }
 
         // Creates and returns the AlertDialog for the logs

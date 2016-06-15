@@ -18,7 +18,7 @@ public class CommunicationManager implements Runnable {
     private Socket socket = null;
     private Handler handler;
     private OutputStream outputStream;
-    private static final String TAG = "CommunicationManager";
+    private static final String TAG = WifiDirectHandler.TAG + "CommManager";
 
     public CommunicationManager(Socket socket, Handler handler) {
         this.socket = socket;
