@@ -761,11 +761,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
         // Extra information from EXTRA_WIFI_P2P_DEVICE
         thisDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
 
-        Intent deviceChangedIntent = new Intent(Action.DEVICE_CHANGED);
-        localBroadcastManager.sendBroadcast(deviceChangedIntent);
-
         // Logs extra information from EXTRA_WIFI_P2P_DEVICE
         Log.i(TAG, deviceToString(thisDevice));
+
+        localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
     }
 
     /**
