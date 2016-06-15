@@ -39,7 +39,11 @@ class AvailableServicesListViewAdapter extends BaseAdapter {
         TextView deviceName = (TextView) convertView.findViewById(R.id.deviceName);
         TextView deviceInfo = (TextView) convertView.findViewById(R.id.deviceInfo);
 
-        deviceName.setText(service.getSrcDevice().deviceName);
+        String sourceDeviceName = service.getSrcDevice().deviceName;
+        if (sourceDeviceName.equals("")) {
+            sourceDeviceName = "Android Device";
+        }
+        deviceName.setText(sourceDeviceName);
 
         String records = "";
         if (context.getWifiHandler() != null) {

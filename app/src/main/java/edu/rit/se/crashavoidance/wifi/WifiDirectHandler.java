@@ -891,6 +891,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
         if (thisDevice == null) {
             return "No Device Info";
         } else {
+            if (thisDevice.deviceName.equals("")) {
+                thisDevice.deviceName = "Android Device";
+            }
             return deviceToString(thisDevice);
         }
     }
