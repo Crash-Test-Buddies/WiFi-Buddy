@@ -39,6 +39,7 @@ public class ChatFragment extends ListFragment {
     private WiFiDirectHandlerAccessor handlerAccessor;
     private Toolbar toolbar;
     private Button sendButton;
+    private static final String TAG = WifiDirectHandler.TAG + "ListFragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,7 +75,7 @@ public class ChatFragment extends ListFragment {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                Log.i(WifiDirectHandler.LOG_TAG, "Send button tapped");
+                Log.i(WifiDirectHandler.TAG, "Send button tapped");
                 CommunicationManager communicationManager = handlerAccessor.getWifiHandler().getCommunicationManager();
                 if (communicationManager != null && !textMessageEditText.toString().equals("")) {
                     String message = textMessageEditText.getText().toString();
@@ -83,13 +84,13 @@ public class ChatFragment extends ListFragment {
                     byte[] messageBytes = (author + ": " + message).getBytes();
                     communicationManager.write(messageBytes);
                 } else {
-                    Log.e(WifiDirectHandler.LOG_TAG, "Communication Manager is null");
+                    Log.e(TAG, "Communication Manager is null");
                 }
                 String message = textMessageEditText.getText().toString();
                 if (!message.equals("")) {
                     pushMessage("Me: " + message);
                     messages.add(message);
-                    Log.i(WifiDirectHandler.LOG_TAG, "Message: " + message);
+                    Log.i(TAG, "Message: " + message);
                     textMessageEditText.setText("");
                 }
                 sendButton.setEnabled(false);

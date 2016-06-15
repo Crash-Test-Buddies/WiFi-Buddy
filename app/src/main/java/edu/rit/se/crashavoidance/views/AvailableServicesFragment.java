@@ -34,7 +34,6 @@ public class AvailableServicesFragment extends Fragment{
     private ListView deviceList;
     private Toolbar toolbar;
 
-
     /**
      * Sets the Layout for the UI
      */
@@ -76,7 +75,7 @@ public class AvailableServicesFragment extends Fragment{
     private void resetServiceDiscovery(){
         // Clear the list, notify the list adapter, and start discovering
         // services again
-        Log.i(WifiDirectHandler.LOG_TAG, "Resetting service discovery");
+        Log.i(WifiDirectHandler.TAG, "Resetting service discovery");
         services.clear();
         servicesListAdapter.notifyDataSetChanged();
         wifiDirectHandlerAccessor.getWifiHandler().stopDiscoveringServices();
