@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
@@ -44,6 +45,7 @@ public class AvailableServicesFragment extends Fragment{
         toolbar = (Toolbar) getActivity().findViewById(R.id.mainToolbar);
         deviceList = (ListView)rootView.findViewById(R.id.device_list);
         setServiceList();
+        Log.d("TIMING", "Discovering started " + (new Date()).getTime());
         startDiscoveringServices();
         prepareResetButton(rootView);
         return rootView;
@@ -109,6 +111,7 @@ public class AvailableServicesFragment extends Fragment{
             if (intent.getAction().equals(WifiDirectHandler.Action.DNS_SD_SERVICE_AVAILABLE)) {
                 String serviceKey = intent.getStringExtra(WifiDirectHandler.SERVICE_MAP_KEY);
                 DnsSdService service = wifiDirectHandlerAccessor.getWifiHandler().getDnsSdServiceMap().get(serviceKey);
+                Log.d("TIMING", "Service Discovered and Accessed " + (new Date()).getTime());
                 // Add the service to the UI and update
                 servicesListAdapter.addUnique(service);
                 // TODO Capture an intent that indicates the peer list has changed
