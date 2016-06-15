@@ -1,4 +1,4 @@
-package edu.rit.se.crashavoidance.wifi;
+package edu.rit.se.wifibuddy;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,12 +34,9 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import edu.rit.se.crashavoidance.views.ChatFragment.MessageTarget;
-
 // TODO: Add JavaDoc
 public class WifiDirectHandler extends NonStopIntentService implements
         WifiP2pManager.ConnectionInfoListener,
-        MessageTarget,
         Handler.Callback{
 
     private static final String ANDROID_SERVICE_NAME = "Wi-Fi Direct Handler";

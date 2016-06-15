@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
+import edu.rit.se.wifibuddy.WifiDirectHandler;
 
 /**
  * DialogFragment that shows the WifiDirectHandler log messages

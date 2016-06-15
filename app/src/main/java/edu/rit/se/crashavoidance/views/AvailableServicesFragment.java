@@ -21,8 +21,8 @@ import java.util.Date;
 import java.util.List;
 
 import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.DnsSdService;
-import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
+import edu.rit.se.wifibuddy.DnsSdService;
+import edu.rit.se.wifibuddy.WifiDirectHandler;
 
 /**
  * ListFragment that shows a list of available discovered services
