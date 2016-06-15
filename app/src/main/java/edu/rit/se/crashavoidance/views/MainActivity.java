@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiDirectHandler.Action.SERVICE_CONNECTED);
         filter.addAction(WifiDirectHandler.Action.MESSAGE_RECEIVED);
+        filter.addAction(WifiDirectHandler.Action.DEVICE_CHANGED);
         LocalBroadcastManager.getInstance(this).registerReceiver(communicationReceiver, filter);
         Log.i(TAG, "Communication Receiver registered");
         Log.i(TAG, "MainActivity created");
@@ -168,7 +169,12 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
      */
     public void onServiceClick(DnsSdService service) {
         Log.i(TAG, "\nService List item tapped");
-        Toast.makeText(this, "Invitation sent to " + service.getSrcDevice().deviceName, Toast.LENGTH_LONG).show();
+        String sourceDeviceName = service.getSrcDevice().deviceName;
+        if (sourceDeviceName.equals("")) {
+            sourceDeviceName = "other device";
+        }
+        Toast.makeText(this, "Inviting " + sourceDeviceName + " to connect", Toast.LENGTH_LONG).show();
+        // TODO: maybe make it so that if you are already connected then go to chat
         wifiDirectHandler.initiateConnectToService(service);
     }
 
@@ -233,22 +239,24 @@ public class MainActivity extends AppCompatActivity implements WiFiDirectHandler
      * Used to update the UI and receive communication messages
      */
     public class CommunicationReceiver extends BroadcastReceiver {
+
+        private static final String TAG = WifiDirectHandler.TAG + "CommReceiver";
+
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get the intent sent by WifiDirectHandler when a service is found
             if (intent.getAction().equals(WifiDirectHandler.Action.SERVICE_CONNECTED)) {
-                Log.i(TAG, "Communication Receiver: Service connected");
+                Log.i(TAG, "Service connected");
                 if (chatFragment == null) {
                     chatFragment = new ChatFragment();
                 }
                 replaceFragment(chatFragment);
                 Log.i(TAG, "Switching to Chat fragment");
             } else if (intent.getAction().equals(WifiDirectHandler.Action.DEVICE_CHANGED)) {
-                // TODO: check if this is actually working
-                Log.i(TAG, "Communication Receiver: Device changed");
+                Log.i(TAG, "This device changed");
                 deviceInfoTextView.setText(wifiDirectHandler.getThisDeviceInfo());
             } else if (intent.getAction().equals(WifiDirectHandler.Action.MESSAGE_RECEIVED)) {
-                Log.i(TAG, "Communication Receiver: Message received");
+                Log.i(TAG, "Message received");
                 if(chatFragment != null) {
                     chatFragment.pushMessage(intent.getByteArrayExtra(WifiDirectHandler.MESSAGE_KEY));
                 }
