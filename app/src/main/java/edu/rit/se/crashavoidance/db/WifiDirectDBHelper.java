@@ -7,25 +7,20 @@ import android.database.MatrixCursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import edu.rit.se.crashavoidance.R;
-import edu.rit.se.crashavoidance.wifi.WifiDirectHandler;
-
 /**
  * Created by Chris on 6/12/2016.
  */
 public class WifiDirectDBHelper extends SQLiteOpenHelper {
-    private static final String TAG = WifiDirectHandler.LOG_TAG;
+    private static final String TAG = "WfdDbHelper";
     // Strings for basic SQL command/keywords
     private static final String TEXT = " TEXT";
     private static final String INTEGER = " INTEGER";
