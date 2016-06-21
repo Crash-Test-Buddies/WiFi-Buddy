@@ -49,7 +49,8 @@ public class CommunicationManager implements Runnable {
                             bytes, -1, buffer.clone()).sendToTarget();
                     buffer = new byte[1024];
                 } catch (IOException e) {
-                    Log.e(TAG, "disconnected", e);
+                    Log.e(TAG, "Communication disconnected", e);
+                    // TODO: Handle disconnect
                 }
             }
         } catch (IOException e) {

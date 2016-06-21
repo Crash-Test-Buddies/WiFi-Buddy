@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
@@ -13,22 +13,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@color/colorToolbar">
+        android:background="@color/colorToolbar"
+        android:paddingLeft="20dp"
+        android:paddingRight="10dp" >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
+            android:id="@+id/findingServices"
             android:text="@string/finding_services"
-            android:layout_centerVertical="true">
+            android:layout_centerVertical="true" >
         </TextView>
 
         <ProgressBar
+            android:layout_toEndOf="@id/findingServices"
+            android:layout_toRightOf="@id/findingServices"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dip"
-            android:layout_marginStart="20dip"
-            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="10dip"
+            android:layout_marginStart="10dip"
             android:layout_centerVertical="true"
             style="@android:style/Widget.ProgressBar.Small" >
         </ProgressBar>
@@ -47,11 +51,11 @@
 
     <ListView
         android:id="@+id/device_list"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="0dp"
         tools:listitem="@layout/service_item"
         android:layout_weight="1"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin">
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
     </ListView>
 </LinearLayout>
