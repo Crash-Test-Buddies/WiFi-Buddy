@@ -38,6 +38,8 @@ class AvailableServicesListViewAdapter extends BaseAdapter {
 
         TextView deviceName = (TextView) convertView.findViewById(R.id.deviceName);
         TextView deviceInfo = (TextView) convertView.findViewById(R.id.deviceInfo);
+        TextView connect = (TextView) convertView.findViewById(R.id.connect);
+        connect.setText("Connect");
 
         String sourceDeviceName = service.getSrcDevice().deviceName;
         if (sourceDeviceName.equals("")) {
