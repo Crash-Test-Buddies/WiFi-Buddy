@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Map;
 
 import edu.rit.se.crashavoidance.R;
 import edu.rit.se.wifibuddy.DnsSdService;
@@ -36,26 +37,31 @@ class AvailableServicesListViewAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.service_item, parent, false);
         }
 
-        TextView deviceName = (TextView) convertView.findViewById(R.id.deviceName);
-        TextView deviceInfo = (TextView) convertView.findViewById(R.id.deviceInfo);
-        TextView connect = (TextView) convertView.findViewById(R.id.connect);
-        connect.setText("Connect");
+        TextView deviceNameTextView = (TextView) convertView.findViewById(R.id.deviceName);
+        TextView deviceInfoTextView = (TextView) convertView.findViewById(R.id.deviceInfo);
+        TextView connectTextView = (TextView) convertView.findViewById(R.id.connect);
+        connectTextView.setText("Connect");
 
         String sourceDeviceName = service.getSrcDevice().deviceName;
         if (sourceDeviceName.equals("")) {
             sourceDeviceName = "Android Device";
         }
-        deviceName.setText(sourceDeviceName);
+        deviceNameTextView.setText(sourceDeviceName);
 
-        String records = "";
+        Map<String, String> mapTxtRecord;
+        String strTxtRecord = "";
         if (context.getWifiHandler() != null) {
             DnsSdTxtRecord txtRecord = context.getWifiHandler().getDnsSdTxtRecordMap().get(service.getSrcDevice().deviceAddress);
             if (txtRecord != null) {
-                records = txtRecord.getRecord().toString();
+                mapTxtRecord = txtRecord.getRecord();
+                for (Map.Entry<String, String> record : mapTxtRecord.entrySet()) {
+                    strTxtRecord += record.getKey() + ": " + record.getValue() + "\n";
+                }
             }
         }
         String status = context.getWifiHandler().deviceStatusToString(context.getWifiHandler().getThisDevice().status);
-        deviceInfo.setText(status + "\n" + records);
+        String strDeviceInfo = status + "\n" + strTxtRecord;
+        deviceInfoTextView.setText(strDeviceInfo);
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
