@@ -14,23 +14,25 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@color/colorToolbar"
-        android:paddingLeft="10dp"
+        android:paddingLeft="20dp"
         android:paddingRight="10dp" >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
+            android:id="@+id/findingServices"
             android:text="@string/finding_services"
             android:layout_centerVertical="true" >
         </TextView>
 
         <ProgressBar
+            android:layout_toEndOf="@id/findingServices"
+            android:layout_toRightOf="@id/findingServices"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dip"
-            android:layout_marginStart="20dip"
-            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="10dip"
+            android:layout_marginStart="10dip"
             android:layout_centerVertical="true"
             style="@android:style/Widget.ProgressBar.Small" >
         </ProgressBar>
