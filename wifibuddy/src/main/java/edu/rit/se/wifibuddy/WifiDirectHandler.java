@@ -159,10 +159,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Unregisters the WifiDirectBroadcastReceiver and IntentFilter
      */
     public void unregisterP2pReceiver() {
-       if (p2pReceiver != null) {
-            unregisterReceiver(p2pReceiver);
-            p2pReceiver = null;
-            filter = null;
+       if (p2pBroadcastReceiver != null) {
+            unregisterReceiver(p2pBroadcastReceiver);
+            p2pBroadcastReceiver = null;
             Log.i(TAG, "P2P BroadcastReceiver unregistered");
         }
     }
