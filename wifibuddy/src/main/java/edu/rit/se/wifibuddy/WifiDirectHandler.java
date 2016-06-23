@@ -62,6 +62,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private CommunicationManager communicationManager = null;
     public static final int MESSAGE_READ = 0x400 + 1;
     public static final int MY_HANDLE = 0x400 + 2;
+    public static final int COMMUNICATION_DISCONNECTED = 0x400 + 3;
     public static final int SERVER_PORT = 4545;
 
     private boolean continueDiscovering = false;
@@ -838,6 +839,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
             case MY_HANDLE:
                 Object messageObject = msg.obj;
                 communicationManager = (CommunicationManager) messageObject;
+                break;
+            case COMMUNICATION_DISCONNECTED:
+                Log.i(TAG, "Handling communication disconnect");
+                // TODO: handle disconnect
+
         }
         return true;
     }

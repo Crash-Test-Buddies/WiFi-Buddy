@@ -49,8 +49,9 @@ public class CommunicationManager implements Runnable {
                             bytes, -1, buffer.clone()).sendToTarget();
                     buffer = new byte[1024];
                 } catch (IOException e) {
-                    Log.e(TAG, "Communication disconnected", e);
-                    // TODO: Handle disconnect
+                    // Sends a message to WifiDirectHandler to handle the disconnect
+                    handler.obtainMessage(WifiDirectHandler.COMMUNICATION_DISCONNECTED, this).sendToTarget();
+                    Log.i(TAG, "Communication disconnected");
                 }
             }
         } catch (IOException e) {
