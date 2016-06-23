@@ -320,55 +320,57 @@ public class WifiDirectHandler extends NonStopIntentService implements
    * callbacks within the registered listeners are called when services are found.
    */
     public void setupServiceDiscovery() {
-        // DnsSdTxtRecordListener
-        // Interface for callback invocation when Bonjour TXT record is available for a service
-        // Used to listen for incoming records and get peer device information
-        WifiP2pManager.DnsSdTxtRecordListener txtRecordListener = new WifiP2pManager.DnsSdTxtRecordListener() {
-            @Override
-            public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> txtRecordMap, WifiP2pDevice srcDevice) {
-                // Records of peer are available
-                Log.i(TAG, "Peer DnsSDTxtRecord available");
+        if (continueDiscovering == false) {
+            // DnsSdTxtRecordListener
+            // Interface for callback invocation when Bonjour TXT record is available for a service
+            // Used to listen for incoming records and get peer device information
+            WifiP2pManager.DnsSdTxtRecordListener txtRecordListener = new WifiP2pManager.DnsSdTxtRecordListener() {
+                @Override
+                public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> txtRecordMap, WifiP2pDevice srcDevice) {
+                    // Records of peer are available
+                    Log.i(TAG, "Peer DnsSDTxtRecord available");
 
-                Intent intent = new Intent(Action.DNS_SD_TXT_RECORD_ADDED);
-                localBroadcastManager.sendBroadcast(intent);
-                dnsSdTxtRecordMap.put(srcDevice.deviceAddress, new DnsSdTxtRecord(fullDomainName, txtRecordMap, srcDevice));
-            }
-        };
+                    Intent intent = new Intent(Action.DNS_SD_TXT_RECORD_ADDED);
+                    localBroadcastManager.sendBroadcast(intent);
+                    dnsSdTxtRecordMap.put(srcDevice.deviceAddress, new DnsSdTxtRecord(fullDomainName, txtRecordMap, srcDevice));
+                }
+            };
 
-        // DnsSdServiceResponseListener
-        // Interface for callback invocation when Bonjour service discovery response is received
-        // Used to get service information
-        WifiP2pManager.DnsSdServiceResponseListener serviceResponseListener = new WifiP2pManager.DnsSdServiceResponseListener() {
-            @Override
-            public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice srcDevice) {
-                // Not sure if we want to track the map here or just send the service in the request to let the caller do
-                // what it wants with it
-                Log.i(TAG, "Local service found:");
-                Log.i(TAG, deviceToString(srcDevice));
-                dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
-                Intent intent = new Intent(Action.DNS_SD_SERVICE_AVAILABLE);
-                intent.putExtra(SERVICE_MAP_KEY, srcDevice.deviceAddress);
-                localBroadcastManager.sendBroadcast(intent);
-            }
-        };
+            // DnsSdServiceResponseListener
+            // Interface for callback invocation when Bonjour service discovery response is received
+            // Used to get service information
+            WifiP2pManager.DnsSdServiceResponseListener serviceResponseListener = new WifiP2pManager.DnsSdServiceResponseListener() {
+                @Override
+                public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice srcDevice) {
+                    // Not sure if we want to track the map here or just send the service in the request to let the caller do
+                    // what it wants with it
+                    Log.i(TAG, "Local service found:");
+                    Log.i(TAG, deviceToString(srcDevice));
+                    dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
+                    Intent intent = new Intent(Action.DNS_SD_SERVICE_AVAILABLE);
+                    intent.putExtra(SERVICE_MAP_KEY, srcDevice.deviceAddress);
+                    localBroadcastManager.sendBroadcast(intent);
+                }
+            };
 
-        wifiP2pManager.setDnsSdResponseListeners(channel, serviceResponseListener, txtRecordListener);
+            wifiP2pManager.setDnsSdResponseListeners(channel, serviceResponseListener, txtRecordListener);
 
-        // Now that we are listening for services, begin to find them
-        serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
+            // Now that we are listening for services, begin to find them
+            serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
 
-        // Tell the framework we want to scan for services. Prerequisite for discovering services
-        wifiP2pManager.addServiceRequest(channel, serviceRequest, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Log.i(TAG, "Service discovery request added");
-            }
+            // Tell the framework we want to scan for services. Prerequisite for discovering services
+            wifiP2pManager.addServiceRequest(channel, serviceRequest, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.i(TAG, "Service discovery request added");
+                }
 
-            @Override
-            public void onFailure(int reason) {
-                Log.e(TAG, "Failure adding service discovery request: " + FailureReason.fromInteger(reason).toString());
-            }
-        });
+                @Override
+                public void onFailure(int reason) {
+                    Log.e(TAG, "Failure adding service discovery request: " + FailureReason.fromInteger(reason).toString());
+                }
+            });
+        }
     }
 
     /**
@@ -442,6 +444,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
+    // TODO: might want to use this when connected
     /**
      * Stop discovering services if continuous discovery was called
      */
