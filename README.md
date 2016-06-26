@@ -1,4 +1,5 @@
-# Wi-Fi Buddy - A Library to handle Android Wi-Fi Direct
+# Wi-Fi Buddy
+A Library to handle Android Wi-Fi Direct
 
 The goal of this project is to document and understand Wi-Fi Peer-to-Peer / Wi-Fi Direct on Android through an application that demonstrates its use, and also to build a library that simplifies the use of Wi-Fi Direct on Android. If this project is successful, it will remove some of the hurdles preventing developers from using Wi-Fi Direct in Android applications.
 
