@@ -66,6 +66,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     private boolean continueDiscovering = false;
     private boolean groupFormed = false;
+    private boolean serviceDiscoveryRegistered = false;
 
     // Flag for creating a no prompt service
     private boolean isCreatingNoPrompt = false;
@@ -321,12 +322,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
-    /**
-     * Starts discovering services. First registers DnsSdTxtRecordListener and a
-     * DnsSdServiceResponseListener. Then adds a service request and begins to discover services. The
-     * callbacks within the registered listeners are called when services are found.
-     */
-    public void setupServiceDiscovery() {
+    private void registerServiceDiscoveryListeners() {
         // DnsSdTxtRecordListener
         // Interface for callback invocation when Bonjour TXT record is available for a service
         // Used to listen for incoming records and get peer device information
@@ -360,8 +356,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
         };
 
         wifiP2pManager.setDnsSdResponseListeners(channel, serviceResponseListener, txtRecordListener);
+    }
 
-        // Now that we are listening for services, begin to find them
+    private void addServiceDiscoveryRequest() {
         serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
 
         // Tell the framework we want to scan for services. Prerequisite for discovering services
@@ -403,18 +400,25 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Discover task. This will continue until stopDiscoveringServices is called
      */
     public void continuouslyDiscoverServices(){
-        // TODO Change this to give some sort of status
-        Log.i(TAG, "Continuously Discover services called");
-        if (continueDiscovering){
-            Log.w(TAG, "Services are still discovering, do not need to make this call");
+        if (serviceDiscoveryRegistered == false) {
+            Log.i(TAG, "Setting up service discovery");
+            registerServiceDiscoveryListeners();
+            addServiceDiscoveryRequest();
+            serviceDiscoveryRegistered = true;
         } else {
-            Log.i(TAG, "Calling discover and submitting first discover task");
-            continueDiscovering = true;
-            // List to track discovery tasks in progress
-            discoverTasks = new ArrayList<>();
-            // Make discover call and first discover task submission
-            discoverServices();
-            submitDiscoverTask();
+            // TODO Change this to give some sort of status
+            Log.i(TAG, "Continuously Discover services called");
+            if (continueDiscovering){
+                Log.w(TAG, "Services are still discovering, do not need to make this call");
+            } else {
+                Log.i(TAG, "Calling discover and submitting first discover task");
+                continueDiscovering = true;
+                // List to track discovery tasks in progress
+                discoverTasks = new ArrayList<>();
+                // Make discover call and first discover task submission
+                discoverServices();
+                submitDiscoverTask();
+            }
         }
     }
 
