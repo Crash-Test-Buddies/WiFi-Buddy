@@ -221,41 +221,40 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     // TODO add JavaDoc
-    public void addLocalService(String serviceName, HashMap<String, String> record) {
-        ServiceData serviceData = new ServiceData(
-                serviceName,                    // Name
-                4545,                           // Port
-                record,                         // Record
-                ServiceType.PRESENCE_TCP        // Type
-        );
-
+    public void addLocalService(String serviceName, HashMap<String, String> serviceRecord) {
         // Logs information about local service
-        Log.i(TAG, "Adding local service:");
-        Log.i(TAG, serviceData.toString());
-
-        // Removes service if it is already added for some reason
-        if (serviceInfo != null) {
-            removeService();
-        }
+        Log.i(TAG, "Adding local service: " + serviceName);
 
         // Service information
-        // Instance name, service type, records map
         serviceInfo = WifiP2pDnsSdServiceInfo.newInstance(
-                serviceData.getServiceName(),
-                serviceData.getServiceType().toString(),
-                record
+                serviceName,
+                ServiceType.PRESENCE_TCP.toString(),
+                serviceRecord
         );
 
-        // Add the local service
-        wifiP2pManager.addLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
+        // Only add a local service if clearLocalServices succeeds
+        wifiP2pManager.clearLocalServices(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-                Log.i(TAG, "Local service added");
+                // Add the local service
+                wifiP2pManager.addLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        Log.i(TAG, "Local service added");
+                    }
+
+                    @Override
+                    public void onFailure(int reason) {
+                        Log.e(TAG, "Failure adding local service: " + FailureReason.fromInteger(reason).toString());
+                        serviceInfo = null;
+                    }
+                });
             }
 
             @Override
             public void onFailure(int reason) {
-                Log.e(TAG, "Failure adding local service: " + FailureReason.fromInteger(reason).toString());
+                Log.e(TAG, "Failure clearing local services: " + FailureReason.fromInteger(reason).toString());
+                serviceInfo = null;
             }
         });
     }
@@ -504,6 +503,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                     Log.e(TAG, "Failure removing local service: " + FailureReason.fromInteger(reason).toString());
                 }
             });
+            serviceInfo = null;
         } else {
             Log.i(TAG, "No local service to remove");
         }
