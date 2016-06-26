@@ -99,8 +99,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
         if (wifiManager.isWifiEnabled()) {
             Log.i(TAG, "Wi-Fi enabled on load");
-            registerP2p();
-            registerP2pReceiver();
         } else {
             Log.i(TAG, "Wi-Fi disabled on load");
         }
@@ -128,9 +126,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Unregisters the application with the Wi-Fi P2P framework
      */
     public void unregisterP2p() {
-        wifiP2pManager = null;
-        channel = null;
-        Log.i(TAG, "Unregistered with Wi-Fi P2P framework");
+        if (wifiP2pManager != null) {
+            wifiP2pManager = null;
+            channel = null;
+            Log.i(TAG, "Unregistered with Wi-Fi P2P framework");
+        }
     }
 
     /**
@@ -160,9 +160,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
         if (p2pReceiver != null) {
             unregisterReceiver(p2pReceiver);
             p2pReceiver = null;
+            filter = null;
+            Log.i(TAG, "P2P BroadcastReceiver unregistered");
         }
-        filter = null;
-        Log.i(TAG, "P2P BroadcastReceiver unregistered");
     }
 
     @Override
