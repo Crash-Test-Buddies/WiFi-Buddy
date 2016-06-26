@@ -99,6 +99,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
         if (wifiManager.isWifiEnabled()) {
             Log.i(TAG, "Wi-Fi enabled on load");
+            registerP2p();
+            registerP2pReceiver();
         } else {
             Log.i(TAG, "Wi-Fi disabled on load");
         }
