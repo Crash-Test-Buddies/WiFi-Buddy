@@ -221,13 +221,13 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     // TODO add JavaDoc
-    public void startAddingLocalService(ServiceData serviceData) {
-        Map<String, String> records = new HashMap<>(serviceData.getRecord());
-        records.put("device name", getThisDevice().deviceName);
-        records.put("device address", getThisDevice().deviceAddress);
-        records.put("prim. device type", getThisDevice().primaryDeviceType);
-        records.put("sec. type", getThisDevice().secondaryDeviceType);
-        records.put("listenport", Integer.toString(serviceData.getPort()));
+    public void addLocalService(String serviceName, HashMap<String, String> record) {
+        ServiceData serviceData = new ServiceData(
+                serviceName,                    // Name
+                4545,                           // Port
+                record,                         // Record
+                ServiceType.PRESENCE_TCP        // Type
+        );
 
         // Logs information about local service
         Log.i(TAG, "Adding local service:");
@@ -243,7 +243,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         serviceInfo = WifiP2pDnsSdServiceInfo.newInstance(
                 serviceData.getServiceName(),
                 serviceData.getServiceType().toString(),
-                records
+                record
         );
 
         // Add the local service
