@@ -39,7 +39,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         WifiP2pManager.ConnectionInfoListener,
         Handler.Callback{
 
-    private static final String ANDROID_SERVICE_NAME = "Wi-Fi Direct Handler";
+    private static final String ANDROID_SERVICE_NAME = "Wi-Fi Buddy";
     public static final String TAG = "wfd_";
     private final IBinder binder = new WifiTesterBinder();
 
@@ -87,18 +87,20 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     /**
-     * Registers the app with the Wi-Fi P2P framework and registers a WifiDirectBroadcastReceiver
-     * with an IntentFilter that listens for Wi-Fi P2P Actions
+     * Registers the Wi-Fi manager, registers the app with the Wi-Fi P2P framework, registers the
+     * P2P BroadcastReceiver, and registers a local BroadcastManager
      */
     @Override
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "Creating WifiDirectHandler");
 
-        // Manages Wi-Fi connectivity
+        // Registers the Wi-Fi Manager and the Wi-Fi BroadcastReceiver
         wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
         registerWifiReceiver();
 
+        // Registers the app with the P2P framework and registers the P2P BroadcastReceiver
+        // if Wi-Fi is enabled
         if (wifiManager.isWifiEnabled()) {
             Log.i(TAG, "Wi-Fi enabled on load");
             registerP2p();
@@ -107,6 +109,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             Log.i(TAG, "Wi-Fi disabled on load");
         }
 
+        // Registers a local BroadcastManager that is used to broadcast Intents to Activities
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         Log.i(TAG, "WifiDirectHandler created");
     }
@@ -186,6 +189,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
+    /**
+     * The requested connection info is available
+     * @param p2pInfo Wi-Fi P2P connection info
+     */
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
         Log.i(TAG, "Connection info available");
@@ -216,8 +223,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
     // TODO add JavaDoc
     public void startAddingLocalService(ServiceData serviceData) {
         Map<String, String> records = new HashMap<>(serviceData.getRecord());
+        records.put("device name", getThisDevice().deviceName);
+        records.put("device address", getThisDevice().deviceAddress);
+        records.put("prim. device type", getThisDevice().primaryDeviceType);
+        records.put("sec. type", getThisDevice().secondaryDeviceType);
         records.put("listenport", Integer.toString(serviceData.getPort()));
-        records.put("available", "visible");
 
         // Logs information about local service
         Log.i(TAG, "Adding local service:");
@@ -568,7 +578,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
         });
     }
 
-    // TODO: Use this method
     /**
      * Connects to a no prompt service
      * @param service The service to connect to
