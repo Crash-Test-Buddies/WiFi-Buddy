@@ -52,7 +52,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private List<DiscoverTask> discoverTasks;
     private WifiP2pDeviceList peers;
     private LocalBroadcastManager localBroadcastManager;
-    private BroadcastReceiver p2pReceiver;
+    private BroadcastReceiver p2pBroadcastReceiver;
     private WifiP2pServiceInfo serviceInfo;
     private WifiP2pServiceRequest serviceRequest;
     private Boolean isWifiP2pEnabled;
@@ -60,6 +60,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private CommunicationManager communicationManager = null;
     public static final int MESSAGE_READ = 0x400 + 1;
     public static final int MY_HANDLE = 0x400 + 2;
+    public static final int COMMUNICATION_DISCONNECTED = 0x400 + 3;
     public static final int SERVER_PORT = 4545;
 
     private boolean continueDiscovering = false;
@@ -74,7 +75,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private WifiP2pManager wifiP2pManager;
     private WifiManager wifiManager;
 
-    private IntentFilter filter;
     private WifiP2pDevice thisDevice;
 
     /** Constructor **/
@@ -99,8 +99,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
         if (wifiManager.isWifiEnabled()) {
             Log.i(TAG, "Wi-Fi enabled on load");
-            registerP2p();
-            registerP2pReceiver();
         } else {
             Log.i(TAG, "Wi-Fi disabled on load");
         }
@@ -128,28 +126,30 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Unregisters the application with the Wi-Fi P2P framework
      */
     public void unregisterP2p() {
-        wifiP2pManager = null;
-        channel = null;
-        Log.i(TAG, "Unregistered with Wi-Fi P2P framework");
+        if (wifiP2pManager != null) {
+            wifiP2pManager = null;
+            channel = null;
+            Log.i(TAG, "Unregistered with Wi-Fi P2P framework");
+        }
     }
 
     /**
      * Registers a WifiDirectBroadcastReceiver with an IntentFilter listening for P2P Actions
      */
     public void registerP2pReceiver() {
-        p2pReceiver = new WifiDirectBroadcastReceiver();
-        filter = new IntentFilter();
+        p2pBroadcastReceiver = new WifiDirectBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter();
 
         // Indicates a change in the list of available peers
-        filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         // Indicates a change in the Wi-Fi P2P status
-        filter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         // Indicates the state of Wi-Fi P2P connectivity has changed
-        filter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         // Indicates this device's details have changed.
-        filter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
-        registerReceiver(p2pReceiver, filter);
+        registerReceiver(p2pBroadcastReceiver, intentFilter);
         Log.i(TAG, "P2P BroadcastReceiver registered");
     }
 
@@ -157,12 +157,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Unregisters the WifiDirectBroadcastReceiver and IntentFilter
      */
     public void unregisterP2pReceiver() {
-        if (p2pReceiver != null) {
-            unregisterReceiver(p2pReceiver);
-            p2pReceiver = null;
+        if (p2pBroadcastReceiver != null) {
+            unregisterReceiver(p2pBroadcastReceiver);
+            p2pBroadcastReceiver = null;
+            Log.i(TAG, "P2P BroadcastReceiver unregistered");
         }
-        filter = null;
-        Log.i(TAG, "P2P BroadcastReceiver unregistered");
     }
 
     @Override
@@ -806,6 +805,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
             case MY_HANDLE:
                 Object messageObject = msg.obj;
                 communicationManager = (CommunicationManager) messageObject;
+                break;
+            case COMMUNICATION_DISCONNECTED:
+                Log.i(TAG, "Handling communication disconnect");
+                // TODO: handle disconnect
+                break;
         }
         return true;
     }
