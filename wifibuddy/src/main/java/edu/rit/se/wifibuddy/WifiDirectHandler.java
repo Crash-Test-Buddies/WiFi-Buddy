@@ -53,6 +53,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private WifiP2pDeviceList peers;
     private LocalBroadcastManager localBroadcastManager;
     private BroadcastReceiver p2pBroadcastReceiver;
+    private BroadcastReceiver wifiBroadcastReceiver;
     private WifiP2pServiceInfo serviceInfo;
     private WifiP2pServiceRequest serviceRequest;
     private Boolean isWifiP2pEnabled;
@@ -96,6 +97,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
         // Manages Wi-Fi connectivity
         wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+        registerWifiReceiver();
 
         if (wifiManager.isWifiEnabled()) {
             Log.i(TAG, "Wi-Fi enabled on load");
@@ -166,6 +168,24 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
+    public void registerWifiReceiver() {
+        wifiBroadcastReceiver = new WifiBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+
+        // Indicates that Wi-Fi has been enabled, disabled, enabling, disabling, or unknown
+        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        registerReceiver(wifiBroadcastReceiver, intentFilter);
+        Log.i(TAG, "Wi-Fi BroadcastReceiver registered");
+    }
+
+    public void unregisterWifiReceiver() {
+        if (wifiBroadcastReceiver != null) {
+            unregisterReceiver(wifiBroadcastReceiver);
+            wifiBroadcastReceiver = null;
+            Log.i(TAG, "Wi-Fi BroadcastReceiver unregistered");
+        }
+    }
+
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
         Log.i(TAG, "Connection info available");
@@ -189,8 +209,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
             handler.start();
         }
 
-        Intent connectionIntent = new Intent(Action.SERVICE_CONNECTED);
-        localBroadcastManager.sendBroadcast(connectionIntent);
+        localBroadcastManager.sendBroadcast(new Intent(Action.SERVICE_CONNECTED));
+        localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
     }
 
     // TODO add JavaDoc
@@ -211,9 +231,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
         // Service information
         // Instance name, service type, records map
         serviceInfo = WifiP2pDnsSdServiceInfo.newInstance(
-            serviceData.getServiceName(),
-            serviceData.getServiceType().toString(),
-            records
+                serviceData.getServiceName(),
+                serviceData.getServiceType().toString(),
+                records
         );
 
         // Add the local service
@@ -238,6 +258,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         removeService();
         unregisterP2pReceiver();
         unregisterP2p();
+        unregisterWifiReceiver();
         Log.i(TAG, "Wifi Handler service destroyed");
     }
 
@@ -292,10 +313,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     /**
-   * Starts discovering services. First registers DnsSdTxtRecordListener and a
-   * DnsSdServiceResponseListener. Then adds a service request and begins to discover services. The
-   * callbacks within the registered listeners are called when services are found.
-   */
+     * Starts discovering services. First registers DnsSdTxtRecordListener and a
+     * DnsSdServiceResponseListener. Then adds a service request and begins to discover services. The
+     * callbacks within the registered listeners are called when services are found.
+     */
     public void setupServiceDiscovery() {
         // DnsSdTxtRecordListener
         // Interface for callback invocation when Bonjour TXT record is available for a service
@@ -431,7 +452,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             for (DiscoverTask task : discoverTasks) {
                 task.cancel();
             }
-        // We don't want to do anything if we're not discovering services
+            // We don't want to do anything if we're not discovering services
         } else {
             Log.w(TAG, "Service discovery was not running, no action will be taken");
         }
@@ -594,6 +615,24 @@ public class WifiDirectHandler extends NonStopIntentService implements
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             // Indicates this device's configuration details have changed
             handleThisDeviceChanged(intent);
+        } else if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(action)) {
+            handleWifiStateChanged(intent);
+        }
+    }
+
+    private void handleWifiStateChanged(Intent intent) {
+        int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
+        if (wifiState == WifiManager.WIFI_STATE_ENABLED) {
+            // Register app with Wi-Fi P2P framework, register WifiDirectBroadcastReceiver
+            Log.i(TAG, "Wi-Fi enabled");
+            registerP2p();
+            registerP2pReceiver();
+        } else if (wifiState == WifiManager.WIFI_STATE_DISABLED) {
+            // Remove local service, unregister app with Wi-Fi P2P framework, unregister P2pReceiver
+            Log.i(TAG, "Wi-Fi disabled");
+            removeService();
+            unregisterP2pReceiver();
+            unregisterP2p();
         }
     }
 
@@ -771,19 +810,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
      */
     public void setWifiEnabled(boolean wifiEnabled) {
         wifiManager.setWifiEnabled(wifiEnabled);
-        if (wifiEnabled) {
-            // Register app with Wi-Fi P2P framework, register WifiDirectBroadcastReceiver
-            Log.i(TAG, "Wi-Fi enabled");
-            registerP2p();
-            registerP2pReceiver();
-        } else {
-            // Remove local service, unregister app with Wi-Fi P2P framework,
-            //   unregister WifiDirectBroadcastReceiver
-            Log.i(TAG, "Wi-Fi disabled");
-            removeService();
-            unregisterP2pReceiver();
-            unregisterP2p();
-        }
     }
 
     public Handler getHandler() {
@@ -834,23 +860,30 @@ public class WifiDirectHandler extends NonStopIntentService implements
      */
     public class Action {
         public static final String DNS_SD_TXT_RECORD_ADDED = "dnsSdTxtRecordAdded",
-        DNS_SD_SERVICE_AVAILABLE = "dnsSdServiceAvailable",
-        SERVICE_REMOVED = "serviceRemoved",
-        PEERS_CHANGED = "peersChanged",
-        SERVICE_CONNECTED = "serviceConnected",
-        DEVICE_CHANGED = "deviceChanged",
-        MESSAGE_RECEIVED = "messageReceived";
+                DNS_SD_SERVICE_AVAILABLE = "dnsSdServiceAvailable",
+                SERVICE_REMOVED = "serviceRemoved",
+                PEERS_CHANGED = "peersChanged",
+                SERVICE_CONNECTED = "serviceConnected",
+                DEVICE_CHANGED = "deviceChanged",
+                MESSAGE_RECEIVED = "messageReceived";
     }
 
     private class Keys {
         public static final String NO_PROMPT_NETWORK_NAME = "networkName",
-        NO_PROMPT_NETWORK_PASS = "passphrase";
+                NO_PROMPT_NETWORK_PASS = "passphrase";
     }
 
     // TODO: Add JavaDoc
     private class WifiDirectBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            onHandleIntent(intent);
+        }
+    }
+
+    // TODO: Add JavaDoc
+    private class WifiBroadcastReceiver extends BroadcastReceiver {
+        @Override public void onReceive(Context context, Intent intent) {
             onHandleIntent(intent);
         }
     }
