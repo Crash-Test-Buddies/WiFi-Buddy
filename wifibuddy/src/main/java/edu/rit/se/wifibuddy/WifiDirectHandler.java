@@ -634,6 +634,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             unregisterP2pReceiver();
             unregisterP2p();
         }
+        localBroadcastManager.sendBroadcast(new Intent(Action.WIFI_STATE_CHANGED));
     }
 
     /**
@@ -865,7 +866,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 PEERS_CHANGED = "peersChanged",
                 SERVICE_CONNECTED = "serviceConnected",
                 DEVICE_CHANGED = "deviceChanged",
-                MESSAGE_RECEIVED = "messageReceived";
+                MESSAGE_RECEIVED = "messageReceived",
+                WIFI_STATE_CHANGED = "wifiStateChanged";
     }
 
     private class Keys {
