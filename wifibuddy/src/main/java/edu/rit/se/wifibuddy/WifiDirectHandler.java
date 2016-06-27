@@ -49,7 +49,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
     private Map<String, DnsSdService> dnsSdServiceMap;
-    private List<DiscoverTask> discoverTasks;
+    private List<ServiceDiscoveryTask> serviceDiscoveryTasks;
     private WifiP2pDeviceList peers;
     private LocalBroadcastManager localBroadcastManager;
     private BroadcastReceiver p2pBroadcastReceiver;
@@ -63,8 +63,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
     public static final int MY_HANDLE = 0x400 + 2;
     public static final int COMMUNICATION_DISCONNECTED = 0x400 + 3;
     public static final int SERVER_PORT = 4545;
+    private final int SERVICE_DISCOVERY_TIMEOUT = 120000;
 
-    private boolean continueDiscovering = false;
+    private boolean continuouslyDiscovering = false;
     private boolean groupFormed = false;
     private boolean serviceDiscoveryRegistered = false;
 
@@ -356,6 +357,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         };
 
         wifiP2pManager.setDnsSdResponseListeners(channel, serviceResponseListener, txtRecordListener);
+        Log.i(TAG, "Service discovery listeners registered");
     }
 
     private void addServiceDiscoveryRequest() {
@@ -371,6 +373,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             @Override
             public void onFailure(int reason) {
                 Log.e(TAG, "Failure adding service discovery request: " + FailureReason.fromInteger(reason).toString());
+                serviceRequest = null;
             }
         });
     }
@@ -380,7 +383,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * discover services use continuouslyDiscoverServices
      */
     public void discoverServices(){
-        Log.i(TAG, "Discover services called");
         // Initiates service discovery. Starts to scan for services we want to connect to
         wifiP2pManager.discoverServices(channel, new WifiP2pManager.ActionListener() {
             @Override
@@ -400,25 +402,26 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Discover task. This will continue until stopDiscoveringServices is called
      */
     public void continuouslyDiscoverServices(){
+        Log.i(TAG, "Continuously Discover services called");
+
         if (serviceDiscoveryRegistered == false) {
             Log.i(TAG, "Setting up service discovery");
             registerServiceDiscoveryListeners();
             addServiceDiscoveryRequest();
             serviceDiscoveryRegistered = true;
+        }
+
+        // TODO Change this to give some sort of status
+        if (continuouslyDiscovering){
+            Log.w(TAG, "Services are still discovering, do not need to make this call");
         } else {
-            // TODO Change this to give some sort of status
-            Log.i(TAG, "Continuously Discover services called");
-            if (continueDiscovering){
-                Log.w(TAG, "Services are still discovering, do not need to make this call");
-            } else {
-                Log.i(TAG, "Calling discover and submitting first discover task");
-                continueDiscovering = true;
-                // List to track discovery tasks in progress
-                discoverTasks = new ArrayList<>();
-                // Make discover call and first discover task submission
-                discoverServices();
-                submitDiscoverTask();
-            }
+            Log.i(TAG, "Calling discover and submitting first discover task");
+            continuouslyDiscovering = true;
+            // List to track discovery tasks in progress
+            serviceDiscoveryTasks = new ArrayList<>();
+            // Make discover call and first discover task submission
+            discoverServices();
+            submitServiceDiscoveryTask();
         }
     }
 
@@ -426,30 +429,30 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Submits a new task to initiate service discovery after the discovery
      * timeout period has expired
      */
-    private void submitDiscoverTask(){
+    private void submitServiceDiscoveryTask(){
         Log.i(TAG, "Submitting discover task");
         // Discover times out after 2 minutes so we set the timer to that
-        int timeToWait = 120000;
-        DiscoverTask task = new DiscoverTask();
+        int timeToWait = SERVICE_DISCOVERY_TIMEOUT;
+        ServiceDiscoveryTask task = new ServiceDiscoveryTask();
         Timer timer = new Timer();
-        // Submit the task and add it to the List
+        // Submit the service discovery task and add it to the list
         timer.schedule(task, timeToWait);
-        discoverTasks.add(task);
+        serviceDiscoveryTasks.add(task);
     }
 
     /**
      * Timed task to initiate a new services discovery. Will recursively submit
-     * a new task as long as continueDiscovering is true
+     * a new task as long as continuouslyDiscovering is true
      */
-    private class DiscoverTask extends TimerTask {
+    private class ServiceDiscoveryTask extends TimerTask {
         public void run() {
             discoverServices();
             // Submit the next task if a stop call hasn't been made
-            if (continueDiscovering){
-                submitDiscoverTask();
+            if (continuouslyDiscovering){
+                submitServiceDiscoveryTask();
             }
-            // remove this task from the list since it's complete
-            discoverTasks.remove(this);
+            // Remove this task from the list since it's complete
+            serviceDiscoveryTasks.remove(this);
         }
     }
 
@@ -457,12 +460,12 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Stop discovering services if continuous discovery was called
      */
     public void stopDiscoveringServices(){
-        Log.i(TAG, "Service discovery called");
-        if (continueDiscovering) {
+        Log.i(TAG, "Stop discovery services called");
+        if (continuouslyDiscovering) {
             Log.i(TAG, "Service discovery being stopped");
-            continueDiscovering = false;
+            continuouslyDiscovering = false;
             // Cancel all discover tasks that may be in progress
-            for (DiscoverTask task : discoverTasks) {
+            for (ServiceDiscoveryTask task : serviceDiscoveryTasks) {
                 task.cancel();
             }
             // We don't want to do anything if we're not discovering services
@@ -510,6 +513,23 @@ public class WifiDirectHandler extends NonStopIntentService implements
             serviceInfo = null;
         } else {
             Log.i(TAG, "No local service to remove");
+        }
+    }
+
+    private void removeServiceDiscoveryRequest() {
+        if (serviceRequest != null) {
+            wifiP2pManager.removeServiceRequest(channel, serviceRequest, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.i(TAG, "Service discovery request removed");
+                }
+
+                @Override
+                public void onFailure(int reason) {
+                    Log.e(TAG, "Failure removing service discovery request: " + FailureReason.fromInteger(reason).toString());
+                }
+            });
+            serviceRequest = null;
         }
     }
 
