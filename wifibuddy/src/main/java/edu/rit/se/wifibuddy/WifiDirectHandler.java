@@ -267,6 +267,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         removeGroup();
         removePersistentGroups();
         removeService();
+        removeServiceDiscoveryRequest();
         unregisterP2pReceiver();
         unregisterP2p();
         unregisterWifiReceiver();
@@ -373,6 +374,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             @Override
             public void onFailure(int reason) {
                 Log.e(TAG, "Failure adding service discovery request: " + FailureReason.fromInteger(reason).toString());
+                serviceRequest = null;
             }
         });
     }
@@ -515,6 +517,23 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
+    private void removeServiceDiscoveryRequest() {
+        if (serviceRequest != null) {
+            wifiP2pManager.removeServiceRequest(channel, serviceRequest, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.i(TAG, "Service discovery request removed");
+                }
+
+                @Override
+                public void onFailure(int reason) {
+                    Log.e(TAG, "Failure removing service discovery request: " + FailureReason.fromInteger(reason).toString());
+                }
+            });
+            serviceRequest = null;
+        }
+    }
+
     /**
      * Removes a service discovery request and initiates a connection to a service
      * @param service The service to connect to
@@ -646,6 +665,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             // Remove local service, unregister app with Wi-Fi P2P framework, unregister P2pReceiver
             Log.i(TAG, "Wi-Fi disabled");
             removeService();
+            removeServiceDiscoveryRequest();
             unregisterP2pReceiver();
             unregisterP2p();
         }
