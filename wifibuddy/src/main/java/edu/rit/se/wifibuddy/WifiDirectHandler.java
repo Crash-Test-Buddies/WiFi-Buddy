@@ -356,6 +356,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         };
 
         wifiP2pManager.setDnsSdResponseListeners(channel, serviceResponseListener, txtRecordListener);
+        Log.i(TAG, "Service discovery listeners registered");
     }
 
     private void addServiceDiscoveryRequest() {
@@ -405,20 +406,20 @@ public class WifiDirectHandler extends NonStopIntentService implements
             registerServiceDiscoveryListeners();
             addServiceDiscoveryRequest();
             serviceDiscoveryRegistered = true;
+        }
+
+        // TODO Change this to give some sort of status
+        Log.i(TAG, "Continuously Discover services called");
+        if (continueDiscovering){
+            Log.w(TAG, "Services are still discovering, do not need to make this call");
         } else {
-            // TODO Change this to give some sort of status
-            Log.i(TAG, "Continuously Discover services called");
-            if (continueDiscovering){
-                Log.w(TAG, "Services are still discovering, do not need to make this call");
-            } else {
-                Log.i(TAG, "Calling discover and submitting first discover task");
-                continueDiscovering = true;
-                // List to track discovery tasks in progress
-                discoverTasks = new ArrayList<>();
-                // Make discover call and first discover task submission
-                discoverServices();
-                submitDiscoverTask();
-            }
+            Log.i(TAG, "Calling discover and submitting first discover task");
+            continueDiscovering = true;
+            // List to track discovery tasks in progress
+            discoverTasks = new ArrayList<>();
+            // Make discover call and first discover task submission
+            discoverServices();
+            submitDiscoverTask();
         }
     }
 
