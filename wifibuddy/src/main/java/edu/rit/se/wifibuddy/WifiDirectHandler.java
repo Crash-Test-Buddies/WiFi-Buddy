@@ -264,10 +264,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
     @Override
     public void onDestroy() {
         super.onDestroy();
+        removeServiceDiscoveryRequest();
         removeGroup();
         removePersistentGroups();
         removeService();
-        removeServiceDiscoveryRequest();
         unregisterP2pReceiver();
         unregisterP2p();
         unregisterWifiReceiver();
@@ -664,8 +664,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
         } else if (wifiState == WifiManager.WIFI_STATE_DISABLED) {
             // Remove local service, unregister app with Wi-Fi P2P framework, unregister P2pReceiver
             Log.i(TAG, "Wi-Fi disabled");
-            removeService();
             removeServiceDiscoveryRequest();
+            removeService();
             unregisterP2pReceiver();
             unregisterP2p();
         }
