@@ -11,6 +11,7 @@ import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
@@ -79,6 +80,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private WifiManager wifiManager;
 
     private WifiP2pDevice thisDevice;
+    private WifiP2pGroup wifiP2pGroup;
 
     /** Constructor **/
     public WifiDirectHandler() {
@@ -266,6 +268,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         super.onDestroy();
         removeGroup();
         removePersistentGroups();
+        clearServiceDiscoveryRequests();
         removeService();
         unregisterP2pReceiver();
         unregisterP2p();
@@ -308,10 +311,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Removes the current WifiP2pGroup in the WifiP2pChannel.
      */
     private void removeGroup() {
-        if (thisDevice.status == WifiP2pDevice.CONNECTED) {
+        if (wifiP2pGroup != null) {
             wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
+                    wifiP2pGroup = null;
                     Log.i(TAG, "Group removed");
                 }
 
@@ -516,17 +520,18 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
-    private void removeServiceDiscoveryRequest() {
+    private void clearServiceDiscoveryRequests() {
         if (serviceRequest != null) {
-            wifiP2pManager.removeServiceRequest(channel, serviceRequest, new WifiP2pManager.ActionListener() {
+            wifiP2pManager.clearServiceRequests(channel, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
+                    serviceRequest = null;
                     Log.i(TAG, "Service discovery request removed");
                 }
 
                 @Override
                 public void onFailure(int reason) {
-                    Log.e(TAG, "Failure removing service discovery request: " + FailureReason.fromInteger(reason).toString());
+                    Log.e(TAG, "Failure clearing service discovery requests: " + FailureReason.fromInteger(reason).toString());
                 }
             });
             serviceRequest = null;
@@ -663,6 +668,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         } else if (wifiState == WifiManager.WIFI_STATE_DISABLED) {
             // Remove local service, unregister app with Wi-Fi P2P framework, unregister P2pReceiver
             Log.i(TAG, "Wi-Fi disabled");
+            clearServiceDiscoveryRequests();
             removeService();
             unregisterP2pReceiver();
             unregisterP2p();
@@ -759,26 +765,14 @@ public class WifiDirectHandler extends NonStopIntentService implements
 //                Log.i(TAG, deviceToString(owner));
 //            }
 //
-//            // Requests peer-to-peer group information
-//            wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
-//                @Override
-//                public void onGroupInfoAvailable(WifiP2pGroup group) {
-//                    Log.i(TAG, "Requesting group info");
-//
-//                    if (isCreatingNoPrompt) {
-//                        if (group == null) {
-//                            Log.e(TAG, "- Adding no prompt service failed, group does not exist");
-//                            return;
-//                        }
-//                        isCreatingNoPrompt = false;
-//
-//                        noPromptServiceData.getRecord().put(Keys.NO_PROMPT_NETWORK_NAME, group.getNetworkName());
-//                        noPromptServiceData.getRecord().put(Keys.NO_PROMPT_NETWORK_PASS, group.getPassphrase());
-//
-//                        startAddingLocalService(noPromptServiceData);
-//                    }
-//                }
-//            });
+            // Requests peer-to-peer group information
+            wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
+                @Override
+                public void onGroupInfoAvailable(WifiP2pGroup group) {
+                    wifiP2pGroup = group;
+                    Log.i(TAG, "Group info available");
+                }
+            });
 //            Thread communicationThread;
 //            if (isGroupOwnerP2pInfo) {
 //                Log.i(TAG, "Connected as group owner");
