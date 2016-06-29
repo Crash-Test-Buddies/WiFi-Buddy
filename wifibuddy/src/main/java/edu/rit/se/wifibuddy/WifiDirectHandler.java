@@ -269,9 +269,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
     @Override
     public void onDestroy() {
         super.onDestroy();
+        stopServiceDiscovery();
         removeGroup();
         removePersistentGroups();
-        stopServiceDiscovery();
         removeService();
         unregisterP2pReceiver();
         unregisterP2p();
