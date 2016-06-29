@@ -271,7 +271,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         super.onDestroy();
         removeGroup();
         removePersistentGroups();
-        clearServiceDiscoveryRequests();
+        stopServiceDiscovery();
         removeService();
         unregisterP2pReceiver();
         unregisterP2p();
@@ -433,6 +433,14 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
+    public void stopServiceDiscovery() {
+        dnsSdServiceMap = null;
+        dnsSdTxtRecordMap = null;
+        serviceDiscoveryTasks = null;
+        continuouslyDiscovering = false;
+        clearServiceDiscoveryRequests();
+    }
+
     /**
      * Submits a new task to initiate service discovery after the discovery
      * timeout period has expired
@@ -530,7 +538,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 @Override
                 public void onSuccess() {
                     serviceRequest = null;
-                    Log.i(TAG, "Service discovery request removed");
+                    Log.i(TAG, "Service discovery requests cleared");
                 }
 
                 @Override
@@ -538,7 +546,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
                     Log.e(TAG, "Failure clearing service discovery requests: " + FailureReason.fromInteger(reason).toString());
                 }
             });
-            serviceRequest = null;
         }
     }
 
