@@ -436,12 +436,12 @@ public class WifiDirectHandler extends NonStopIntentService implements
     public void stopServiceDiscovery() {
         dnsSdServiceMap = null;
         dnsSdTxtRecordMap = null;
-        serviceDiscoveryTasks = null;
         continuouslyDiscovering = false;
         // Cancel all discover tasks that may be in progress
         for (ServiceDiscoveryTask serviceDiscoveryTask : serviceDiscoveryTasks) {
             serviceDiscoveryTask.cancel();
         }
+        serviceDiscoveryTasks = null;
         Log.i(TAG, "Service discovery stopped");
         clearServiceDiscoveryRequests();
     }
