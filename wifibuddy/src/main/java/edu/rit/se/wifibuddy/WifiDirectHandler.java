@@ -415,7 +415,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
         if (serviceDiscoveryRegistered == false) {
             Log.i(TAG, "Setting up service discovery");
             registerServiceDiscoveryListeners();
-            addServiceDiscoveryRequest();
             serviceDiscoveryRegistered = true;
         }
 
@@ -423,7 +422,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
         if (continuouslyDiscovering){
             Log.w(TAG, "Services are still discovering, do not need to make this call");
         } else {
-            Log.i(TAG, "Calling discover and submitting first discover task");
+            addServiceDiscoveryRequest();
+            Log.i(TAG, "Submitting first discover task");
             continuouslyDiscovering = true;
             // List to track discovery tasks in progress
             serviceDiscoveryTasks = new ArrayList<>();
