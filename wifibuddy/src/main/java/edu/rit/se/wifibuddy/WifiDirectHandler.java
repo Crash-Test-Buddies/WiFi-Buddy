@@ -448,6 +448,12 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
+    public void resetServiceDiscovery() {
+        Log.i(TAG, "Resetting service discovery");
+        stopServiceDiscovery();
+        continuouslyDiscoverServices();
+    }
+
     /**
      * Submits a new task to initiate service discovery after the discovery
      * timeout period has expired
