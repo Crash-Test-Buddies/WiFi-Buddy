@@ -66,7 +66,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     public static final int SERVER_PORT = 4545;
     private final int SERVICE_DISCOVERY_TIMEOUT = 120000;
 
-    private boolean continuouslyDiscovering = false;
+    private boolean isDiscovering = false;
     private boolean groupFormed = false;
     private boolean serviceDiscoveryRegistered = false;
 
@@ -419,11 +419,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
 
         // TODO Change this to give some sort of status
-        if (continuouslyDiscovering){
+        if (isDiscovering){
             Log.w(TAG, "Services are still discovering, do not need to make this call");
         } else {
             addServiceDiscoveryRequest();
-            continuouslyDiscovering = true;
+            isDiscovering = true;
             // List to track discovery tasks in progress
             serviceDiscoveryTasks = new ArrayList<>();
             // Make discover call and first discover task submission
@@ -433,7 +433,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     public void stopServiceDiscovery() {
-        if (continuouslyDiscovering) {
+        if (isDiscovering) {
             dnsSdServiceMap = new HashMap<>();
             dnsSdTxtRecordMap = new HashMap<>();
             // Cancel all discover tasks that may be in progress
@@ -441,7 +441,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 serviceDiscoveryTask.cancel();
             }
             serviceDiscoveryTasks = null;
-            continuouslyDiscovering = false;
+            isDiscovering = false;
             Log.i(TAG, "Service discovery stopped");
             clearServiceDiscoveryRequests();
         }
@@ -470,13 +470,13 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     /**
      * Timed task to initiate a new services discovery. Will recursively submit
-     * a new task as long as continuouslyDiscovering is true
+     * a new task as long as isDiscovering is true
      */
     private class ServiceDiscoveryTask extends TimerTask {
         public void run() {
             discoverServices();
             // Submit the next task if a stop call hasn't been made
-            if (continuouslyDiscovering) {
+            if (isDiscovering) {
                 submitServiceDiscoveryTask();
             }
             // Remove this task from the list since it's complete
@@ -966,6 +966,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
             }
             return deviceToString(thisDevice);
         }
+    }
+
+    public boolean isDiscovering() {
+        return this.isDiscovering;
     }
 
     public WifiP2pDevice getThisDevice() {
