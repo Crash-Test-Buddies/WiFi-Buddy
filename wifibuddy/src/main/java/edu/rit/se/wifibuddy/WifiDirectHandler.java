@@ -103,8 +103,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
         wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
         registerWifiReceiver();
 
-        // Registers the app with the P2P framework and registers the P2P BroadcastReceiver
-        // if Wi-Fi is enabled
         if (wifiManager.isWifiEnabled()) {
             Log.i(TAG, "Wi-Fi enabled on load");
         } else {
@@ -191,6 +189,13 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
+    public void unregisterWifi() {
+        if (wifiManager != null) {
+            wifiManager = null;
+            Log.i(TAG, "Wi-Fi manager unregistered");
+        }
+    }
+
     /**
      * The requested connection info is available
      * @param p2pInfo Wi-Fi P2P connection info
@@ -271,6 +276,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         unregisterP2pReceiver();
         unregisterP2p();
         unregisterWifiReceiver();
+        unregisterWifi();
         Log.i(TAG, "Wifi Handler service destroyed");
     }
 
