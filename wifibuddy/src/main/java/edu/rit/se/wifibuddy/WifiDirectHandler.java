@@ -423,7 +423,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
             Log.w(TAG, "Services are still discovering, do not need to make this call");
         } else {
             addServiceDiscoveryRequest();
-            Log.i(TAG, "Submitting first discover task");
             continuouslyDiscovering = true;
             // List to track discovery tasks in progress
             serviceDiscoveryTasks = new ArrayList<>();
