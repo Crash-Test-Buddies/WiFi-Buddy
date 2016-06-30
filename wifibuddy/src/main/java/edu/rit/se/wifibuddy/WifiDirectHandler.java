@@ -553,21 +553,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         config.deviceAddress = service.getSrcDevice().deviceAddress;
         config.wps.setup = WpsInfo.PBC;
 
-        if(serviceRequest != null) {
-            wifiP2pManager.removeServiceRequest(channel, serviceRequest, new WifiP2pManager.ActionListener() {
-                @Override
-                public void onSuccess() {
-                    Log.i(TAG, "Service request removed");
-                }
-
-                @Override
-                public void onFailure(int reason) {
-                    Log.e(TAG, "Failure removing service request: " + FailureReason.fromInteger(reason).toString());
-                }
-            });
-        }
-
-        // TODO: Should this go in the onSuccess() method above, in removeServiceRequest()?
+        stopServiceDiscovery();
         // Starts a peer-to-peer connection with a device with the specified configuration
         wifiP2pManager.connect(channel, config, new WifiP2pManager.ActionListener() {
             // The ActionListener only notifies that initiation of connection has succeeded or failed
