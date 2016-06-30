@@ -474,6 +474,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
      */
     private class ServiceDiscoveryTask extends TimerTask {
         public void run() {
+            addServiceDiscoveryRequest();
             discoverServices();
             // Submit the next task if a stop call hasn't been made
             if (isDiscovering) {
