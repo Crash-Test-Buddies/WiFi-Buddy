@@ -207,25 +207,31 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
         Log.i(TAG, "WifiP2pInfo: ");
         Log.i(TAG, p2pInfoToString(wifiP2pInfo));
+        this.groupFormed = wifiP2pInfo.groupFormed;
+        this.isGroupOwner = wifiP2pInfo.isGroupOwner;
 
-        Thread handler;
-        if (wifiP2pInfo.isGroupOwner) {
-            Log.i(TAG, "Connected as group owner");
-            try {
-                handler = new OwnerSocketHandler(this.getHandler());
+        if (wifiP2pInfo.groupFormed) {
+            Thread handler;
+            if (wifiP2pInfo.isGroupOwner) {
+                Log.i(TAG, "Connected as group owner");
+                try {
+                    handler = new OwnerSocketHandler(this.getHandler());
+                    handler.start();
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to create a server thread - " + e.getMessage());
+                    return;
+                }
+            } else {
+                Log.i(TAG, "Connected as peer");
+                handler = new ClientSocketHandler(this.getHandler(), wifiP2pInfo.groupOwnerAddress);
                 handler.start();
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to create a server thread - " + e.getMessage());
-                return;
             }
-        } else {
-            Log.i(TAG, "Connected as peer");
-            handler = new ClientSocketHandler(this.getHandler(), wifiP2pInfo.groupOwnerAddress);
-            handler.start();
-        }
 
-        localBroadcastManager.sendBroadcast(new Intent(Action.SERVICE_CONNECTED));
-        localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
+            localBroadcastManager.sendBroadcast(new Intent(Action.SERVICE_CONNECTED));
+            localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
+        } else {
+            Log.w(TAG, "Group not formed");
+        }
     }
 
     // TODO add JavaDoc
@@ -729,8 +735,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
                     Log.i(TAG, "WifiP2pGroup:");
                     Log.i(TAG, p2pGroupToString(wifiP2pGroup));
                     WifiDirectHandler.this.wifiP2pGroup = wifiP2pGroup;
-                    isGroupOwner = wifiP2pGroup.isGroupOwner();
-                    groupFormed = true;
                 } else {
                     Log.w(TAG, "Group is null");
                 }
