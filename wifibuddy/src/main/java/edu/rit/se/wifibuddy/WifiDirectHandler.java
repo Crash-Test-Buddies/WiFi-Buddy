@@ -211,6 +211,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
         this.isGroupOwner = wifiP2pInfo.isGroupOwner;
 
         if (wifiP2pInfo.groupFormed) {
+            stopServiceDiscovery();
+            
             Thread handler;
             if (wifiP2pInfo.isGroupOwner) {
                 Log.i(TAG, "Connected as group owner");
@@ -451,6 +453,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     public void stopServiceDiscovery() {
+        Log.i(TAG, "Stopping service discovery");
         if (isDiscovering) {
             dnsSdServiceMap = new HashMap<>();
             dnsSdTxtRecordMap = new HashMap<>();
@@ -562,7 +565,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     /**
-     * Removes a service discovery request and initiates a connection to a service
+     * Initiates a connection to a service
      * @param service The service to connect to
      */
     public void initiateConnectToService(DnsSdService service) {
@@ -571,14 +574,12 @@ public class WifiDirectHandler extends NonStopIntentService implements
         config.deviceAddress = service.getSrcDevice().deviceAddress;
         config.wps.setup = WpsInfo.PBC;
 
-        stopServiceDiscovery();
         // Starts a peer-to-peer connection with a device with the specified configuration
         wifiP2pManager.connect(channel, config, new WifiP2pManager.ActionListener() {
             // The ActionListener only notifies that initiation of connection has succeeded or failed
 
             @Override
             public void onSuccess() {
-//                wifiP2pManager.requestConnectionInfo(channel, WifiDirectHandler.this);
                 Log.i(TAG, "Initiating connection to service");
             }
 
