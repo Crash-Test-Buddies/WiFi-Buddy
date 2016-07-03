@@ -203,9 +203,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
         Log.i(TAG, "Connection info available");
-//        if(!p2pInfo.groupFormed) {
-//            return;
-//        }
+
+        Log.i(TAG, "Group formed: " + p2pInfo.groupFormed);
+        Log.i(TAG, "Group owner address: " + p2pInfo.groupOwnerAddress);
+        Log.i(TAG, "Is group owner: " + p2pInfo.isGroupOwner);
 
         Thread handler;
         if (p2pInfo.isGroupOwner) {
@@ -214,7 +215,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 handler = new OwnerSocketHandler(this.getHandler());
                 handler.start();
             } catch (IOException e) {
-                Log.i(TAG, "Failed to create a server thread - " + e.getMessage());
+                Log.e(TAG, "Failed to create a server thread - " + e.getMessage());
                 return;
             }
         } else {
@@ -331,6 +332,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
+    /*
+     * Registers listeners for DNS-SD services. These are callbacks invoked
+     * by the system when a service is actually discovered.
+     */
     private void registerServiceDiscoveryListeners() {
         // DnsSdTxtRecordListener
         // Interface for callback invocation when Bonjour TXT record is available for a service
@@ -341,7 +346,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 // Records of peer are available
                 Log.i(TAG, "Peer DnsSDTxtRecord available");
 
-                Intent intent = new Intent(Action.DNS_SD_TXT_RECORD_ADDED);
+                Intent intent = new Intent(Action.DNS_SD_TXT_RECORD_AVAILABLE);
                 localBroadcastManager.sendBroadcast(intent);
                 dnsSdTxtRecordMap.put(srcDevice.deviceAddress, new DnsSdTxtRecord(fullDomainName, txtRecordMap, srcDevice));
             }
@@ -355,12 +360,16 @@ public class WifiDirectHandler extends NonStopIntentService implements
             public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice srcDevice) {
                 // Not sure if we want to track the map here or just send the service in the request to let the caller do
                 // what it wants with it
-                Log.i(TAG, "Local service found:");
-                Log.i(TAG, deviceToString(srcDevice));
-                dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
-                Intent intent = new Intent(Action.DNS_SD_SERVICE_AVAILABLE);
-                intent.putExtra(SERVICE_MAP_KEY, srcDevice.deviceAddress);
-                localBroadcastManager.sendBroadcast(intent);
+
+                Log.i(TAG, "Local service found: " + instanceName);
+                if (instanceName.equalsIgnoreCase(ANDROID_SERVICE_NAME)) {
+                    Log.i("TAG", "Source device: ");
+                    Log.i(TAG, deviceToString(srcDevice));
+                    dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
+                    Intent intent = new Intent(Action.DNS_SD_SERVICE_AVAILABLE);
+                    intent.putExtra(SERVICE_MAP_KEY, srcDevice.deviceAddress);
+                    localBroadcastManager.sendBroadcast(intent);
+                }
             }
         };
 
@@ -878,7 +887,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Actions that can be broadcast or received by the handler
      */
     public class Action {
-        public static final String DNS_SD_TXT_RECORD_ADDED = "dnsSdTxtRecordAdded",
+        public static final String DNS_SD_TXT_RECORD_AVAILABLE = "dnsSdTxtRecordAdded",
                 DNS_SD_SERVICE_AVAILABLE = "dnsSdServiceAvailable",
                 SERVICE_REMOVED = "serviceRemoved",
                 PEERS_CHANGED = "peersChanged",
