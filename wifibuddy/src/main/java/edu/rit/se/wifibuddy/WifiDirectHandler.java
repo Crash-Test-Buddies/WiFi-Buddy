@@ -712,7 +712,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         if(wifiP2pManager == null) {
             return;
         }
-        
+
         // Extra information from EXTRA_NETWORK_INFO
         NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
         if(networkInfo.isConnected()) {
@@ -728,6 +728,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 if (wifiP2pGroup != null) {
                     Log.i(TAG, "WifiP2pGroup:");
                     Log.i(TAG, p2pGroupToString(wifiP2pGroup));
+                    WifiDirectHandler.this.wifiP2pGroup = wifiP2pGroup;
                     isGroupOwner = wifiP2pGroup.isGroupOwner();
                     groupFormed = true;
                 } else {
@@ -869,9 +870,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         if (wifiP2pDevice != null) {
             String strDevice = "Device name: " + wifiP2pDevice.deviceName;
             strDevice += "\nDevice address: " + wifiP2pDevice.deviceAddress;
-            if (isGroupFormed()) {
-                strDevice += "\nIs group owner: " + this.isGroupOwner();
-            }
+            strDevice += "\nIs group owner: " + isGroupOwner();
             strDevice += "\nStatus: " + deviceStatusToString(wifiP2pDevice.status) + "\n";
             return strDevice;
         } else {
