@@ -718,7 +718,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
 
         // Extra information from EXTRA_WIFI_P2P_INFO
-        WifiP2pInfo wifiP2pInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO);
+        final WifiP2pInfo wifiP2pInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO);
         Log.i(TAG, "WifiP2pInfo: ");
         Log.i(TAG, "Group formed: " + wifiP2pInfo.groupFormed);
         Log.i(TAG, "Is group owner: " + wifiP2pInfo.isGroupOwner);
@@ -744,19 +744,23 @@ public class WifiDirectHandler extends NonStopIntentService implements
         wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
             @Override
             public void onGroupInfoAvailable(WifiP2pGroup group) {
-                wifiP2pGroup = group;
                 Log.i(TAG, "Group info available");
-                Log.i(TAG, "Is Group owner: " + group.isGroupOwner());
-                if (group.getClientList() != null
-                    && !group.getClientList().isEmpty()) {
-                    for (WifiP2pDevice client : group.getClientList()) {
-                        Log.i(TAG, "Client: ");
-                        Log.i(TAG, deviceToString(client));
+                if (group != null) {
+                    wifiP2pGroup = group;
+                    Log.i(TAG, "Is Group owner: " + group.isGroupOwner());
+                    if (group.getClientList() != null
+                            && !group.getClientList().isEmpty()) {
+                        for (WifiP2pDevice client : group.getClientList()) {
+                            Log.i(TAG, "Client: ");
+                            Log.i(TAG, deviceToString(client));
+                        }
                     }
-                }
-                if (group.getOwner() != null) {
-                    Log.i(TAG, "Group owner: " );
-                    Log.i(TAG, deviceToString(group.getOwner()));
+                    if (group.getOwner() != null) {
+                        Log.i(TAG, "Group owner: " );
+                        Log.i(TAG, deviceToString(group.getOwner()));
+                    }
+                } else {
+                    Log.w(TAG, "Group is null");
                 }
             }
         });
