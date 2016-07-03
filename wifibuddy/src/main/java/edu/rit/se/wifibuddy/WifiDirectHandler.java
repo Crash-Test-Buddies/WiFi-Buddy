@@ -724,27 +724,27 @@ public class WifiDirectHandler extends NonStopIntentService implements
         Log.i(TAG, "Is group owner: " + wifiP2pInfo.isGroupOwner);
         Log.i(TAG, "Group owner address: " + wifiP2pInfo.groupOwnerAddress);
 
-        // Extra information from EXTRA_WIFI_P2P_GROUP
-        WifiP2pGroup wifiP2pGroup = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_GROUP);
-        Log.i(TAG, "WifiP2pGroup: ");
-        Log.i(TAG, "Is group owner: " + wifiP2pGroup.isGroupOwner());
-        Log.i(TAG, "Network name: " + wifiP2pGroup.getNetworkName());
-        if (wifiP2pGroup.getClientList() != null && !wifiP2pGroup.getClientList().isEmpty()) {
-            for (WifiP2pDevice client : wifiP2pGroup.getClientList()) {
-               Log.i(TAG, "Client: ");
-               Log.i(TAG, deviceToString(client));
-            }
-        }
-        if (wifiP2pGroup.getOwner() != null) {
-            Log.i(TAG, "Group owner: " );
-            Log.i(TAG, deviceToString(wifiP2pGroup.getOwner()));
-        }
+//        // Extra information from EXTRA_WIFI_P2P_GROUP
+//        WifiP2pGroup wifiP2pGroup = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_GROUP);
+//        Log.i(TAG, "WifiP2pGroup: ");
+//        Log.i(TAG, "Is group owner: " + wifiP2pGroup.isGroupOwner());
+//        Log.i(TAG, "Network name: " + wifiP2pGroup.getNetworkName());
+//        if (wifiP2pGroup.getClientList() != null && !wifiP2pGroup.getClientList().isEmpty()) {
+//            for (WifiP2pDevice client : wifiP2pGroup.getClientList()) {
+//               Log.i(TAG, "Client: ");
+//               Log.i(TAG, deviceToString(client));
+//            }
+//        }
+//        if (wifiP2pGroup.getOwner() != null) {
+//            Log.i(TAG, "Group owner: " );
+//            Log.i(TAG, deviceToString(wifiP2pGroup.getOwner()));
+//        }
 
         // Requests peer-to-peer group information
         wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
             @Override
             public void onGroupInfoAvailable(WifiP2pGroup group) {
-                WifiDirectHandler.this.wifiP2pGroup = group;
+                wifiP2pGroup = group;
                 Log.i(TAG, "Group info available");
                 Log.i(TAG, "Is Group owner: " + group.isGroupOwner());
                 if (group.getClientList() != null
