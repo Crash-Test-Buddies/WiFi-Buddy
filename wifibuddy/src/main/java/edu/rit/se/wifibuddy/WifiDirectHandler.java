@@ -361,6 +361,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 // Not sure if we want to track the map here or just send the service in the request to let the caller do
                 // what it wants with it
 
+                Log.i(TAG, "DNS-SD service available");
                 Log.i(TAG, "Local service found: " + instanceName);
                 if (instanceName.equalsIgnoreCase(ANDROID_SERVICE_NAME)) {
                     Log.i("TAG", "Source device: ");
@@ -734,22 +735,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
         // Requests peer-to-peer group information
         wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
             @Override
-            public void onGroupInfoAvailable(WifiP2pGroup group) {
+            public void onGroupInfoAvailable(WifiP2pGroup wifiP2pGroup) {
                 Log.i(TAG, "Group info available");
-                if (group != null) {
-                    wifiP2pGroup = group;
-                    Log.i(TAG, "Is Group owner: " + group.isGroupOwner());
-                    if (group.getClientList() != null
-                            && !group.getClientList().isEmpty()) {
-                        for (WifiP2pDevice client : group.getClientList()) {
-                            Log.i(TAG, "Client: ");
-                            Log.i(TAG, p2pDeviceToString(client));
-                        }
-                    }
-                    if (group.getOwner() != null) {
-                        Log.i(TAG, "Group owner: " );
-                        Log.i(TAG, p2pDeviceToString(group.getOwner()));
-                    }
+                if (wifiP2pGroup != null) {
+                    Log.i(TAG, "WifiP2pGroup:");
+                    Log.i(TAG, p2pGroupToString(wifiP2pGroup));
                 } else {
                     Log.w(TAG, "Group is null");
                 }
