@@ -67,6 +67,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private final int SERVICE_DISCOVERY_TIMEOUT = 120000;
 
     private boolean isDiscovering = false;
+    private boolean isGroupOwner = false;
     private boolean groupFormed = false;
     private boolean serviceDiscoveryRegistered = false;
 
@@ -198,18 +199,17 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     /**
      * The requested connection info is available
-     * @param p2pInfo Wi-Fi P2P connection info
+     * @param wifiP2pInfo Wi-Fi P2P connection info
      */
     @Override
-    public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
+    public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
         Log.i(TAG, "Connection info available");
 
-        Log.i(TAG, "Group formed: " + p2pInfo.groupFormed);
-        Log.i(TAG, "Group owner address: " + p2pInfo.groupOwnerAddress);
-        Log.i(TAG, "Is group owner: " + p2pInfo.isGroupOwner);
+        Log.i(TAG, "WifiP2pInfo: ");
+        Log.i(TAG, p2pInfoToString(wifiP2pInfo));
 
         Thread handler;
-        if (p2pInfo.isGroupOwner) {
+        if (wifiP2pInfo.isGroupOwner) {
             Log.i(TAG, "Connected as group owner");
             try {
                 handler = new OwnerSocketHandler(this.getHandler());
@@ -220,7 +220,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             }
         } else {
             Log.i(TAG, "Connected as peer");
-            handler = new ClientSocketHandler(this.getHandler(), p2pInfo.groupOwnerAddress);
+            handler = new ClientSocketHandler(this.getHandler(), wifiP2pInfo.groupOwnerAddress);
             handler.start();
         }
 
@@ -321,6 +321,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 @Override
                 public void onSuccess() {
                     wifiP2pGroup = null;
+                    groupFormed = false;
+                    isGroupOwner = false;
                     Log.i(TAG, "Group removed");
                 }
 
@@ -344,7 +346,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             @Override
             public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> txtRecordMap, WifiP2pDevice srcDevice) {
                 // Records of peer are available
-                Log.i(TAG, "Peer DnsSDTxtRecord available");
+                Log.i(TAG, "Peer DNS-SD TXT Record available");
 
                 Intent intent = new Intent(Action.DNS_SD_TXT_RECORD_AVAILABLE);
                 localBroadcastManager.sendBroadcast(intent);
@@ -718,13 +720,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
             Log.i(TAG, p2pInfoToString(wifiP2pInfo));
         }
 
-        // Extra information from EXTRA_WIFI_P2P_GROUP
-        WifiP2pGroup extraWifiP2pGroup = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_GROUP);
-        if (extraWifiP2pGroup != null) {
-            Log.i(TAG, "WifiP2pGroup: ");
-            Log.i(TAG, p2pGroupToString(extraWifiP2pGroup));
-        }
-
         // Extra information from EXTRA_NETWORK_INFO
         NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
         if(networkInfo.isConnected()) {
@@ -740,6 +735,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 if (wifiP2pGroup != null) {
                     Log.i(TAG, "WifiP2pGroup:");
                     Log.i(TAG, p2pGroupToString(wifiP2pGroup));
+                    isGroupOwner = wifiP2pGroup.isGroupOwner();
+                    groupFormed = true;
                 } else {
                     Log.w(TAG, "Group is null");
                 }
@@ -879,7 +876,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         if (wifiP2pDevice != null) {
             String strDevice = "Device name: " + wifiP2pDevice.deviceName;
             strDevice += "\nDevice address: " + wifiP2pDevice.deviceAddress;
-            strDevice += "\nIs group owner: " + wifiP2pDevice.isGroupOwner();
+            strDevice += "\nIs group owner: " + this.isGroupOwner();
             strDevice += "\nStatus: " + deviceStatusToString(wifiP2pDevice.status) + "\n";
             return strDevice;
         } else {
@@ -953,8 +950,16 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
+    public boolean isGroupOwner() {
+        return this.isGroupOwner;
+    }
+
     public boolean isDiscovering() {
         return this.isDiscovering;
+    }
+
+    public boolean isGroupFormed() {
+        return this.isGroupFormed();
     }
 
     public WifiP2pDevice getThisDevice() {
