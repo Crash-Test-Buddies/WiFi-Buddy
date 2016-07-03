@@ -876,7 +876,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
         if (wifiP2pDevice != null) {
             String strDevice = "Device name: " + wifiP2pDevice.deviceName;
             strDevice += "\nDevice address: " + wifiP2pDevice.deviceAddress;
-            strDevice += "\nIs group owner: " + this.isGroupOwner();
+            if (isGroupFormed()) {
+                strDevice += "\nIs group owner: " + this.isGroupOwner();
+            }
             strDevice += "\nStatus: " + deviceStatusToString(wifiP2pDevice.status) + "\n";
             return strDevice;
         } else {
@@ -954,12 +956,12 @@ public class WifiDirectHandler extends NonStopIntentService implements
         return this.isGroupOwner;
     }
 
-    public boolean isDiscovering() {
-        return this.isDiscovering;
+    public boolean isGroupFormed() {
+        return this.groupFormed;
     }
 
-    public boolean isGroupFormed() {
-        return this.isGroupFormed();
+    public boolean isDiscovering() {
+        return this.isDiscovering;
     }
 
     public WifiP2pDevice getThisDevice() {
