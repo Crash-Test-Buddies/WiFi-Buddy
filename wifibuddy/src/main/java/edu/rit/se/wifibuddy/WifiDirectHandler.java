@@ -206,8 +206,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
         Log.i(TAG, "Connection info available");
-        invitationSent = false;
-        
+
         Log.i(TAG, "WifiP2pInfo: ");
         Log.i(TAG, p2pInfoToString(wifiP2pInfo));
         this.groupFormed = wifiP2pInfo.groupFormed;
@@ -215,6 +214,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
         if (wifiP2pInfo.groupFormed) {
             stopServiceDiscovery();
+            invitationSent = false;
 
             Thread handler;
             if (wifiP2pInfo.isGroupOwner) {
@@ -578,6 +578,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         wifiP2pConfig.wps.setup = WpsInfo.PBC;
 
         if (invitationSent) {
+            Log.w(TAG, "Cancelling connect");
             // Cancel any ongoing invitation to connect
             // Allows you to try to connect to a service again after the source device declines
             wifiP2pManager.cancelConnect(channel, new WifiP2pManager.ActionListener() {
