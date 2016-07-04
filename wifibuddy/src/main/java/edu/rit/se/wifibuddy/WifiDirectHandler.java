@@ -82,6 +82,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     private WifiP2pDevice thisDevice;
     private WifiP2pGroup wifiP2pGroup;
+    private WifiP2pDeviceList clientList;
+    private WifiP2pDevice groupOwner;
 
     /** Constructor **/
     public WifiDirectHandler() {
@@ -138,6 +140,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
             wifiP2pManager = null;
             channel = null;
             thisDevice = null;
+            groupOwner = null;
+            clientList = null;
             localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
             Log.i(TAG, "Unregistered with Wi-Fi P2P framework");
         }
@@ -700,9 +704,13 @@ public class WifiDirectHandler extends NonStopIntentService implements
             wifiP2pManager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
                 @Override
                 public void onPeersAvailable(WifiP2pDeviceList peers) {
-                    for (WifiP2pDevice peer : peers.getDeviceList()) {
-                        Log.i(TAG, "Peer: ");
-                        Log.i(TAG, p2pDeviceToString(peer));
+                    if (peers.getDeviceList().isEmpty()) {
+                        Log.i(TAG, "No peers available");
+                    } else {
+                        for (WifiP2pDevice peer : peers.getDeviceList()) {
+                            Log.i(TAG, "Peer: ");
+                            Log.i(TAG, p2pDeviceToString(peer));
+                        }
                     }
                     WifiDirectHandler.this.peers = peers;
                     Intent intent = new Intent(Action.PEERS_CHANGED);
@@ -742,6 +750,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
                     Log.i(TAG, "WifiP2pGroup:");
                     Log.i(TAG, p2pGroupToString(wifiP2pGroup));
                     WifiDirectHandler.this.wifiP2pGroup = wifiP2pGroup;
+                    WifiDirectHandler.this.groupOwner = wifiP2pGroup.getOwner();
+                    WifiDirectHandler.this.clientList = (WifiP2pDeviceList) wifiP2pGroup.getClientList();
                 } else {
                     Log.w(TAG, "Group is null");
                 }
@@ -974,6 +984,14 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     public WifiP2pDevice getThisDevice() {
         return this.thisDevice;
+    }
+
+    public WifiP2pDevice getGroupOwner() {
+        return this.groupOwner;
+    }
+
+    public WifiP2pDeviceList getClientList() {
+        return this.clientList;
     }
 
     public WifiP2pServiceInfo getWifiP2pServiceInfo() {
