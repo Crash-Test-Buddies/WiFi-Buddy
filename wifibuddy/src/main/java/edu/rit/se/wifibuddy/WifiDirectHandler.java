@@ -82,7 +82,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     private WifiP2pDevice thisDevice;
     private WifiP2pGroup wifiP2pGroup;
-    private WifiP2pConfig wifiP2pConfig;
 
     /** Constructor **/
     public WifiDirectHandler() {
@@ -573,7 +572,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
      */
     public void initiateConnectToService(DnsSdService service) {
         // Device info of peer to connect to
-        wifiP2pConfig = new WifiP2pConfig();
+        WifiP2pConfig wifiP2pConfig = new WifiP2pConfig();
         wifiP2pConfig.deviceAddress = service.getSrcDevice().deviceAddress;
         wifiP2pConfig.wps.setup = WpsInfo.PBC;
 
