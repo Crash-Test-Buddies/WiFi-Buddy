@@ -220,6 +220,22 @@ public class WifiDirectHandler extends NonStopIntentService implements
         if (wifiP2pInfo.groupFormed) {
             stopServiceDiscovery();
 
+            Thread handler;
+            if (wifiP2pInfo.isGroupOwner) {
+                Log.i(TAG, "Connected as group owner");
+                try {
+                    handler = new OwnerSocketHandler(this.getHandler());
+                    handler.start();
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to create a server thread - " + e.getMessage());
+                    return;
+                }
+            } else {
+                Log.i(TAG, "Connected as client");
+                handler = new ClientSocketHandler(this.getHandler(), wifiP2pInfo.groupOwnerAddress);
+                handler.start();
+            }
+
             // Requests peer-to-peer group information
             wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
                 @Override
@@ -234,22 +250,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
                     }
                 }
             });
-
-            Thread handler;
-            if (wifiP2pInfo.isGroupOwner) {
-                Log.i(TAG, "Connected as group owner");
-                try {
-                    handler = new OwnerSocketHandler(this.getHandler());
-                    handler.start();
-                } catch (IOException e) {
-                    Log.e(TAG, "Failed to create a server thread - " + e.getMessage());
-                    return;
-                }
-            } else {
-                Log.i(TAG, "Connected as peer");
-                handler = new ClientSocketHandler(this.getHandler(), wifiP2pInfo.groupOwnerAddress);
-                handler.start();
-            }
 
             localBroadcastManager.sendBroadcast(new Intent(Action.SERVICE_CONNECTED));
         } else {
@@ -720,14 +720,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
             wifiP2pManager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
                 @Override
                 public void onPeersAvailable(WifiP2pDeviceList peers) {
-                    if (peers.getDeviceList().isEmpty()) {
-                        Log.i(TAG, "No peers available");
-                    } else {
-                        for (WifiP2pDevice peer : peers.getDeviceList()) {
-                            Log.i(TAG, "Peer: ");
-                            Log.i(TAG, p2pDeviceToString(peer));
-                        }
-                    }
                     WifiDirectHandler.this.peers = peers;
                     Intent intent = new Intent(Action.PEERS_CHANGED);
                     intent.putExtra(PEERS, peers);
