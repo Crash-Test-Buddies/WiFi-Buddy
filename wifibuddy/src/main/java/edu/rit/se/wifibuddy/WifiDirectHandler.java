@@ -137,56 +137,109 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Unregisters the application with the Wi-Fi P2P framework
      */
     public void unregisterP2p() {
+        /**********************************************
+         * Clear service discovery tasks
+         **********************************************/
+        dnsSdServiceMap = new HashMap<>();
+        dnsSdTxtRecordMap = new HashMap<>();
+        // Cancel all discover tasks that may be in progress
+        for (ServiceDiscoveryTask serviceDiscoveryTask : serviceDiscoveryTasks) {
+            serviceDiscoveryTask.cancel();
+        }
+        serviceDiscoveryTasks = null;
+        isDiscovering = false;
+        Log.i(TAG, "Service discovery stopped");
 
-        stopServiceDiscovery();
-        if (wifiP2pGroup != null) {
-            wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
-                @Override
-                public void onSuccess() {
-                    wifiP2pGroup = null;
-                    groupFormed = false;
-                    isGroupOwner = false;
-                    Log.i(TAG, "Group removed");
+        /**********************************************
+         * Clear service discovery requests
+         **********************************************/
+        wifiP2pManager.clearServiceRequests(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                serviceRequest = null;
+                Log.i(TAG, "Service discovery requests cleared");
 
-                    // Remove persistent groups
-                    removePersistentGroups();
+                /**********************************************
+                 * Remove groups
+                 **********************************************/
+                wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        wifiP2pGroup = null;
+                        groupFormed = false;
+                        isGroupOwner = false;
+                        Log.i(TAG, "Group removed");
 
-                    // Unregister local services
-                    Log.i(TAG, "Removing local service");
-                    wifiP2pManager.clearLocalServices(channel, new WifiP2pManager.ActionListener() {
-                        @Override
-                        public void onSuccess() {
+                        /**********************************************
+                         * Remove persistent groups
+                         **********************************************/
+                        try {
+                            Method[] methods = WifiP2pManager.class.getMethods();
+                            for (int i = 0; i < methods.length; i++) {
+                                if (methods[i].getName().equals("deletePersistentGroup")) {
+                                    // Remove any persistent group
+                                    for (int netid = 0; netid < 32; netid++) {
+                                        methods[i].invoke(wifiP2pManager, channel, netid, null);
+                                    }
+                                }
+                            }
+                            Log.i(TAG, "Persistent groups removed");
+
+                            /**********************************************
+                             * Clear local services
+                             **********************************************/
+                            Log.i(TAG, "Clearing local service");
+                            wifiP2pManager.clearLocalServices(channel, new WifiP2pManager.ActionListener() {
+                                @Override
+                                public void onSuccess() {
+                                    wifiP2pServiceInfo = null;
+                                    Intent intent = new Intent(Action.SERVICE_REMOVED);
+                                    localBroadcastManager.sendBroadcast(intent);
+                                    Log.i(TAG, "Local services cleared");
+
+                                    /**********************************************
+                                     * Clear WifiDirect BroadcastReceiver
+                                     **********************************************/
+                                    unregisterP2pReceiver();
+
+                                    /**********************************************
+                                     * Unregister app from P2P framework
+                                     **********************************************/
+                                    if (wifiP2pManager != null) {
+                                        wifiP2pManager = null;
+                                        channel = null;
+                                        thisDevice = null;
+                                        groupOwner = null;
+                                        clientList = null;
+                                        localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
+                                        Log.i(TAG, "Unregistered with Wi-Fi P2P framework");
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(int reason) {
+                                    Log.e(TAG, "Failure clearing local services: " + FailureReason.fromInteger(reason).toString());
+                                }
+                            });
                             wifiP2pServiceInfo = null;
-                            Intent intent = new Intent(Action.SERVICE_REMOVED);
-                            localBroadcastManager.sendBroadcast(intent);
-                            Log.i(TAG, "Local services cleared");
+                        } catch(Exception e) {
+                            Log.e(TAG, "Failure removing persistent groups: " + e.getMessage());
+                            e.printStackTrace();
                         }
+                    }
 
-                        @Override
-                        public void onFailure(int reason) {
-                            Log.e(TAG, "Failure clearing local services: " + FailureReason.fromInteger(reason).toString());
-                        }
-                    });
-                    wifiP2pServiceInfo = null;
-                }
+                    @Override
+                    public void onFailure(int reason) {
+                        Log.e(TAG, "Failure removing group: " + FailureReason.fromInteger(reason).toString());
+                    }
+                });
+            }
 
-                @Override
-                public void onFailure(int reason) {
-                    Log.e(TAG, "Failure removing group: " + FailureReason.fromInteger(reason).toString());
-                }
-            });
-        }
-        unregisterP2pReceiver();
-
-        if (wifiP2pManager != null) {
-            wifiP2pManager = null;
-            channel = null;
-            thisDevice = null;
-            groupOwner = null;
-            clientList = null;
-            localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
-            Log.i(TAG, "Unregistered with Wi-Fi P2P framework");
-        }
+            @Override
+            public void onFailure(int reason) {
+                Log.e(TAG, "Failure clearing service discovery requests: " + FailureReason.fromInteger(reason).toString());
+            }
+        });
     }
 
     /**
