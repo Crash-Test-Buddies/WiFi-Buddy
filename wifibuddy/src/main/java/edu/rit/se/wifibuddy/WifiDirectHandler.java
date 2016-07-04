@@ -137,6 +137,47 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Unregisters the application with the Wi-Fi P2P framework
      */
     public void unregisterP2p() {
+
+        stopServiceDiscovery();
+        if (wifiP2pGroup != null) {
+            wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    wifiP2pGroup = null;
+                    groupFormed = false;
+                    isGroupOwner = false;
+                    Log.i(TAG, "Group removed");
+
+                    // Remove persistent groups
+                    removePersistentGroups();
+
+                    // Unregister local services
+                    Log.i(TAG, "Removing local service");
+                    wifiP2pManager.clearLocalServices(channel, new WifiP2pManager.ActionListener() {
+                        @Override
+                        public void onSuccess() {
+                            wifiP2pServiceInfo = null;
+                            Intent intent = new Intent(Action.SERVICE_REMOVED);
+                            localBroadcastManager.sendBroadcast(intent);
+                            Log.i(TAG, "Local services cleared");
+                        }
+
+                        @Override
+                        public void onFailure(int reason) {
+                            Log.e(TAG, "Failure clearing local services: " + FailureReason.fromInteger(reason).toString());
+                        }
+                    });
+                    wifiP2pServiceInfo = null;
+                }
+
+                @Override
+                public void onFailure(int reason) {
+                    Log.e(TAG, "Failure removing group: " + FailureReason.fromInteger(reason).toString());
+                }
+            });
+        }
+        unregisterP2pReceiver();
+
         if (wifiP2pManager != null) {
             wifiP2pManager = null;
             channel = null;
@@ -301,11 +342,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        stopServiceDiscovery();
-        removeGroup();
-        removePersistentGroups();
-        removeService();
-        unregisterP2pReceiver();
         unregisterP2p();
         unregisterWifiReceiver();
         unregisterWifi();
@@ -343,27 +379,12 @@ public class WifiDirectHandler extends NonStopIntentService implements
         }
     }
 
-    /**
-     * Removes the current WifiP2pGroup in the WifiP2pChannel.
-     */
-    private void removeGroup() {
-        if (wifiP2pGroup != null) {
-            wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
-                @Override
-                public void onSuccess() {
-                    wifiP2pGroup = null;
-                    groupFormed = false;
-                    isGroupOwner = false;
-                    Log.i(TAG, "Group removed");
-                }
-
-                @Override
-                public void onFailure(int reason) {
-                    Log.e(TAG, "Failure removing group: " + FailureReason.fromInteger(reason).toString());
-                }
-            });
-        }
-    }
+//    /**
+//     * Removes the current WifiP2pGroup in the WifiP2pChannel.
+//     */
+//    private void removeGroup() {
+//
+//    }
 
     /*
      * Registers listeners for DNS-SD services. These are callbacks invoked
@@ -701,9 +722,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
         } else if (wifiState == WifiManager.WIFI_STATE_DISABLED) {
             // Remove local service, unregister app with Wi-Fi P2P framework, unregister P2pReceiver
             Log.i(TAG, "Wi-Fi disabled");
-            clearServiceDiscoveryRequests();
-            removeService();
-            unregisterP2pReceiver();
             unregisterP2p();
         }
         localBroadcastManager.sendBroadcast(new Intent(Action.WIFI_STATE_CHANGED));
