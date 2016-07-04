@@ -82,7 +82,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     private WifiP2pDevice thisDevice;
     private WifiP2pGroup wifiP2pGroup;
-    private WifiP2pConfig wifiP2pConfig;
 
     /** Constructor **/
     public WifiDirectHandler() {
@@ -138,6 +137,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
         if (wifiP2pManager != null) {
             wifiP2pManager = null;
             channel = null;
+            thisDevice = null;
+            localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
             Log.i(TAG, "Unregistered with Wi-Fi P2P framework");
         }
     }
@@ -231,10 +232,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
             }
 
             localBroadcastManager.sendBroadcast(new Intent(Action.SERVICE_CONNECTED));
-            localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
         } else {
             Log.w(TAG, "Group not formed");
         }
+        localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
     }
 
     // TODO add JavaDoc
@@ -544,7 +545,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             });
             wifiP2pServiceInfo = null;
         } else {
-            Log.i(TAG, "No local service to remove");
+            Log.w(TAG, "No local service to remove");
         }
     }
 
@@ -571,7 +572,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
      */
     public void initiateConnectToService(DnsSdService service) {
         // Device info of peer to connect to
-        wifiP2pConfig = new WifiP2pConfig();
+        WifiP2pConfig wifiP2pConfig = new WifiP2pConfig();
         wifiP2pConfig.deviceAddress = service.getSrcDevice().deviceAddress;
         wifiP2pConfig.wps.setup = WpsInfo.PBC;
 
@@ -742,6 +743,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 }
             }
         });
+
     }
 
     /**
