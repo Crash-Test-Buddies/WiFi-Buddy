@@ -220,6 +220,21 @@ public class WifiDirectHandler extends NonStopIntentService implements
         if (wifiP2pInfo.groupFormed) {
             stopServiceDiscovery();
 
+            // Requests peer-to-peer group information
+            wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
+                @Override
+                public void onGroupInfoAvailable(WifiP2pGroup wifiP2pGroup) {
+                    Log.i(TAG, "Group info available");
+                    if (wifiP2pGroup != null) {
+                        Log.i(TAG, "WifiP2pGroup:");
+                        Log.i(TAG, p2pGroupToString(wifiP2pGroup));
+                        WifiDirectHandler.this.wifiP2pGroup = wifiP2pGroup;
+                    } else {
+                        Log.w(TAG, "Group is null");
+                    }
+                }
+            });
+
             Thread handler;
             if (wifiP2pInfo.isGroupOwner) {
                 Log.i(TAG, "Connected as group owner");
@@ -741,22 +756,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
             Log.i(TAG, "Connected to P2P network. Requesting connection info");
             wifiP2pManager.requestConnectionInfo(channel, WifiDirectHandler.this);
         }
-
-        // Requests peer-to-peer group information
-        wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
-            @Override
-            public void onGroupInfoAvailable(WifiP2pGroup wifiP2pGroup) {
-                Log.i(TAG, "Group info available");
-                if (wifiP2pGroup != null) {
-                    Log.i(TAG, "WifiP2pGroup:");
-                    Log.i(TAG, p2pGroupToString(wifiP2pGroup));
-                    WifiDirectHandler.this.wifiP2pGroup = wifiP2pGroup;
-                } else {
-                    Log.w(TAG, "Group is null");
-                }
-            }
-        });
-
     }
 
     /**
