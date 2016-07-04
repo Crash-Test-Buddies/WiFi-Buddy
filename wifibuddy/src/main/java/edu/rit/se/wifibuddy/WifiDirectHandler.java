@@ -206,7 +206,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
         Log.i(TAG, "Connection info available");
-
+        invitationSent = false;
+        
         Log.i(TAG, "WifiP2pInfo: ");
         Log.i(TAG, p2pInfoToString(wifiP2pInfo));
         this.groupFormed = wifiP2pInfo.groupFormed;
@@ -591,7 +592,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
                         @Override
                         public void onSuccess() {
                             Log.i(TAG, "Initiating connection to service");
-                            invitationSent = false;
                         }
 
                         @Override
@@ -599,6 +599,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                             Log.e(TAG, "Failure initiating connection to service: " + FailureReason.fromInteger(reason).toString());
                         }
                     });
+                    invitationSent = true;
                 }
 
                 @Override
@@ -614,7 +615,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 @Override
                 public void onSuccess() {
                     Log.i(TAG, "Initiating connection to service");
-                    invitationSent = false;
                 }
 
                 @Override
