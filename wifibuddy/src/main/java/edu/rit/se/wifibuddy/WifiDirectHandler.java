@@ -138,6 +138,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
         if (wifiP2pManager != null) {
             wifiP2pManager = null;
             channel = null;
+            thisDevice = null;
+            localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
             Log.i(TAG, "Unregistered with Wi-Fi P2P framework");
         }
     }
@@ -231,10 +233,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
             }
 
             localBroadcastManager.sendBroadcast(new Intent(Action.SERVICE_CONNECTED));
-            localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
         } else {
             Log.w(TAG, "Group not formed");
         }
+        localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
     }
 
     // TODO add JavaDoc
@@ -544,7 +546,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             });
             wifiP2pServiceInfo = null;
         } else {
-            Log.i(TAG, "No local service to remove");
+            Log.w(TAG, "No local service to remove");
         }
     }
 
@@ -683,7 +685,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
             removeService();
             unregisterP2pReceiver();
             unregisterP2p();
-            localBroadcastManager.sendBroadcast(new Intent(Action.DEVICE_CHANGED));
         }
         localBroadcastManager.sendBroadcast(new Intent(Action.WIFI_STATE_CHANGED));
     }
