@@ -55,7 +55,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private LocalBroadcastManager localBroadcastManager;
     private BroadcastReceiver p2pBroadcastReceiver;
     private BroadcastReceiver wifiBroadcastReceiver;
-    private WifiP2pServiceInfo serviceInfo;
+    private WifiP2pServiceInfo wifiP2pServiceInfo;
     private WifiP2pServiceRequest serviceRequest;
     private Boolean isWifiP2pEnabled;
     private Handler handler = new Handler((Handler.Callback) this);
@@ -243,7 +243,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         Log.i(TAG, "Adding local service: " + serviceName);
 
         // Service information
-        serviceInfo = WifiP2pDnsSdServiceInfo.newInstance(
+        wifiP2pServiceInfo = WifiP2pDnsSdServiceInfo.newInstance(
                 serviceName,
                 ServiceType.PRESENCE_TCP.toString(),
                 serviceRecord
@@ -254,7 +254,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             @Override
             public void onSuccess() {
                 // Add the local service
-                wifiP2pManager.addLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
+                wifiP2pManager.addLocalService(channel, wifiP2pServiceInfo, new WifiP2pManager.ActionListener() {
                     @Override
                     public void onSuccess() {
                         Log.i(TAG, "Local service added");
@@ -263,7 +263,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                     @Override
                     public void onFailure(int reason) {
                         Log.e(TAG, "Failure adding local service: " + FailureReason.fromInteger(reason).toString());
-                        serviceInfo = null;
+                        wifiP2pServiceInfo = null;
                     }
                 });
             }
@@ -271,7 +271,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             @Override
             public void onFailure(int reason) {
                 Log.e(TAG, "Failure clearing local services: " + FailureReason.fromInteger(reason).toString());
-                serviceInfo = null;
+                wifiP2pServiceInfo = null;
             }
         });
     }
@@ -526,12 +526,12 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Removes a registered local service.
      */
     public void removeService() {
-        if(serviceInfo != null) {
+        if(wifiP2pServiceInfo != null) {
             Log.i(TAG, "Removing local service");
-            wifiP2pManager.removeLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
+            wifiP2pManager.removeLocalService(channel, wifiP2pServiceInfo, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
-                    serviceInfo = null;
+                    wifiP2pServiceInfo = null;
                     Intent intent = new Intent(Action.SERVICE_REMOVED);
                     localBroadcastManager.sendBroadcast(intent);
                     Log.i(TAG, "Local service removed");
@@ -542,7 +542,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                     Log.e(TAG, "Failure removing local service: " + FailureReason.fromInteger(reason).toString());
                 }
             });
-            serviceInfo = null;
+            wifiP2pServiceInfo = null;
         } else {
             Log.i(TAG, "No local service to remove");
         }
@@ -597,7 +597,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * wifi direct, but the effect is the same.
      */
     public void startAddingNoPromptService(ServiceData serviceData) {
-        if (serviceInfo != null) {
+        if (wifiP2pServiceInfo != null) {
             removeService();
         }
         isCreatingNoPrompt = true;
@@ -967,6 +967,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     public WifiP2pDevice getThisDevice() {
-        return thisDevice;
+        return this.thisDevice;
+    }
+
+    public WifiP2pServiceInfo getWifiP2pServiceInfo() {
+        return this.wifiP2pServiceInfo;
     }
 }
