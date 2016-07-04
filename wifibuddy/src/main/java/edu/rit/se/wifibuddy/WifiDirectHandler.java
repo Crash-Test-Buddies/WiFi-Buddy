@@ -29,6 +29,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +83,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     private WifiP2pDevice thisDevice;
     private WifiP2pGroup wifiP2pGroup;
-    private WifiP2pDeviceList clientList;
+    private Collection<WifiP2pDevice> clientList;
     private WifiP2pDevice groupOwner;
 
     /** Constructor **/
@@ -751,7 +752,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                     Log.i(TAG, p2pGroupToString(wifiP2pGroup));
                     WifiDirectHandler.this.wifiP2pGroup = wifiP2pGroup;
                     WifiDirectHandler.this.groupOwner = wifiP2pGroup.getOwner();
-                    WifiDirectHandler.this.clientList = (WifiP2pDeviceList) wifiP2pGroup.getClientList();
+                    WifiDirectHandler.this.clientList = wifiP2pGroup.getClientList();
                 } else {
                     Log.w(TAG, "Group is null");
                 }
@@ -990,7 +991,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
         return this.groupOwner;
     }
 
-    public WifiP2pDeviceList getClientList() {
+    public Collection<WifiP2pDevice> getClientList() {
         return this.clientList;
     }
 
