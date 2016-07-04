@@ -85,7 +85,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private WifiP2pGroup wifiP2pGroup;
     private Collection<WifiP2pDevice> clientList;
     private WifiP2pDevice groupOwner;
-    private WifiP2pInfo wifiP2pInfo;
 
     /** Constructor **/
     public WifiDirectHandler() {
@@ -213,7 +212,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
     public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
         Log.i(TAG, "Connection info available");
 
-        this.wifiP2pInfo = wifiP2pInfo;
         Log.i(TAG, "WifiP2pInfo: ");
         Log.i(TAG, p2pInfoToString(wifiP2pInfo));
         this.groupFormed = wifiP2pInfo.groupFormed;
@@ -221,6 +219,22 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
         if (wifiP2pInfo.groupFormed) {
             stopServiceDiscovery();
+
+            Thread handler;
+            if (wifiP2pInfo.isGroupOwner) {
+                Log.i(TAG, "Connected as group owner");
+                try {
+                    handler = new OwnerSocketHandler(this.getHandler());
+                    handler.start();
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to create a server thread - " + e.getMessage());
+                    return;
+                }
+            } else {
+                Log.i(TAG, "Connected as client");
+                handler = new ClientSocketHandler(this.getHandler(), wifiP2pInfo.groupOwnerAddress);
+                handler.start();
+            }
 
             Log.i(TAG, "Requesting group info");
             // Requests peer-to-peer group information
@@ -235,26 +249,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
                     } else {
                         Log.w(TAG, "Group is null");
                     }
-
-                    Thread handler;
-                    if (WifiDirectHandler.this.wifiP2pInfo.isGroupOwner) {
-                        Log.i(TAG, "Connected as group owner");
-                        try {
-                            handler = new OwnerSocketHandler(WifiDirectHandler.this.getHandler());
-                            handler.start();
-                        } catch (IOException e) {
-                            Log.e(TAG, "Failed to create a server thread - " + e.getMessage());
-                            return;
-                        }
-                    } else {
-                        Log.i(TAG, "Connected as client");
-                        handler = new ClientSocketHandler(WifiDirectHandler.this.getHandler(), WifiDirectHandler.this.wifiP2pInfo.groupOwnerAddress);
-                        handler.start();
-                    }
-
                     localBroadcastManager.sendBroadcast(new Intent(Action.SERVICE_CONNECTED));
                 }
             });
+
         } else {
             Log.w(TAG, "Group not formed");
         }
