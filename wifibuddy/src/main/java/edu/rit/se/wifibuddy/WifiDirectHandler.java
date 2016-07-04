@@ -929,6 +929,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
                     strWifiP2pGroup += "\nClient: ";
                     strWifiP2pGroup += "\n" + p2pDeviceToString(client);
                 }
+            } else {
+                strWifiP2pGroup += "\nClient list is empty.";
             }
             return strWifiP2pGroup;
         } else {
