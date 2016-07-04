@@ -70,6 +70,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private boolean isGroupOwner = false;
     private boolean groupFormed = false;
     private boolean serviceDiscoveryRegistered = false;
+    private boolean invitationSent = false;
 
     // Flag for creating a no prompt service
     private boolean isCreatingNoPrompt = false;
@@ -575,34 +576,54 @@ public class WifiDirectHandler extends NonStopIntentService implements
         wifiP2pConfig.deviceAddress = service.getSrcDevice().deviceAddress;
         wifiP2pConfig.wps.setup = WpsInfo.PBC;
 
-        // Cancel any ongoing invitation to connect
-        // Allows you to try to connect to a service again after the source device declines
-        wifiP2pManager.cancelConnect(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Log.i(TAG, "Existing connection invitations cancelled");
+        if (invitationSent) {
+            // Cancel any ongoing invitation to connect
+            // Allows you to try to connect to a service again after the source device declines
+            wifiP2pManager.cancelConnect(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.i(TAG, "Existing connection invitations cancelled");
 
-                // Starts a peer-to-peer connection with a device with the specified configuration
-                wifiP2pManager.connect(channel, wifiP2pConfig, new WifiP2pManager.ActionListener() {
-                    // The ActionListener only notifies that initiation of connection has succeeded or failed
+                    // Starts a peer-to-peer connection with a device with the specified configuration
+                    wifiP2pManager.connect(channel, wifiP2pConfig, new WifiP2pManager.ActionListener() {
+                        // The ActionListener only notifies that initiation of connection has succeeded or failed
 
-                    @Override
-                    public void onSuccess() {
-                        Log.i(TAG, "Initiating connection to service");
-                    }
+                        @Override
+                        public void onSuccess() {
+                            Log.i(TAG, "Initiating connection to service");
+                            invitationSent = false;
+                        }
 
-                    @Override
-                    public void onFailure(int reason) {
-                        Log.e(TAG, "Failure initiating connection to service: " + FailureReason.fromInteger(reason).toString());
-                    }
-                });
-            }
+                        @Override
+                        public void onFailure(int reason) {
+                            Log.e(TAG, "Failure initiating connection to service: " + FailureReason.fromInteger(reason).toString());
+                        }
+                    });
+                }
 
-            @Override
-            public void onFailure(int reason) {
-                Log.e(TAG, "Failure canceling ongoing invitation to connect: " + FailureReason.fromInteger(reason).toString());
-            }
-        });
+                @Override
+                public void onFailure(int reason) {
+                    Log.e(TAG, "Failure canceling ongoing invitation to connect: " + FailureReason.fromInteger(reason).toString());
+                }
+            });
+        } else {
+            // Starts a peer-to-peer connection with a device with the specified configuration
+            wifiP2pManager.connect(channel, wifiP2pConfig, new WifiP2pManager.ActionListener() {
+                // The ActionListener only notifies that initiation of connection has succeeded or failed
+
+                @Override
+                public void onSuccess() {
+                    Log.i(TAG, "Initiating connection to service");
+                    invitationSent = false;
+                }
+
+                @Override
+                public void onFailure(int reason) {
+                    Log.e(TAG, "Failure initiating connection to service: " + FailureReason.fromInteger(reason).toString());
+                }
+            });
+            invitationSent = true;
+        }
     }
 
     /**
