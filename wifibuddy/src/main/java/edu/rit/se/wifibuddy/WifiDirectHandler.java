@@ -700,6 +700,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
             wifiP2pManager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
                 @Override
                 public void onPeersAvailable(WifiP2pDeviceList peers) {
+                    for (WifiP2pDevice peer : peers.getDeviceList()) {
+                        Log.i(TAG, "Peer: ");
+                        Log.i(TAG, p2pDeviceToString(peer));
+                    }
                     WifiDirectHandler.this.peers = peers;
                     Intent intent = new Intent(Action.PEERS_CHANGED);
                     intent.putExtra(PEERS, peers);
