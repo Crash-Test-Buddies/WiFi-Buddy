@@ -325,7 +325,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     /**
      * Removes the current WifiP2pGroup in the WifiP2pChannel.
      */
-    private void removeGroup() {
+    public void removeGroup() {
         if (wifiP2pGroup != null) {
             wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
                 @Override
