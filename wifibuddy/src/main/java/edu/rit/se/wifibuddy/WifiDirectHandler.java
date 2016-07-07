@@ -816,7 +816,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 break;
             case COMMUNICATION_DISCONNECTED:
                 Log.i(TAG, "Handling communication disconnect");
-                // TODO: handle disconnect
+                localBroadcastManager.sendBroadcast(new Intent(Action.COMMUNICATION_DISCONNECTED));
                 break;
         }
         return true;
@@ -846,7 +846,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 SERVICE_CONNECTED = "serviceConnected",
                 DEVICE_CHANGED = "deviceChanged",
                 MESSAGE_RECEIVED = "messageReceived",
-                WIFI_STATE_CHANGED = "wifiStateChanged";
+                WIFI_STATE_CHANGED = "wifiStateChanged",
+                COMMUNICATION_DISCONNECTED = "communicationDisconnected";
     }
 
     private class Keys {
