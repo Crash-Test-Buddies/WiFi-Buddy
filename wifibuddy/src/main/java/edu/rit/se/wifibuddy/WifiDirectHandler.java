@@ -375,14 +375,12 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
                 Log.i(TAG, "DNS-SD service available");
                 Log.i(TAG, "Local service found: " + instanceName);
-                if (instanceName.equalsIgnoreCase(ANDROID_SERVICE_NAME)) {
-                    Log.i("TAG", "Source device: ");
-                    Log.i(TAG, p2pDeviceToString(srcDevice));
-                    dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
-                    Intent intent = new Intent(Action.DNS_SD_SERVICE_AVAILABLE);
-                    intent.putExtra(SERVICE_MAP_KEY, srcDevice.deviceAddress);
-                    localBroadcastManager.sendBroadcast(intent);
-                }
+                Log.i("TAG", "Source device: ");
+                Log.i(TAG, p2pDeviceToString(srcDevice));
+                dnsSdServiceMap.put(srcDevice.deviceAddress, new DnsSdService(instanceName, registrationType, srcDevice));
+                Intent intent = new Intent(Action.DNS_SD_SERVICE_AVAILABLE);
+                intent.putExtra(SERVICE_MAP_KEY, srcDevice.deviceAddress);
+                localBroadcastManager.sendBroadcast(intent);
             }
         };
 
