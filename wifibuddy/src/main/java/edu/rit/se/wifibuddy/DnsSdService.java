@@ -17,6 +17,7 @@ public class DnsSdService{
         this.srcDevice = srcDevice;
     }
 
+    public String getInstanceName() { return instanceName; }
     public WifiP2pDevice getSrcDevice() {
         return srcDevice;
     }
