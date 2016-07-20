@@ -38,7 +38,7 @@ import java.util.TimerTask;
 // TODO: Add JavaDoc
 public class WifiDirectHandler extends NonStopIntentService implements
         WifiP2pManager.ConnectionInfoListener,
-        Handler.Callback{
+        Handler.Callback {
 
     private static final String ANDROID_SERVICE_NAME = "Wi-Fi Buddy";
     public static final String TAG = "wfd_";
@@ -231,7 +231,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 handler.start();
             }
 
-            localBroadcastManager.sendBroadcast(new Intent(Action.SERVICE_CONNECTED));
+//            localBroadcastManager.sendBroadcast(new Intent(Action.SERVICE_CONNECTED));
         } else {
             Log.w(TAG, "Group not formed");
         }
@@ -725,6 +725,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
         if(networkInfo.isConnected()) {
             Log.i(TAG, "Connected to P2P network. Requesting connection info");
             wifiP2pManager.requestConnectionInfo(channel, WifiDirectHandler.this);
+        } else {
+            Intent disconnected = new Intent(Action.COMMUNICATION_DISCONNECTED);
+            localBroadcastManager.sendBroadcast(disconnected);
         }
 
         // Requests peer-to-peer group information
@@ -811,6 +814,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             case MY_HANDLE:
                 Object messageObject = msg.obj;
                 communicationManager = (CommunicationManager) messageObject;
+                localBroadcastManager.sendBroadcast(new Intent(Action.SERVICE_CONNECTED));
                 break;
             case COMMUNICATION_DISCONNECTED:
                 Log.i(TAG, "Handling communication disconnect");
