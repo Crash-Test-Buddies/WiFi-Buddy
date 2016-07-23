@@ -695,9 +695,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     private void handleScanResultsAvailable(Intent intent) {
         Log.i(TAG, "Wi-Fi scan results available");
-        List<ScanResult> scanResults = wifiManager.getScanResults();
-        for (ScanResult scanResult : scanResults) {
-            Log.i(TAG, scanResult.toString());
+        List<ScanResult> wifiScanResults = wifiManager.getScanResults();
+        for (ScanResult wifiScanResult : wifiScanResults) {
+            Log.i(TAG, wifiScanResult.BSSID);
+            Log.i(TAG, wifiScanResult.SSID);
         }
     }
 
