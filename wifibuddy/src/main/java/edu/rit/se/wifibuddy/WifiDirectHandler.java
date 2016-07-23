@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.NetworkInfo;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WpsInfo;
@@ -104,6 +105,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
         wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
         registerWifiReceiver();
 
+        // Scans for available Wi-Fi networks
+        wifiManager.startScan();
+
         if (wifiManager.isWifiEnabled()) {
             Log.i(TAG, "Wi-Fi enabled on load");
         } else {
@@ -180,6 +184,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
         // Indicates that Wi-Fi has been enabled, disabled, enabling, disabling, or unknown
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         registerReceiver(wifiBroadcastReceiver, intentFilter);
         Log.i(TAG, "Wi-Fi BroadcastReceiver registered");
     }
@@ -665,6 +670,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
             handleThisDeviceChanged(intent);
         } else if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(action)) {
             handleWifiStateChanged(intent);
+        } else if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(action)) {
+            handleScanResultsAvailable(intent);
         }
     }
 
@@ -684,6 +691,14 @@ public class WifiDirectHandler extends NonStopIntentService implements
             unregisterP2p();
         }
         localBroadcastManager.sendBroadcast(new Intent(Action.WIFI_STATE_CHANGED));
+    }
+
+    private void handleScanResultsAvailable(Intent intent) {
+        Log.i(TAG, "Wi-Fi scan results available");
+        List<ScanResult> scanResults = wifiManager.getScanResults();
+        for (ScanResult scanResult : scanResults) {
+            Log.i(TAG, scanResult.toString());
+        }
     }
 
     /**
