@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.NetworkInfo;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WpsInfo;
@@ -82,6 +83,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     private WifiP2pDevice thisDevice;
     private WifiP2pGroup wifiP2pGroup;
+    private List<ScanResult> wifiScanResults;
 
     /** Constructor **/
     public WifiDirectHandler() {
@@ -103,6 +105,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
         // Registers the Wi-Fi Manager and the Wi-Fi BroadcastReceiver
         wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
         registerWifiReceiver();
+
+        // Scans for available Wi-Fi networks
+        wifiManager.startScan();
 
         if (wifiManager.isWifiEnabled()) {
             Log.i(TAG, "Wi-Fi enabled on load");
@@ -180,6 +185,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
         // Indicates that Wi-Fi has been enabled, disabled, enabling, disabling, or unknown
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         registerReceiver(wifiBroadcastReceiver, intentFilter);
         Log.i(TAG, "Wi-Fi BroadcastReceiver registered");
     }
@@ -665,6 +671,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
             handleThisDeviceChanged(intent);
         } else if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(action)) {
             handleWifiStateChanged(intent);
+        } else if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(action)) {
+            handleScanResultsAvailable(intent);
         }
     }
 
@@ -684,6 +692,25 @@ public class WifiDirectHandler extends NonStopIntentService implements
             unregisterP2p();
         }
         localBroadcastManager.sendBroadcast(new Intent(Action.WIFI_STATE_CHANGED));
+    }
+
+    private void handleScanResultsAvailable(Intent intent) {
+        Log.i(TAG, "Wi-Fi scan results available");
+        wifiScanResults = wifiManager.getScanResults();
+        Log.i(TAG, "There are " + (wifiScanResults.size() - 1) + " available networks");
+        for (ScanResult wifiScanResult : wifiScanResults) {
+            Log.i(TAG, wifiScanResult.SSID);
+        }
+
+        // Unregister the Wi-Fi receiver and register it again without the SCAN_RESULTS action
+        unregisterWifiReceiver();
+        wifiBroadcastReceiver = new WifiBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+
+        // Indicates that Wi-Fi has been enabled, disabled, enabling, disabling, or unknown
+        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        registerReceiver(wifiBroadcastReceiver, intentFilter);
+        Log.i(TAG, "Wi-Fi BroadcastReceiver registered");
     }
 
     /**
@@ -973,5 +1000,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     public WifiP2pServiceInfo getWifiP2pServiceInfo() {
         return this.wifiP2pServiceInfo;
+    }
+
+    public List<ScanResult> getWifiScanResults() {
+        return wifiScanResults;
     }
 }
