@@ -697,10 +697,18 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private void handleScanResultsAvailable(Intent intent) {
         Log.i(TAG, "Wi-Fi scan results available");
         wifiScanResults = wifiManager.getScanResults();
-        Log.i(TAG, "There are " + wifiScanResults.size() + " available networks");
+        Log.i(TAG, "There are " + (wifiScanResults.size() - 1) + " available networks");
         for (ScanResult wifiScanResult : wifiScanResults) {
             Log.i(TAG, wifiScanResult.SSID);
         }
+        unregisterWifiReceiver();
+        wifiBroadcastReceiver = new WifiBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+
+        // Indicates that Wi-Fi has been enabled, disabled, enabling, disabling, or unknown
+        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        registerReceiver(wifiBroadcastReceiver, intentFilter);
+        Log.i(TAG, "Wi-Fi BroadcastReceiver registered");
     }
 
     /**
