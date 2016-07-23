@@ -999,4 +999,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
     public WifiP2pServiceInfo getWifiP2pServiceInfo() {
         return this.wifiP2pServiceInfo;
     }
+
+    public List<ScanResult> getWifiScanResults() {
+        return wifiScanResults;
+    }
 }
