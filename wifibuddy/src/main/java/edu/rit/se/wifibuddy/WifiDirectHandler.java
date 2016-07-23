@@ -701,6 +701,8 @@ public class WifiDirectHandler extends NonStopIntentService implements
         for (ScanResult wifiScanResult : wifiScanResults) {
             Log.i(TAG, wifiScanResult.SSID);
         }
+
+        // Unregister the Wi-Fi receiver and register it again without the SCAN_RESULTS action
         unregisterWifiReceiver();
         wifiBroadcastReceiver = new WifiBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter();
