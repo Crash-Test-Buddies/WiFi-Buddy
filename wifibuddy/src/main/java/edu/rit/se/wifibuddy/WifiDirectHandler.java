@@ -48,6 +48,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     public static final String SERVICE_MAP_KEY = "serviceMapKey";
     public static final String MESSAGE_KEY = "messageKey";
     private final String PEERS = "peers";
+    private final String WIFI_STATE = "wifiState";
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
     private Map<String, DnsSdService> dnsSdServiceMap;
@@ -691,7 +692,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
             unregisterP2pReceiver();
             unregisterP2p();
         }
-        localBroadcastManager.sendBroadcast(new Intent(Action.WIFI_STATE_CHANGED));
+        Intent wifiStateChangedIntent = new Intent(Action.WIFI_STATE_CHANGED);
+        wifiStateChangedIntent.putExtra(WIFI_STATE, wifiState);
+        localBroadcastManager.sendBroadcast(wifiStateChangedIntent);
     }
 
     private void handleScanResultsAvailable(Intent intent) {
@@ -758,13 +761,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
         wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
             @Override
             public void onGroupInfoAvailable(WifiP2pGroup wifiP2pGroup) {
-                Log.i(TAG, "Group info available");
                 if (wifiP2pGroup != null) {
+                    Log.i(TAG, "Group info available");
                     Log.i(TAG, "WifiP2pGroup:");
                     Log.i(TAG, p2pGroupToString(wifiP2pGroup));
                     WifiDirectHandler.this.wifiP2pGroup = wifiP2pGroup;
-                } else {
-                    Log.w(TAG, "Group is null");
                 }
             }
         });
