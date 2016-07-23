@@ -83,6 +83,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     private WifiP2pDevice thisDevice;
     private WifiP2pGroup wifiP2pGroup;
+    private List<ScanResult> wifiScanResults;
 
     /** Constructor **/
     public WifiDirectHandler() {
@@ -191,6 +192,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     public void unregisterWifiReceiver() {
         if (wifiBroadcastReceiver != null) {
+            wifiBroadcastReceiver.abortBroadcast();
             unregisterReceiver(wifiBroadcastReceiver);
             wifiBroadcastReceiver = null;
             Log.i(TAG, "Wi-Fi BroadcastReceiver unregistered");
@@ -695,11 +697,13 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     private void handleScanResultsAvailable(Intent intent) {
         Log.i(TAG, "Wi-Fi scan results available");
-        List<ScanResult> wifiScanResults = wifiManager.getScanResults();
+        wifiScanResults = wifiManager.getScanResults();
+        Log.i(TAG, "There are " + wifiScanResults.size() + " available networks");
         for (ScanResult wifiScanResult : wifiScanResults) {
-            Log.i(TAG, wifiScanResult.BSSID);
             Log.i(TAG, wifiScanResult.SSID);
         }
+        unregisterWifiReceiver();
+        registerWifiReceiver();
     }
 
     /**
