@@ -192,7 +192,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     public void unregisterWifiReceiver() {
         if (wifiBroadcastReceiver != null) {
-            wifiBroadcastReceiver.abortBroadcast();
             unregisterReceiver(wifiBroadcastReceiver);
             wifiBroadcastReceiver = null;
             Log.i(TAG, "Wi-Fi BroadcastReceiver unregistered");
@@ -702,8 +701,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
         for (ScanResult wifiScanResult : wifiScanResults) {
             Log.i(TAG, wifiScanResult.SSID);
         }
-        unregisterWifiReceiver();
-        registerWifiReceiver();
     }
 
     /**
