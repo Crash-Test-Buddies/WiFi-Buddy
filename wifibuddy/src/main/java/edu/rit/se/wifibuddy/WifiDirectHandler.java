@@ -689,7 +689,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
             // Remove local service, unregister app with Wi-Fi P2P framework, unregister P2pReceiver
             Log.i(TAG, "Wi-Fi disabled");
             clearServiceDiscoveryRequests();
-            removeService();
+            if (wifiP2pServiceInfo != null) {
+                removeService();
+            }
             unregisterP2pReceiver();
             unregisterP2p();
         }
