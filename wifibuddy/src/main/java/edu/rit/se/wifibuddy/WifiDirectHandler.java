@@ -48,6 +48,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     public static final String SERVICE_MAP_KEY = "serviceMapKey";
     public static final String MESSAGE_KEY = "messageKey";
     private final String PEERS = "peers";
+    private final String WIFI_STATE = "wifiState";
 
     private Map<String, DnsSdTxtRecord> dnsSdTxtRecordMap;
     private Map<String, DnsSdService> dnsSdServiceMap;
@@ -181,12 +182,12 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     public void registerWifiReceiver() {
         wifiBroadcastReceiver = new WifiBroadcastReceiver();
-        IntentFilter intentFilter = new IntentFilter();
+        IntentFilter wifiIntentFilter = new IntentFilter();
 
         // Indicates that Wi-Fi has been enabled, disabled, enabling, disabling, or unknown
-        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-        registerReceiver(wifiBroadcastReceiver, intentFilter);
+        wifiIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        wifiIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        registerReceiver(wifiBroadcastReceiver, wifiIntentFilter);
         Log.i(TAG, "Wi-Fi BroadcastReceiver registered");
     }
 
@@ -665,7 +666,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             handleConnectionChanged(intent);
         } else if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
             // Indicates whether Wi-Fi P2P is enabled
-            handleStateChanged(intent);
+            handleP2pStateChanged(intent);
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             // Indicates this device's configuration details have changed
             handleThisDeviceChanged(intent);
@@ -677,6 +678,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     private void handleWifiStateChanged(Intent intent) {
+        Log.i(TAG, "Wi-Fi state changed");
         int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
         if (wifiState == WifiManager.WIFI_STATE_ENABLED) {
             // Register app with Wi-Fi P2P framework, register WifiDirectBroadcastReceiver
@@ -687,7 +689,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
             // Remove local service, unregister app with Wi-Fi P2P framework, unregister P2pReceiver
             Log.i(TAG, "Wi-Fi disabled");
             clearServiceDiscoveryRequests();
-            removeService();
+            if (wifiP2pServiceInfo != null) {
+                removeService();
+            }
             unregisterP2pReceiver();
             unregisterP2p();
         }
@@ -758,13 +762,11 @@ public class WifiDirectHandler extends NonStopIntentService implements
         wifiP2pManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
             @Override
             public void onGroupInfoAvailable(WifiP2pGroup wifiP2pGroup) {
-                Log.i(TAG, "Group info available");
                 if (wifiP2pGroup != null) {
+                    Log.i(TAG, "Group info available");
                     Log.i(TAG, "WifiP2pGroup:");
                     Log.i(TAG, p2pGroupToString(wifiP2pGroup));
                     WifiDirectHandler.this.wifiP2pGroup = wifiP2pGroup;
-                } else {
-                    Log.w(TAG, "Group is null");
                 }
             }
         });
@@ -778,7 +780,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Sticky Intent
      * @param intent
      */
-    private void handleStateChanged(Intent intent) {
+    private void handleP2pStateChanged(Intent intent) {
         Log.i(TAG, "Wi-Fi P2P State Changed:");
         int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
         if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
