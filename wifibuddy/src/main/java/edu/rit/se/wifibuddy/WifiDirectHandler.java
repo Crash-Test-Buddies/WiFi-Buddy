@@ -694,6 +694,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
             unregisterP2pReceiver();
             unregisterP2p();
         }
+        Log.e(TAG, "TESTTTT");
         localBroadcastManager.sendBroadcast(new Intent(Action.WIFI_STATE_CHANGED));
     }
 
