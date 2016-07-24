@@ -658,7 +658,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
     protected void onHandleIntent(Intent intent) {
         String action = intent.getAction();
 
-        Log.i(TAG, "Handling intent: " + action);
         if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
             // The list of discovered peers has changed
             handlePeersChanged(intent);
@@ -694,7 +693,6 @@ public class WifiDirectHandler extends NonStopIntentService implements
             unregisterP2pReceiver();
             unregisterP2p();
         }
-        Log.e(TAG, "TESTTTT");
         localBroadcastManager.sendBroadcast(new Intent(Action.WIFI_STATE_CHANGED));
     }
 
