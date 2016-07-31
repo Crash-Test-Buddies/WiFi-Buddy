@@ -1,12 +1,15 @@
 package edu.rit.se.wifibuddy;
 
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InterfaceAddress;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
@@ -31,23 +34,27 @@ public class CommunicationManager implements Runnable {
         try {
             InputStream inputStream = socket.getInputStream();
             outputStream = socket.getOutputStream();
-            byte[] buffer = new byte[1024];
+            byte[] messageSizeBuffer = new byte[Integer.SIZE/Byte.SIZE];
+            int messageSize;
+            byte[] buffer;// = new byte[1024];
             int bytes;
             handler.obtainMessage(WifiDirectHandler.MY_HANDLE, this).sendToTarget();
 
             while (true) {
                 try {
                     // Read from the InputStream
+                    inputStream.read(messageSizeBuffer);
+                    bytes = messageSize = ByteBuffer.wrap(messageSizeBuffer).getInt();
+                    if (bytes == -1) { break; }
+
+                    buffer = new byte[messageSize];
                     bytes = inputStream.read(buffer);
-                    if (bytes == -1) {
-                        break;
-                    }
+                    if (bytes == -1) { break; }
 
                     // Send the obtained bytes to the UI Activity
                     Log.i(TAG, "Rec:" + Arrays.toString(buffer));
                     handler.obtainMessage(WifiDirectHandler.MESSAGE_READ,
-                            bytes, -1, buffer.clone()).sendToTarget();
-                    buffer = new byte[1024];
+                            bytes, -1, buffer).sendToTarget();
                 } catch (IOException e) {
                     // Sends a message to WifiDirectHandler to handle the disconnect
                     handler.obtainMessage(WifiDirectHandler.COMMUNICATION_DISCONNECTED, this).sendToTarget();
@@ -66,9 +73,14 @@ public class CommunicationManager implements Runnable {
         }
     }
 
-    public void write(byte[] buffer) {
+    public void write(byte[] message) {
         try {
-            outputStream.write(buffer);
+            ByteBuffer sizeBuffer = ByteBuffer.allocate(Integer.SIZE/Byte.SIZE);
+            byte[] sizeArray = sizeBuffer.putInt(message.length).array();
+            byte[] completeMessage = new byte[sizeArray.length + message.length];
+            System.arraycopy(sizeArray, 0, completeMessage, 0, sizeArray.length);
+            System.arraycopy(message, 0, completeMessage, sizeArray.length, message.length);
+            outputStream.write(completeMessage);
         } catch (IOException e) {
             Log.e(TAG, "Exception during write", e);
         }
