@@ -43,9 +43,10 @@ public class CommunicationManager implements Runnable {
             while (true) {
                 try {
                     // Read from the InputStream
-                    inputStream.read(messageSizeBuffer);
-                    bytes = messageSize = ByteBuffer.wrap(messageSizeBuffer).getInt();
+                    bytes = inputStream.read(messageSizeBuffer);
                     if (bytes == -1) { break; }
+                    messageSize = ByteBuffer.wrap(messageSizeBuffer).getInt();
+                    Log.i(TAG, "message size: " + messageSize);
 
                     buffer = new byte[messageSize];
                     bytes = inputStream.read(buffer);
