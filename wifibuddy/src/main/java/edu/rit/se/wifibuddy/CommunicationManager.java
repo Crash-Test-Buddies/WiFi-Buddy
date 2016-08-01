@@ -38,6 +38,7 @@ public class CommunicationManager implements Runnable {
             int messageSize;
             byte[] buffer;// = new byte[1024];
             int bytes;
+            int totalBytes;
             handler.obtainMessage(WifiDirectHandler.MY_HANDLE, this).sendToTarget();
 
             while (true) {
@@ -50,6 +51,11 @@ public class CommunicationManager implements Runnable {
 
                     buffer = new byte[messageSize];
                     bytes = inputStream.read(buffer);
+                    totalBytes = bytes;
+                    while (bytes != -1 && totalBytes < messageSize) {
+                        bytes = inputStream.read(buffer, totalBytes, messageSize - totalBytes);
+                        totalBytes += bytes;
+                    }
                     if (bytes == -1) { break; }
 
                     // Send the obtained bytes to the UI Activity
