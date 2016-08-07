@@ -61,6 +61,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private WifiP2pServiceRequest serviceRequest;
     private Boolean isWifiP2pEnabled;
     private Handler handler = new Handler((Handler.Callback) this);
+    private Thread socketHandler;
     private CommunicationManager communicationManager = null;
     public static final int MESSAGE_READ = 0x400 + 1;
     public static final int MY_HANDLE = 0x400 + 2;
@@ -221,21 +222,20 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
         if (wifiP2pInfo.groupFormed) {
             stopServiceDiscovery();
-
-            Thread handler;
-            if (wifiP2pInfo.isGroupOwner) {
+//            Thread handler;
+            if (wifiP2pInfo.isGroupOwner && socketHandler == null) {
                 Log.i(TAG, "Connected as group owner");
                 try {
-                    handler = new OwnerSocketHandler(this.getHandler());
-                    handler.start();
+                    socketHandler = new OwnerSocketHandler(this.getHandler());
+                    socketHandler.start();
                 } catch (IOException e) {
                     Log.e(TAG, "Failed to create a server thread - " + e.getMessage());
                     return;
                 }
             } else {
                 Log.i(TAG, "Connected as peer");
-                handler = new ClientSocketHandler(this.getHandler(), wifiP2pInfo.groupOwnerAddress);
-                handler.start();
+                socketHandler = new ClientSocketHandler(this.getHandler(), wifiP2pInfo.groupOwnerAddress);
+                socketHandler.start();
             }
 
 //            localBroadcastManager.sendBroadcast(new Intent(Action.SERVICE_CONNECTED));
