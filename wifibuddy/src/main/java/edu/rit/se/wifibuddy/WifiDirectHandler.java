@@ -46,6 +46,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private final IBinder binder = new WifiTesterBinder();
 
     public static final String SERVICE_MAP_KEY = "serviceMapKey";
+    public static final String TXT_MAP_KEY = "txtMapKey";
     public static final String MESSAGE_KEY = "messageKey";
     private final String PEERS = "peers";
     private final String WIFI_STATE = "wifiState";
@@ -366,6 +367,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 Log.i(TAG, "Peer DNS-SD TXT Record available");
 
                 Intent intent = new Intent(Action.DNS_SD_TXT_RECORD_AVAILABLE);
+                intent.putExtra(TXT_MAP_KEY, srcDevice.deviceAddress);
                 localBroadcastManager.sendBroadcast(intent);
                 dnsSdTxtRecordMap.put(srcDevice.deviceAddress, new DnsSdTxtRecord(fullDomainName, txtRecordMap, srcDevice));
             }
