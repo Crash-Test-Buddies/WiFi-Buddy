@@ -36,6 +36,7 @@ Tester App
 Build the project with gradle and you are good to go.
 
 1) Create an Android Studio Project
+
 2) It is easiest to use JitPack to add the library to your project. Add JitPack as a dependency in the `build.gradle` project file
 
 ```
@@ -61,7 +62,7 @@ allprojects {
 
 `compile 'com.github.Crash-Test-Buddies:WiFi-Buddy:v0.8.0'`
 
-4) Set the min SDK to 16 in the `build.gradle` file, this is becasue WiFi-Direct requires Android 4.1 or greater.
+4) Set the min SDK to 16 in the `build.gradle` file. This is because Wi-Fi Direct requires Android 4.1 or greater.
 
 ```
 android {
@@ -131,7 +132,7 @@ private ServiceConnection wifiServiceConnection = new ServiceConnection() {
 };
 ```
 
-6) Create and locally register a BroadcastReceiver to listen for the intents you want from the library.
+6) Create and locally register a BroadcastReceiver to listen for the Intents you want from the library.
 
 ```
 IntentFilter filter = new IntentFilter();
@@ -157,13 +158,13 @@ Intent intent = new Intent(this, WifiDirectHandler.class);
 bindService(intent, wifiServiceConnection, BIND_AUTO_CREATE);
 ```
 
-When this has successfully completed the `onServiceConnected` method from step 5 will be called. At this point you are ready to use the library. Outlined below are some of the features you may wish to use with the `WifiDirectHandler` instance you now have.
+When this has successfully completed, the `onServiceConnected` method from step 5 will be called. At this point you are ready to use the library. Outlined below are some of the features you may wish to use with the `WifiDirectHandler` instance you now have.
 
 ### Registering a P2P Service
 
 `addLocalService(String serviceName, HashMap<String,String> serviceRecord)`
 
-This function brodcasts a service out for other WiFi-Direct enabled devices to discover. You will want to name your service and provide any additional records you want to associate with it. Records are visible to another device when it discovers your service. You do not need to provide any records.
+This function brodcasts a service out for other Wi-Fi Direct enabled devices to discover. You will want to name your service and provide any additional records you want to associate with it. Records are visible to another device when it discovers your service. You do not need to provide any records.
 
 ### Discovering a P2P Service
 
@@ -171,14 +172,14 @@ This function brodcasts a service out for other WiFi-Direct enabled devices to d
 
 This method adds a service discovery request and begins discovering services. As it discovers the services, they are stored for later access. Using Android's API, service discovery times out after 2 minutes without giving any warning whatsoever to the application. Fortunately this library uses a timer to resume service discovery every two minutes in order to prevent frustration.
 
-As services are discovered, two different intents may be locally broadcast by the library for an application to listen for. 
+As services are discovered, two different Intents may be locally broadcast by the library for an application to listen for. 
 
 - `WifiDirectHandler.Action.DNS_SD_TXT_RECORD_AVAILABLE` - A Bonjour text record is available. If you have been following along this would indicate that a service record from the previous _Registering a P2P Service_ section has been found. This intent contains a String extra holding the device address of the discovered device. This extra can be accessed using `WifiDirectHandler.TXT_MAP_KEY`. The actual results can be found by calling `getDnsSdTxtRecordMap()` and keying the resulting map using the device address. 
 - `WifiDirectHandlerAction.DNS_SD_SERVICE_AVAILABLE` - A Bonjour service discovery response has been received. This intent contains a String extra holding the device address of the discovered device. This extra can be accessed using `WifiDirectHandler.SERVICE_MAP_KEY`. The actual results can be found by calling `getDnsSdServiceMap()` and keying the resulting map using the device address.
 
 ### Connecting to a Discovered P2P Service
 
-Using the service you found within `getDnsSdServiceMap` in the previous step, call `initiateConnectToService(DnsSdService service)` when the `WifiDirectHandler.Action.SERVICE_CONNECTED` intent is broadcast that indicates that the connection is complete and you are ready to send messages back and forth between devices.
+Using the service you found within `getDnsSdServiceMap` in the previous step, call `initiateConnectToService(DnsSdService service)` when the `WifiDirectHandler.Action.SERVICE_CONNECTED` Intent is broadcast, that indicates that the connection is complete and you are ready to send messages back and forth between devices.
 
 ### Sending Messages
 
@@ -186,4 +187,8 @@ Once connected, call `getCommunicationManager()` and use the `write(byte[] messa
 
 ### Receiving Messages
 
-The `WifiDirectHandler.Action.MESSAGE_RECEIVED` intent indicates that a message has been received. The message is accessible as a byte[] extra within the intent. The message can be accessed with the key `WifiDirectHandler.MESSAGE_KEY`
+The `WifiDirectHandler.Action.MESSAGE_RECEIVED` intent indicates that a message has been received. The message is accessible as a byte[] extra within the Intent. The message can be accessed with the key `WifiDirectHandler.MESSAGE_KEY`
+
+### Contributing
+
+Contributions are welcome! Just fork and make a pull request, and we'll merge your changes if approved. Also feel free to report any issues.
