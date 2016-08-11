@@ -35,8 +35,8 @@ Tester App
 
 Build the project with gradle and you are good to go.
 
-1. Create an Android Studio Project
-2. It is easiest to use JitPack to add the library to your project. Add JitPack as a dependency in the `build.gradle` project file
+1) Create an Android Studio Project
+2) It is easiest to use JitPack to add the library to your project. Add JitPack as a dependency in the `build.gradle` project file
 
 ```
 buildscript {
@@ -57,11 +57,11 @@ allprojects {
 }
 ```
 
-3. Add WiFi-Buddy as a dependency in the build.gradle module file
+3) Add WiFi-Buddy as a dependency in the build.gradle module file
 
 `compile 'com.github.Crash-Test-Buddies:WiFi-Buddy:v0.8.0'`
 
-4. Set the min SDK to 16 in the `build.gradle` file, this is becasue WiFi-Direct requires Android 4.1 or greater.
+4) Set the min SDK to 16 in the `build.gradle` file, this is becasue WiFi-Direct requires Android 4.1 or greater.
 
 ```
 android {
@@ -85,7 +85,7 @@ android {
 }
 ```
 
-5. Create a ServiceConnection (typically in your Main Activity)
+5) Create a ServiceConnection (typically in your Main Activity)
 
 ```
 // Note: This is used to run WifiDirectHandler as a Service instead of being coupled to an
@@ -131,7 +131,7 @@ private ServiceConnection wifiServiceConnection = new ServiceConnection() {
 };
 ```
 
-6. Create and locally register a BroadcastReceiver to listen for the intents you want from the library.
+6) Create and locally register a BroadcastReceiver to listen for the intents you want from the library.
 
 ```
 IntentFilter filter = new IntentFilter();
@@ -150,7 +150,7 @@ LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver()
 , filter);
 ```
 
-7. Bind to the service (typically in `onCreate`)
+7) Bind to the service (typically in `onCreate`)
 
 ```
 Intent intent = new Intent(this, WifiDirectHandler.class);
