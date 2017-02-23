@@ -74,6 +74,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     private boolean isGroupOwner = false;
     private boolean groupFormed = false;
     private boolean serviceDiscoveryRegistered = false;
+    private boolean stopDiscoveryAfterGroupFormed = true;
 
     // Flag for creating a no prompt service
     private boolean isCreatingNoPrompt = false;
@@ -222,7 +223,10 @@ public class WifiDirectHandler extends NonStopIntentService implements
         this.isGroupOwner = wifiP2pInfo.isGroupOwner;
 
         if (wifiP2pInfo.groupFormed) {
-            stopServiceDiscovery();
+            if(stopDiscoveryAfterGroupFormed){
+                stopServiceDiscovery();
+            }
+
 //            Thread handler;
             if (wifiP2pInfo.isGroupOwner && socketHandler == null) {
                 Log.i(TAG, "Connected as group owner");
@@ -248,6 +252,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
 
     // TODO add JavaDoc
     public void addLocalService(String serviceName, HashMap<String, String> serviceRecord) {
+
         // Logs information about local service
         Log.i(TAG, "Adding local service: " + serviceName);
 
@@ -413,6 +418,25 @@ public class WifiDirectHandler extends NonStopIntentService implements
                 serviceRequest = null;
             }
         });
+    }
+
+    /**
+     * By default after a group is formed service discovery will be stopped automatically. If you
+     * wish to continue discovery after forming a group set this to false
+     *
+     * @param stopDiscoveryAfterGroupFormed true to stop discovery automatically after a group is formed; false otherwise
+     */
+    public void setStopDiscoveryAfterGroupFormed(boolean stopDiscoveryAfterGroupFormed){
+        this.stopDiscoveryAfterGroupFormed=stopDiscoveryAfterGroupFormed;
+    }
+
+    /**
+     * By default after a group is formed service discovery will be stopped automatically.
+     *
+     * @return true if discovery will be stopped automatically after group is formed, false otherwise
+     */
+    public boolean isStopDiscoveryAfterGroupFormed(){
+        return  stopDiscoveryAfterGroupFormed;
     }
 
     /**
