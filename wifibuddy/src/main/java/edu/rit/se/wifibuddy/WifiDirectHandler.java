@@ -78,6 +78,7 @@ public class WifiDirectHandler extends NonStopIntentService implements
     // Flag for creating a no prompt service
     private boolean isCreatingNoPrompt = false;
     private ServiceData noPromptServiceData;
+    private WifiP2pManager.ActionListener noPromptActionListener;
 
     // Variables created in onCreate()
     private WifiP2pManager.Channel channel;
@@ -247,7 +248,9 @@ public class WifiDirectHandler extends NonStopIntentService implements
     }
 
     // TODO add JavaDoc
-    public void addLocalService(String serviceName, HashMap<String, String> serviceRecord) {
+
+    public void addLocalService(String serviceName, HashMap<String, String> serviceRecord, @Nullable final WifiP2pManager.ActionListener actionListener) {
+        
         // Logs information about local service
         Log.i(TAG, "Adding local service: " + serviceName);
 
@@ -267,12 +270,16 @@ public class WifiDirectHandler extends NonStopIntentService implements
                     @Override
                     public void onSuccess() {
                         Log.i(TAG, "Local service added");
+                        if(actionListener != null)
+                            actionListener.onSuccess();
                     }
 
                     @Override
                     public void onFailure(int reason) {
                         Log.e(TAG, "Failure adding local service: " + FailureReason.fromInteger(reason).toString());
                         wifiP2pServiceInfo = null;
+                        if(actionListener!=null)
+                            actionListener.onFailure(reason);
                     }
                 });
             }
@@ -281,8 +288,14 @@ public class WifiDirectHandler extends NonStopIntentService implements
             public void onFailure(int reason) {
                 Log.e(TAG, "Failure clearing local services: " + FailureReason.fromInteger(reason).toString());
                 wifiP2pServiceInfo = null;
+                if(actionListener != null)
+                    actionListener.onFailure(reason);
             }
         });
+    }
+
+    public void addLocalService(String serviceName, HashMap<String, String> serviceRecord) {
+        addLocalService(serviceName, serviceRecord, null);
     }
 
     @Override
@@ -603,27 +616,48 @@ public class WifiDirectHandler extends NonStopIntentService implements
      * Creates a service that can be connected to without prompting. This is possible by creating an
      * access point and broadcasting the password for peers to use. Peers connect via normal wifi, not
      * wifi direct, but the effect is the same.
+     *
+     * @param serviceData Service data (TXT records) to add to the created service. TXT records are
+     *                    automatically added for the created SSID and passphrase
+     * @param actionListener ActionListener that will be called when the whole process (create group,
+     *                       clearLocalServices, addLocalService) has completed with onSuccess or onFailure.
      */
-    public void startAddingNoPromptService(ServiceData serviceData) {
+    public void startAddingNoPromptService(ServiceData serviceData, final @Nullable WifiP2pManager.ActionListener actionListener) {
         if (wifiP2pServiceInfo != null) {
             removeService();
         }
         isCreatingNoPrompt = true;
         noPromptServiceData = serviceData;
+        noPromptActionListener = actionListener;
 
         wifiP2pManager.createGroup(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
                 Log.i(TAG, "Group created successfully");
                 //Note that you will have to wait for WIFI_P2P_CONNECTION_CHANGED_INTENT for group info
+                //The next stage is handled by onGroupInfoAvailable triggered by connection change
             }
 
             @Override
             public void onFailure(int reason) {
+                WifiDirectHandler.this.isCreatingNoPrompt = false;
                 Log.i(TAG, "Group creation failed: " + FailureReason.fromInteger(reason));
-
+                WifiDirectHandler.this.noPromptActionListener.onFailure(reason);
+                WifiDirectHandler.this.noPromptActionListener = null;
             }
         });
+    }
+
+    /**
+     * Creates a service that can be connected to without prompting. This is possible by creating an
+     * access point and broadcasting the password for peers to use. Peers connect via normal wifi, not
+     * wifi direct, but the effect is the same.
+     *
+     * @param serviceData Service data (TXT records) to add to the created service. TXT records are
+     *                    automatically added for the created SSID and passphrase
+     */
+    public void startAddingNoPromptService(ServiceData serviceData) {
+        startAddingNoPromptService(serviceData, null);
     }
 
     /**
@@ -772,6 +806,32 @@ public class WifiDirectHandler extends NonStopIntentService implements
                     Log.i(TAG, "WifiP2pGroup:");
                     Log.i(TAG, p2pGroupToString(wifiP2pGroup));
                     WifiDirectHandler.this.wifiP2pGroup = wifiP2pGroup;
+
+                    if(isCreatingNoPrompt) {
+                        WifiDirectHandler.this.isCreatingNoPrompt = false;
+                        noPromptServiceData.getRecord().put(Keys.NO_PROMPT_NETWORK_NAME,
+                                wifiP2pGroup.getNetworkName());
+                        noPromptServiceData.getRecord().put(Keys.NO_PROMPT_NETWORK_PASS,
+                                wifiP2pGroup.getPassphrase());
+                        WifiDirectHandler.this.addLocalService(noPromptServiceData.getServiceName(),
+                                noPromptServiceData.getRecord(), new WifiP2pManager.ActionListener() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Log.i(TAG, "Successfully added local service for no-prompt group");
+                                        WifiDirectHandler.this.noPromptActionListener.onSuccess();
+                                        WifiDirectHandler.this.noPromptActionListener = null;
+                                    }
+
+                                    @Override
+                                    public void onFailure(int reason) {
+                                        Log.e(TAG, "Failed to add local service for no-prompt group"
+                                            + FailureReason.fromInteger(reason));
+                                        WifiDirectHandler.this.noPromptActionListener.onFailure(reason);
+                                        WifiDirectHandler.this.noPromptActionListener = null;
+                                    }
+                                });
+
+                    }
                 }
             }
         });
